@@ -21,3 +21,7 @@ flash: out/${TARGET}.hex
 	avrdude -v -p m328p -c arduino -P ${DEVICE} -U flash:w:$<:i
 
 out/blink.elf: out/blink.o
+
+out/sender.elf: out/sender.o out/uart.o
+
+out/receiver.elf: out/receiver.o out/uart.o
