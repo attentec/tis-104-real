@@ -7,6 +7,12 @@ out/%.o:%.c
 	avr-gcc -o $@ -c $^ \
 		-std=c11 -mmcu=atmega328p -g -Os -DF_CPU=16000000ul
 
+out/%.o:%.cpp
+	mkdir -p $(dir $@)
+	avr-g++ -o $@ -c $^ \
+		-ITFT_22_ILI9225 \
+		-mmcu=atmega328p -g -Os -DF_CPU=16000000ul
+
 %.elf:
 	mkdir -p $(dir $@)
 	avr-gcc -o $@ $^ \
@@ -25,3 +31,8 @@ out/blink.elf: out/blink.o
 out/sender.elf: out/sender.o out/uart.o
 
 out/receiver.elf: out/receiver.o out/uart.o
+
+LCD_SOURCES = $(addprefix TFT_22_ILI9225/,TFT_22_ILI9225.cpp DefaultFonts.c)
+LCD_OBJECTS = $(addprefix out/,$(patsubst %.cpp,%.o,$(patsubst %.c,%.o,${LCD_SOURCES})))
+
+out/display.elf: out/display.o ${LCD_OBJECTS}
