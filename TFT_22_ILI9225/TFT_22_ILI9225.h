@@ -3,6 +3,10 @@
 
 #include <avr/pgmspace.h>
 #include <stdlib.h>
+extern "C" {
+#include <font.h>
+#include <screen.h>
+}
 
 enum Direction {
 	INPUT,
@@ -104,29 +108,19 @@ enum Level {
 
 /* Font defines */
 #define FONT_HEADER_SIZE 4 // 1: pixel width of 1 font character, 2: pixel height, 
-#define readFontByte(x) pgm_read_byte(&cfont.font[x])  
+#define readFontByte(x) pgm_read_byte(&cfont->font[x])  
 
-extern uint8_t Terminal6x8[];
-extern uint8_t Terminal11x16[];
-extern uint8_t Terminal12x16[];
-extern uint8_t Trebuchet_MS16x21[];
-
-struct _currentFont
-{
-	uint8_t* font;
-	uint8_t width;
-	uint8_t height;
-	uint8_t offset;
-	uint8_t numchars;
-	uint8_t nbrows;
-};
+extern Font Terminal6x8[];
+extern Font Terminal11x16[];
+extern Font Terminal12x16[];
+extern Font Trebuchet_MS16x21[];
 
 /// Main and core class
 class TFT_22_ILI9225 {
 
 	public:
 
-		TFT_22_ILI9225(uint8_t RST, uint8_t RS, uint8_t CS, uint8_t SDI, uint8_t CLK, uint8_t LED);
+		TFT_22_ILI9225(uint8_t RST, uint8_t RS, uint8_t CS, uint8_t SDI, uint8_t CLK, uint8_t LED, screen scr);
 		TFT_22_ILI9225(uint8_t RST, uint8_t RS, uint8_t CS, uint8_t LED);
 
 		/// Initialization
@@ -264,7 +258,7 @@ class TFT_22_ILI9225 {
 
 		/// Set current font
 		/// @param	font Font name
-		void setFont(uint8_t* font);
+		void setFont(FontInfo* font);
 
 		/// Draw single character (pixel coordinates)
 		/// @param	x point coordinate, x-axis
@@ -272,6 +266,8 @@ class TFT_22_ILI9225 {
 		/// @param	ch ASCII character
 		/// @param	color 16-bit color, default=white
 		uint16_t drawChar(uint16_t x, uint16_t y, uint16_t ch, uint16_t color = COLOR_WHITE);
+
+		void render();
 
 	private:
 
@@ -290,8 +286,9 @@ class TFT_22_ILI9225 {
 
 	  	bool  hwSPI;
 
-		_currentFont cfont;
+		FontInfo *cfont;
 
+        screen _scr;
 };
 
 #endif

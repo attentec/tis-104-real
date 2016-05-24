@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+gcc *.c --std=c11 ../TFT_22_ILI9225/DefaultFonts.c -I .

@@ -45,7 +45,7 @@ uint8_t bitRead(uint8_t byte, uint8_t index) {
 
 
 // Constructor when using software SPI.  All output pins are configurable.
-TFT_22_ILI9225::TFT_22_ILI9225(uint8_t rst, uint8_t rs, uint8_t cs, uint8_t sdi, uint8_t clk, uint8_t led) {
+TFT_22_ILI9225::TFT_22_ILI9225(uint8_t rst, uint8_t rs, uint8_t cs, uint8_t sdi, uint8_t clk, uint8_t led, screen scr) {
 	_rst  = rst;
 	_rs   = rs;
 	_cs   = cs;
@@ -53,6 +53,7 @@ TFT_22_ILI9225::TFT_22_ILI9225(uint8_t rst, uint8_t rs, uint8_t cs, uint8_t sdi,
 	_clk  = clk;
 	_led  = led;
 	hwSPI = false;
+	_scr = scr;
 }
 
 // Constructor when using hardware SPI.  Faster, but must use SPI pins
@@ -556,16 +557,9 @@ void TFT_22_ILI9225::setBackgroundColor(uint16_t color) {
 }
 
 
-void TFT_22_ILI9225::setFont(uint8_t* font) {
+void TFT_22_ILI9225::setFont(FontInfo* font) {
 
-	cfont.font 	   = font;
-	cfont.width    = readFontByte(0);
-	cfont.height   = readFontByte(1);
-	cfont.offset   = readFontByte(2);
-	cfont.numchars = readFontByte(3);
-	cfont.nbrows   = cfont.height / 8;
-
-	if (cfont.height % 8) cfont.nbrows++;  // Set number of bytes used by height of font in multiples of 8
+	cfont = font;
 }
 
 
@@ -575,38 +569,49 @@ void TFT_22_ILI9225::drawText(uint16_t x, uint16_t y, char *s, uint16_t color) {
 
 	// Print every character in string
 	for (uint8_t k = 0; k < strlen(s); k++) {
-		currx += drawChar(currx, y, s[k], color) + 1;
+		screen_set(_scr,
+				   currx / cfont->width,
+				   y / cfont->height,
+				   s[k] - cfont->offset);
+		currx += cfont->width;
+	}
+}
+
+
+void TFT_22_ILI9225::render() {
+	DirtyIterator dirties;
+	screen_get_dirties(_scr, &dirties);
+	while (screen_get_next_dirty(&dirties)) {
+		drawChar(dirties.x * cfont->width,
+				dirties.y * cfont->height,
+				screen_get(_scr, dirties.x, dirties.y),
+				COLOR_WHITE);
 	}
 }
 
 
 uint16_t TFT_22_ILI9225::drawChar(uint16_t x, uint16_t y, uint16_t ch, uint16_t color) {
 
-	uint8_t charData, charWidth;
-	uint8_t h, i, j, k;
+	uint8_t charData;
+	uint8_t h, i, k;
 	uint16_t charOffset;
 
-	charOffset = (cfont.width * cfont.nbrows) + 1;  // bytes used by each character
-	charOffset = (charOffset * (ch - cfont.offset)) + FONT_HEADER_SIZE;  // char offset (add 4 for font header)
-	charWidth  = readFontByte(charOffset);  // get font width from 1st byte
+	charOffset = font_char_index(cfont, ch);
 	charOffset++;  // increment pointer to first character data byte
 
-	for (i = 0; i <= charWidth; i++) {  // each font "column" (+1 blank column for spacing)
+	for (i = 0; i < cfont->width; i++) {  // each font "column"
 		h = 0;  // keep track of char height
-		for (j = 0; j < cfont.nbrows; j++) 	{  // each column byte
-			if (i == charWidth) charData = (uint8_t)0x0; // Insert blank column
-			else                charData = readFontByte(charOffset);
-			charOffset++;
-			
-			// Process every row in font character
-			for (uint8_t k = 0; k < 8; k++) {
-				if (h >= cfont.height ) break;  // No need to process excess bits
-				if (bitRead(charData, k)) drawPixel(x + i, y + (j * 8) + k, color);
-				else                      drawPixel(x + i, y + (j * 8) + k, _bgColor);
-				h++;
-			};
-		};
+        charData = font_read_byte(cfont, charOffset);
+        charOffset++;
+        
+        // Process every row in font character
+        for (uint8_t k = 0; k < 8; k++) {
+            if (h >= cfont->height ) break;  // No need to process excess bits
+            if (bitRead(charData, k)) drawPixel(x + i, y + k, color);
+            else                      drawPixel(x + i, y + k, _bgColor);
+            h++;
+        };
 	};
-	return charWidth;
+	return cfont->width;
 }
 
