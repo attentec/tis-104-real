@@ -3,6 +3,14 @@
 
 #include "TFT_22_ILI9225.h"
 
+static void set_pin_high(void) {
+  PORTB |= (1 << 1);
+}
+
+static void set_pin_low(void) {
+  PORTB &= ~(1 << 1);
+}
+
 void pinMode(uint8_t pin, Direction dir) {
 	if (pin < 8) {
 		if (dir == INPUT) {
@@ -90,12 +98,6 @@ void TFT_22_ILI9225::_orientCoordinates(uint16_t &x1, uint16_t &y1) {
 
 
 void TFT_22_ILI9225::_setWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
-	_orientCoordinates(x0, y0);
-	_orientCoordinates(x1, y1);
-
-	if (x1<x0) _swap(x0, x1);
-	if (y1<y0) _swap(y0, y1);
-
 	_writeRegister(ILI9225_HORIZONTAL_WINDOW_ADDR1,x1);
 	_writeRegister(ILI9225_HORIZONTAL_WINDOW_ADDR2,x0);
 
@@ -390,8 +392,6 @@ void TFT_22_ILI9225::drawPixel(uint16_t x1, uint16_t y1, uint16_t color) {
 
 	if((x1 < 0) || (x1 >= _maxX) || (y1 < 0) || (y1 >= _maxY)) return;
 
-	_setWindow(x1, y1, x1+1, y1+1);
-	_orientCoordinates(x1, y1);
 	_writeData(color >> 8, color);
 }
 
@@ -577,7 +577,6 @@ void TFT_22_ILI9225::drawText(uint16_t x, uint16_t y, char *s, uint16_t color) {
 	}
 }
 
-
 void TFT_22_ILI9225::render() {
 	DirtyIterator dirties;
 	screen_get_dirties(_scr, &dirties);
@@ -596,22 +595,30 @@ uint16_t TFT_22_ILI9225::drawChar(uint16_t x, uint16_t y, uint16_t ch, uint16_t 
 	uint8_t h, i, k;
 	uint16_t charOffset;
 
+    set_pin_high();
 	charOffset = font_char_index(cfont, ch);
 	charOffset++;  // increment pointer to first character data byte
 
+	_setWindow(x, y, x + cfont->width - 1, y + cfont->height - 1);
+    uint16_t charPixels[6 * 8] = {0};
 	for (i = 0; i < cfont->width; i++) {  // each font "column"
-		h = 0;  // keep track of char height
         charData = font_read_byte(cfont, charOffset);
         charOffset++;
         
         // Process every row in font character
-        for (uint8_t k = 0; k < 8; k++) {
-            if (h >= cfont->height ) break;  // No need to process excess bits
-            if (bitRead(charData, k)) drawPixel(x + i, y + k, color);
-            else                      drawPixel(x + i, y + k, _bgColor);
-            h++;
+        for (uint8_t k = 0; k < cfont->height; k++) {
+            if (charData & 1) {
+                charPixels[k * 6 + i] = color;
+            } else {
+                charPixels[k * 6 + i] = _bgColor;
+            }
+            charData >>= 1;
         };
 	};
+    for (i = 0; i < 6 * 8; i++) {
+        _writeData(charPixels[i] >> 8, charPixels[i]);
+    }
+    set_pin_low();
 	return cfont->width;
 }
 

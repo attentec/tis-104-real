@@ -22,6 +22,14 @@ uint16_t random(uint16_t max) {
   return (uint16_t)(((float)rand() * (float)max) / (float)RAND_MAX);
 }
 
+static void set_pin_high(void) {
+  PORTB |= (1 << 0);
+}
+
+static void set_pin_low(void) {
+  PORTB &= ~(1 << 0);
+}
+
 int main() {
   indexmap indices = indexmap_init(20, 20);
   FontInfo font = font_make_fontinfo(Terminal6x8);
@@ -48,13 +56,19 @@ int main() {
   }
   tft.render();
 
+  DDRB |= (1 << 0);
+  DDRB |= (1 << 1);
+
+
   int count = 0;
   char buffer[5];
   while (true) {
       sprintf(buffer, "%04d", count);
       buffer[4] = '\0';
       tft.drawText(10, 10, buffer);
+    set_pin_high();
       tft.render();
+    set_pin_low();
       count += 1;
   }
 
