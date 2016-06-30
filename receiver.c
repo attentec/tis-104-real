@@ -47,7 +47,7 @@ int main() {
     PORTD &= ~((1 << 3) | (1 << 2));
 
     uart_init();
-    
+
     int16_t value;
     const size_t mysize = 100;
     uint8_t mybuf[mysize];

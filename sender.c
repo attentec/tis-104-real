@@ -51,7 +51,7 @@ int main() {
     PORTD &= ~((1 << 3) | (1 << 2));
 
     uart_init();
-    
+
     int16_t counter = -999;
     while (true) {
 	read_char();
