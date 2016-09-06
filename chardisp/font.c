@@ -1,39 +1,29 @@
-#ifdef __AVR__
-#include <avr/pgmspace.h>
-#endif
 #include "font.h"
+#include "mem.h"
 
-FontInfo font_make_fontinfo(Font *font) {
-    FontInfo info = {
-        .font = font,
-        .width = pgm_read_byte(&font[0]),
-        .height = pgm_read_byte(&font[1]),
-        .offset = pgm_read_byte(&font[2]),
-        .numchars = pgm_read_byte(&font[3]),
-    };
-    return info;
+#define FONT_HEADER_SIZE (4u) // 1: pixel width of 1 font character, 2: pixel height
+
+void font_init(struct font *font, uint8_t *data) {
+    font->data = data;
+    font->width = mem_read_byte(&data[0]);
+    font->height = mem_read_byte(&data[1]);
+    font->offset = mem_read_byte(&data[2]);
+    font->numchars = mem_read_byte(&data[3]);
 }
 
-int font_char_index(FontInfo *font, int charno) {
-	int char_offset = font->width + 1;  // bytes used by each character
-	return (char_offset * charno) + FONT_HEADER_SIZE;  // char offset (add 4 for font header)
+uint8_t font_read_column(struct font *font, uint8_t charno, uint8_t column) {
+    uint16_t char_width = font->width + 1u; // bytes used by each character
+    uint16_t char_offset = charno - font->offset; // shift charno into font subrange
+    uint16_t char_index = (char_width * char_offset) + FONT_HEADER_SIZE;
+    return mem_read_byte(&font->data[char_index + column + 1u]);
 }
 
-int font_read_byte(FontInfo *font, int index) {
-    return pgm_read_byte(&font->font[index]);
-}
+void font_sprint_char(struct font *font, char *buf, char ch, int line) {
+    uint8_t char_data, char_width;
+    uint8_t i, j;
 
-void font_sprint_char(FontInfo *font, char *buf, char ch, int line) {
-	uint8_t char_data, char_width;
-	uint8_t i, j;
-	uint16_t char_offset;
-
-	char_offset = font_char_index(font, ch);
-	char_offset++;  // increment pointer to first character data byte
-
-	for (i = 0; i < font->width; i++) {  // each font "column"
-        char_data = font_read_byte(font, char_offset);
-        char_offset++;
+    for (i = 0; i < font->width; i++) {  // each font "column"
+        char_data = font_read_column(font, ch, i);
 
         if (line >= font->height) {
             break;  // No need to process excess bits
@@ -43,5 +33,5 @@ void font_sprint_char(FontInfo *font, char *buf, char ch, int line) {
         } else {
             buf[i] = ' ';
         }
-	}
+    }
 }
