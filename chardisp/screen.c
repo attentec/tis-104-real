@@ -4,8 +4,8 @@
 #include "screen.h"
 
 struct Screen {
-    indexmap indices;
-    FontInfo *font;
+    struct indexmap *indices;
+    struct font *font;
     int cursor_enabled;
     int cursor_x;
     int cursor_y;
@@ -16,7 +16,7 @@ static int screen_is_dirty(screen scr, int x, int y);
 static void screen_set_dirty(screen scr, int x, int y, int dirty);
 static void screen_clear_dirty(screen scr);
 
-screen screen_init(indexmap indices, FontInfo *font) {
+screen screen_init(struct indexmap *indices, struct font *font) {
     const size_t size = indexmap_width(indices) * indexmap_height(indices);
     screen scr = malloc(sizeof(struct Screen) + size * sizeof(int));
     memset(scr, 0, sizeof(struct Screen) + size * sizeof(int));

@@ -9,13 +9,6 @@
 
 #include "tft.h"
 
-#define TFT_RST 2
-#define TFT_RS  3
-#define TFT_CS  4  // SS
-#define TFT_SDI 5  // MOSI
-#define TFT_CLK 6  // SCK
-#define TFT_LED 7   // 0 if wired to +5V directly
-
 static void set_pin_high(void) {
     PORTB |= (1 << 0);
 }
@@ -25,14 +18,27 @@ static void set_pin_low(void) {
 }
 
 int main() {
-    indexmap indices = indexmap_init(20, 20);
-    FontInfo font = font_make_fontinfo(Terminal6x8);
-    screen scr = screen_init(indices, &font);
+    struct indexmap indices;
+    uint8_t buf[20 * 20];
+    indexmap_init(&indices, 20, 20, buf);
+
+    struct font font;
+    font_init(&font, Terminal6x8);
+
+    screen scr = screen_init(&indices, &font);
+
+    // Set up pins
+    pin_t rs = pin_init(PIN_PORT_D, 3, PIN_DIR_OUTPUT);
+    pin_t cs = pin_init(PIN_PORT_D, 4, PIN_DIR_OUTPUT);
+    pin_t rst = pin_init(PIN_PORT_D, 2, PIN_DIR_OUTPUT);
+    pin_t led = pin_init(PIN_PORT_D, 7, PIN_DIR_OUTPUT);
+    pin_t clk = pin_init(PIN_PORT_D, 6, PIN_DIR_OUTPUT);
+    pin_t sdi = pin_init(PIN_PORT_D, 5, PIN_DIR_OUTPUT);
 
     // Use hardware SPI (faster - on Uno: 13-SCK, 12-MISO, 11-MOSI)
-    //TFT_22_ILI9225 tft = TFT_22_ILI9225(TFT_RST, TFT_RS, TFT_CS, TFT_LED);
+    //TFT_22_ILI9225 tft = TFT_22_ILI9225(rst, rs, cs, led);
     // Use software SPI (slower)
-    tft_swspi(TFT_RST, TFT_RS, TFT_CS, TFT_SDI, TFT_CLK, TFT_LED, scr);
+    tft_swspi(rst, rs, cs, sdi, clk, led, scr);
 
     tft_setFont(&font);
 

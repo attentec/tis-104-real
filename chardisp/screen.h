@@ -5,7 +5,7 @@
 struct Screen;
 typedef struct Screen* screen;
 
-screen screen_init(indexmap indices, FontInfo *font);
+screen screen_init(struct indexmap *indices, struct font *font);
 void screen_set(screen scr, int x, int y, int val);
 int screen_get(screen scr, int x, int y);
 void screen_enable_cursor(screen scr);

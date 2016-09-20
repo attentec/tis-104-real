@@ -6,6 +6,8 @@
 #include <screen.h>
 #include <stdbool.h>
 
+#include "disp.h"
+
 enum Direction {
     INPUT,
     OUTPUT,
@@ -108,10 +110,10 @@ enum Level {
 #define FONT_HEADER_SIZE 4 // 1: pixel width of 1 font character, 2: pixel height,
 #define readFontByte(x) pgm_read_byte(&cfont->font[x])
 
-extern Font Terminal6x8[];
-extern Font Terminal11x16[];
-extern Font Terminal12x16[];
-extern Font Trebuchet_MS16x21[];
+extern uint8_t Terminal6x8[];
+extern uint8_t Terminal11x16[];
+extern uint8_t Terminal12x16[];
+extern uint8_t Trebuchet_MS16x21[];
 
 void tft_swspi(uint8_t RST, uint8_t RS, uint8_t CS, uint8_t SDI, uint8_t CLK, uint8_t LED, screen scr);
 void tft_hwspi(uint8_t RST, uint8_t RS, uint8_t CS, uint8_t LED);
@@ -203,7 +205,7 @@ void tft_drawText(uint16_t x, uint16_t y, char *s, uint16_t color);
 
 /// Set current font
 /// @param  font Font name
-void tft_setFont(FontInfo* font);
+void tft_setFont(struct font* font);
 
 /// Draw single character (pixel coordinates)
 /// @param  x point coordinate, x-axis
@@ -220,17 +222,9 @@ struct tft {
     uint16_t maxY;
     uint16_t bgColor;
 
-    uint8_t rst;
-    uint8_t rs;
-    uint8_t cs;
-    uint8_t sdi;
-    uint8_t clk;
-    uint8_t led;
     uint8_t orientation;
 
-    bool  hwSPI;
-
-    FontInfo *cfont;
+    struct font *cfont;
 
     screen scr;
 };

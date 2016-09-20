@@ -3,22 +3,21 @@
 #include <stdbool.h>
 
 #include "tft.h"
+#include "pin.h"
+#include "panic.h"
 
 static void swap(uint16_t *a, uint16_t *b);
 static void setWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
 static void orientCoordinates(uint16_t *x1, uint16_t *y1);
-static void writeRegister(uint16_t reg, uint16_t data);
-static void writeData(uint8_t HI, uint8_t LO);
-static void writeCommand(uint8_t HI, uint8_t LO);
-static void spiWriteByte(uint8_t byte);
 static uint16_t joinColor(uint8_t red8, uint8_t green8, uint8_t blue8);
 static void splitColor(uint16_t rgb, uint8_t *red, uint8_t *green, uint8_t *blue);
 static void drawPixel(uint16_t x1, uint16_t y1, uint16_t color);
 static void pinMode(uint8_t pin, enum Direction dir);
-static void digitalWrite(uint8_t pin, enum Level level);
 static uint8_t bitRead(uint8_t byte, uint8_t index);
 
 static struct tft tft;
+static struct disp_t _disp;
+static struct disp_t *disp = &_disp;
 
 // Helper functions
 static void drawPixel(uint16_t x1, uint16_t y1, uint16_t color) {
@@ -26,7 +25,7 @@ static void drawPixel(uint16_t x1, uint16_t y1, uint16_t color) {
         return;
     }
 
-    writeData(color >> 8, color);
+    disp_write_data(disp, color);
 }
 
 static uint16_t joinColor(uint8_t red8, uint8_t green8, uint8_t blue8) {
@@ -39,11 +38,6 @@ static void splitColor(uint16_t rgb, uint8_t *red, uint8_t *green, uint8_t *blue
     *red   = (rgb & 0b1111100000000000) >> 11 << 3;
     *green = (rgb & 0b0000011111100000) >>  5 << 2;
     *blue  = (rgb & 0b0000000000011111)       << 3;
-}
-
-static void writeRegister(uint16_t reg, uint16_t data) {
-    writeCommand(reg >> 8, reg & 255);
-    writeData(data >> 8, data & 255);
 }
 
 static void orientCoordinates(uint16_t *x1, uint16_t *y1) {
@@ -66,56 +60,22 @@ static void orientCoordinates(uint16_t *x1, uint16_t *y1) {
 }
 
 static void setWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
-    writeRegister(ILI9225_HORIZONTAL_WINDOW_ADDR1,x1);
-    writeRegister(ILI9225_HORIZONTAL_WINDOW_ADDR2,x0);
+    disp_write_register(disp, ILI9225_HORIZONTAL_WINDOW_ADDR1, x1);
+    disp_write_register(disp, ILI9225_HORIZONTAL_WINDOW_ADDR2, x0);
 
-    writeRegister(ILI9225_VERTICAL_WINDOW_ADDR1,y1);
-    writeRegister(ILI9225_VERTICAL_WINDOW_ADDR2,y0);
+    disp_write_register(disp, ILI9225_VERTICAL_WINDOW_ADDR1, y1);
+    disp_write_register(disp, ILI9225_VERTICAL_WINDOW_ADDR2, y0);
 
-    writeRegister(ILI9225_RAM_ADDR_SET1,x0);
-    writeRegister(ILI9225_RAM_ADDR_SET2,y0);
+    disp_write_register(disp, ILI9225_RAM_ADDR_SET1, x0);
+    disp_write_register(disp, ILI9225_RAM_ADDR_SET2, y0);
 
-    writeCommand(0x00, 0x22);
+    disp_write_command(disp, 0x22);
 }
 
 static void swap(uint16_t *a, uint16_t *b) {
     uint16_t w = *a;
     *a = *b;
     *b = w;
-}
-
-static void spiWriteByte(uint8_t byte) {
-    const uint8_t spi_delay = 1;
-    _delay_us(spi_delay);
-    for (int i = 0; i < 8; ++i) {
-        if (byte & (1 << 7)) {
-            digitalWrite(tft.sdi, HIGH);
-        } else {
-            digitalWrite(tft.sdi, LOW);
-        }
-        _delay_us(spi_delay);
-        digitalWrite(tft.clk, HIGH);
-        _delay_us(spi_delay);
-        digitalWrite(tft.clk, LOW);
-        byte <<= 1;
-    }
-    _delay_us(spi_delay);
-}
-
-static void writeCommand(uint8_t HI, uint8_t LO) {
-    digitalWrite(tft.rs, LOW);
-    digitalWrite(tft.cs, LOW);
-    spiWriteByte(HI);
-    spiWriteByte(LO);
-    digitalWrite(tft.cs, HIGH);
-}
-
-static void writeData(uint8_t HI, uint8_t LO) {
-    digitalWrite(tft.rs, HIGH);
-    digitalWrite(tft.cs, LOW);
-    spiWriteByte(HI);
-    spiWriteByte(LO);
-    digitalWrite(tft.cs, HIGH);
 }
 
 // Arduino-like functions
@@ -136,134 +96,98 @@ static void pinMode(uint8_t pin, enum Direction dir) {
     }
 }
 
-static void digitalWrite(uint8_t pin, enum Level level) {
-    if (pin < 8) {
-        if (level == LOW) {
-            PORTD &= ~(1 << pin);
-        } else {
-            PORTD |= (1 << pin);
-        }
-    } else {
-        uint8_t index = pin - 8;
-        if (level == LOW) {
-            PORTB &= ~(1 << index);
-        } else {
-            PORTB |= (1 << index);
-        }
-    }
-}
-
-
 static uint8_t bitRead(uint8_t byte, uint8_t index) {
     return byte & (1 << index);
 }
 
 // Constructor when using software SPI.  All output pins are configurable.
 void tft_swspi(uint8_t rst, uint8_t rs, uint8_t cs, uint8_t sdi, uint8_t clk, uint8_t led, screen scr) {
-    tft.rst  = rst;
-    tft.rs   = rs;
-    tft.cs   = cs;
-    tft.sdi  = sdi;
-    tft.clk  = clk;
-    tft.led  = led;
-    tft.hwSPI = false;
+    disp_init(disp, rs, cs, rst, led, sdi, clk);
     tft.scr = scr;
 }
 
 // Constructor when using hardware SPI.  Faster, but must use SPI pins
 // specific to each board type (e.g. 11,13 for Uno, 51,52 for Mega, etc.)
 void tft_hwspi(uint8_t rst, uint8_t rs, uint8_t cs, uint8_t led) {
-    tft.rst  = rst;
-    tft.rs   = rs;
-    tft.cs   = cs;
-    tft.sdi  = 0;
-    tft.clk = 0;
-    tft.led  = led;
-    tft.hwSPI = true;
+    panic();
+    disp->rst  = rst;
+    disp->rs   = rs;
+    disp->cs   = cs;
+    // disp->sdi  = 0;
+    // disp->clk = 0;
+    disp->led  = led;
 }
 
 void tft_begin() {
-    // Set up pins
-    pinMode(tft.rs, OUTPUT);
-    pinMode(tft.cs, OUTPUT);
-    pinMode(tft.rst, OUTPUT);
-    if (tft.led) {
-        pinMode(tft.led, OUTPUT);
-    }
-    pinMode(tft.clk, OUTPUT);
-    pinMode(tft.sdi, OUTPUT);
-
     // Turn on backlight
-    if (tft.led) {
-        digitalWrite(tft.led, HIGH);
-    }
+    disp_set_backlight(disp, true);
 
     // Initialization Code
-    digitalWrite(tft.rst, HIGH); // Pull the reset pin high to release the ILI9225C from the reset status
+    disp_set_reset(disp, true); // Pull the reset pin high to release the ILI9225C from the reset status
     _delay_ms(1);
-    digitalWrite(tft.rst, LOW); // Pull the reset pin low to reset ILI9225
+    disp_set_reset(disp, false); // Pull the reset pin low to reset ILI9225
     _delay_ms(10);
-    digitalWrite(tft.rst, HIGH); // Pull the reset pin high to release the ILI9225C from the reset status
+    disp_set_reset(disp, true); // Pull the reset pin high to release the ILI9225C from the reset status
     _delay_ms(50);
 
     /* Start Initial Sequence */
     /* Set SS bit and direction output from S528 to S1 */
-    writeRegister(ILI9225_POWER_CTRL1, 0x0000); // Set SAP,DSTB,STB
-    writeRegister(ILI9225_POWER_CTRL2, 0x0000); // Set APON,PON,AON,VCI1EN,VC
-    writeRegister(ILI9225_POWER_CTRL3, 0x0000); // Set BT,DC1,DC2,DC3
-    writeRegister(ILI9225_POWER_CTRL4, 0x0000); // Set GVDD
-    writeRegister(ILI9225_POWER_CTRL5, 0x0000); // Set VCOMH/VCOML voltage
+    disp_write_register(disp, ILI9225_POWER_CTRL1, 0x0000); // Set SAP,DSTB,STB
+    disp_write_register(disp, ILI9225_POWER_CTRL2, 0x0000); // Set APON,PON,AON,VCI1EN,VC
+    disp_write_register(disp, ILI9225_POWER_CTRL3, 0x0000); // Set BT,DC1,DC2,DC3
+    disp_write_register(disp, ILI9225_POWER_CTRL4, 0x0000); // Set GVDD
+    disp_write_register(disp, ILI9225_POWER_CTRL5, 0x0000); // Set VCOMH/VCOML voltage
     _delay_ms(40);
 
     // Power-on sequence
-    writeRegister(ILI9225_POWER_CTRL2, 0x0018); // Set APON,PON,AON,VCI1EN,VC
-    writeRegister(ILI9225_POWER_CTRL3, 0x6121); // Set BT,DC1,DC2,DC3
-    writeRegister(ILI9225_POWER_CTRL4, 0x006F); // Set GVDD   /*007F 0088 */
-    writeRegister(ILI9225_POWER_CTRL5, 0x495F); // Set VCOMH/VCOML voltage
-    writeRegister(ILI9225_POWER_CTRL1, 0x0800); // Set SAP,DSTB,STB
+    disp_write_register(disp, ILI9225_POWER_CTRL2, 0x0018); // Set APON,PON,AON,VCI1EN,VC
+    disp_write_register(disp, ILI9225_POWER_CTRL3, 0x6121); // Set BT,DC1,DC2,DC3
+    disp_write_register(disp, ILI9225_POWER_CTRL4, 0x006F); // Set GVDD   /*007F 0088 */
+    disp_write_register(disp, ILI9225_POWER_CTRL5, 0x495F); // Set VCOMH/VCOML voltage
+    disp_write_register(disp, ILI9225_POWER_CTRL1, 0x0800); // Set SAP,DSTB,STB
     _delay_ms(10);
-    writeRegister(ILI9225_POWER_CTRL2, 0x103B); // Set APON,PON,AON,VCI1EN,VC
+    disp_write_register(disp, ILI9225_POWER_CTRL2, 0x103B); // Set APON,PON,AON,VCI1EN,VC
     _delay_ms(50);
 
-    writeRegister(ILI9225_DRIVER_OUTPUT_CTRL, 0x011C); // set the display line number and display direction
-    writeRegister(ILI9225_LCD_AC_DRIVING_CTRL, 0x0100); // set 1 line inversion
-    writeRegister(ILI9225_ENTRY_MODE, 0x1030); // set GRAM write direction and BGR=1.
-    writeRegister(ILI9225_DISP_CTRL1, 0x0000); // Display off
-    writeRegister(ILI9225_BLANK_PERIOD_CTRL1, 0x0808); // set the back porch and front porch
-    writeRegister(ILI9225_FRAME_CYCLE_CTRL, 0x1100); // set the clocks number per line
-    writeRegister(ILI9225_INTERFACE_CTRL, 0x0000); // CPU interface
-    writeRegister(ILI9225_OSC_CTRL, 0x0D01); // Set Osc  /*0e01*/
-    writeRegister(ILI9225_VCI_RECYCLING, 0x0020); // Set VCI recycling
-    writeRegister(ILI9225_RAM_ADDR_SET1, 0x0000); // RAM Address
-    writeRegister(ILI9225_RAM_ADDR_SET2, 0x0000); // RAM Address
+    disp_write_register(disp, ILI9225_DRIVER_OUTPUT_CTRL, 0x011C); // set the display line number and display direction
+    disp_write_register(disp, ILI9225_LCD_AC_DRIVING_CTRL, 0x0100); // set 1 line inversion
+    disp_write_register(disp, ILI9225_ENTRY_MODE, 0x1030); // set GRAM write direction and BGR=1.
+    disp_write_register(disp, ILI9225_DISP_CTRL1, 0x0000); // Display off
+    disp_write_register(disp, ILI9225_BLANK_PERIOD_CTRL1, 0x0808); // set the back porch and front porch
+    disp_write_register(disp, ILI9225_FRAME_CYCLE_CTRL, 0x1100); // set the clocks number per line
+    disp_write_register(disp, ILI9225_INTERFACE_CTRL, 0x0000); // CPU interface
+    disp_write_register(disp, ILI9225_OSC_CTRL, 0x0D01); // Set Osc  /*0e01*/
+    disp_write_register(disp, ILI9225_VCI_RECYCLING, 0x0020); // Set VCI recycling
+    disp_write_register(disp, ILI9225_RAM_ADDR_SET1, 0x0000); // RAM Address
+    disp_write_register(disp, ILI9225_RAM_ADDR_SET2, 0x0000); // RAM Address
 
     /* Set GRAM area */
-    writeRegister(ILI9225_GATE_SCAN_CTRL, 0x0000);
-    writeRegister(ILI9225_VERTICAL_SCROLL_CTRL1, 0x00DB);
-    writeRegister(ILI9225_VERTICAL_SCROLL_CTRL2, 0x0000);
-    writeRegister(ILI9225_VERTICAL_SCROLL_CTRL3, 0x0000);
-    writeRegister(ILI9225_PARTIAL_DRIVING_POS1, 0x00DB);
-    writeRegister(ILI9225_PARTIAL_DRIVING_POS2, 0x0000);
-    writeRegister(ILI9225_HORIZONTAL_WINDOW_ADDR1, 0x00AF);
-    writeRegister(ILI9225_HORIZONTAL_WINDOW_ADDR2, 0x0000);
-    writeRegister(ILI9225_VERTICAL_WINDOW_ADDR1, 0x00DB);
-    writeRegister(ILI9225_VERTICAL_WINDOW_ADDR2, 0x0000);
+    disp_write_register(disp, ILI9225_GATE_SCAN_CTRL, 0x0000);
+    disp_write_register(disp, ILI9225_VERTICAL_SCROLL_CTRL1, 0x00DB);
+    disp_write_register(disp, ILI9225_VERTICAL_SCROLL_CTRL2, 0x0000);
+    disp_write_register(disp, ILI9225_VERTICAL_SCROLL_CTRL3, 0x0000);
+    disp_write_register(disp, ILI9225_PARTIAL_DRIVING_POS1, 0x00DB);
+    disp_write_register(disp, ILI9225_PARTIAL_DRIVING_POS2, 0x0000);
+    disp_write_register(disp, ILI9225_HORIZONTAL_WINDOW_ADDR1, 0x00AF);
+    disp_write_register(disp, ILI9225_HORIZONTAL_WINDOW_ADDR2, 0x0000);
+    disp_write_register(disp, ILI9225_VERTICAL_WINDOW_ADDR1, 0x00DB);
+    disp_write_register(disp, ILI9225_VERTICAL_WINDOW_ADDR2, 0x0000);
 
     /* Set GAMMA curve */
-    writeRegister(ILI9225_GAMMA_CTRL1, 0x0000);
-    writeRegister(ILI9225_GAMMA_CTRL2, 0x0808);
-    writeRegister(ILI9225_GAMMA_CTRL3, 0x080A);
-    writeRegister(ILI9225_GAMMA_CTRL4, 0x000A);
-    writeRegister(ILI9225_GAMMA_CTRL5, 0x0A08);
-    writeRegister(ILI9225_GAMMA_CTRL6, 0x0808);
-    writeRegister(ILI9225_GAMMA_CTRL7, 0x0000);
-    writeRegister(ILI9225_GAMMA_CTRL8, 0x0A00);
-    writeRegister(ILI9225_GAMMA_CTRL9, 0x0710);
-    writeRegister(ILI9225_GAMMA_CTRL10, 0x0710);
+    disp_write_register(disp, ILI9225_GAMMA_CTRL1, 0x0000);
+    disp_write_register(disp, ILI9225_GAMMA_CTRL2, 0x0808);
+    disp_write_register(disp, ILI9225_GAMMA_CTRL3, 0x080A);
+    disp_write_register(disp, ILI9225_GAMMA_CTRL4, 0x000A);
+    disp_write_register(disp, ILI9225_GAMMA_CTRL5, 0x0A08);
+    disp_write_register(disp, ILI9225_GAMMA_CTRL6, 0x0808);
+    disp_write_register(disp, ILI9225_GAMMA_CTRL7, 0x0000);
+    disp_write_register(disp, ILI9225_GAMMA_CTRL8, 0x0A00);
+    disp_write_register(disp, ILI9225_GAMMA_CTRL9, 0x0710);
+    disp_write_register(disp, ILI9225_GAMMA_CTRL10, 0x0710);
 
-    writeRegister(ILI9225_DISP_CTRL1, 0x0012);
+    disp_write_register(disp, ILI9225_DISP_CTRL1, 0x0012);
     _delay_ms(50);
-    writeRegister(ILI9225_DISP_CTRL1, 0x1017);
+    disp_write_register(disp, ILI9225_DISP_CTRL1, 0x1017);
 
     tft_setBacklight(true);
     tft_setOrientation(0);
@@ -283,27 +207,25 @@ void tft_clear() {
 }
 
 void tft_invert(bool flag) {
-    writeCommand(0x00, flag ? ILI9225C_INVON : ILI9225C_INVOFF);
+    disp_write_command(disp, flag ? ILI9225C_INVON : ILI9225C_INVOFF);
 }
 
 void tft_setBacklight(bool flag) {
-    if (tft.led) {
-        digitalWrite(tft.led, flag ? HIGH : LOW);
-    }
+    disp_set_backlight(disp, flag);
 }
 
 void tft_setDisplay(bool flag) {
     if (flag) {
-        writeRegister(0x00ff, 0x0000);
-        writeRegister(ILI9225_POWER_CTRL1, 0x0000);
+        disp_write_register(disp, 0x00ff, 0x0000);
+        disp_write_register(disp, ILI9225_POWER_CTRL1, 0x0000);
         _delay_ms(50);
-        writeRegister(ILI9225_DISP_CTRL1, 0x1017);
+        disp_write_register(disp, ILI9225_DISP_CTRL1, 0x1017);
         _delay_ms(200);
     } else {
-        writeRegister(0x00ff, 0x0000);
-        writeRegister(ILI9225_DISP_CTRL1, 0x0000);
+        disp_write_register(disp, 0x00ff, 0x0000);
+        disp_write_register(disp, ILI9225_DISP_CTRL1, 0x0000);
         _delay_ms(50);
-        writeRegister(ILI9225_POWER_CTRL1, 0x0003);
+        disp_write_register(disp, ILI9225_POWER_CTRL1, 0x0003);
         _delay_ms(200);
     }
 }
@@ -345,8 +267,9 @@ void tft_drawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint1
 void tft_fillRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color) {
     setWindow(x1, y1, x2, y2);
 
-    for(uint16_t t=(y2 - y1 + 1) * (x2 - x1 + 1); t > 0; t--)
-        writeData(color >> 8, color);
+    for(uint16_t t=(y2 - y1 + 1) * (x2 - x1 + 1); t > 0; t--) {
+        disp_write_data(disp, color);
+    }
 }
 
 void tft_drawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color) {
@@ -403,7 +326,7 @@ void tft_setBackgroundColor(uint16_t color) {
     tft.bgColor = color;
 }
 
-void tft_setFont(FontInfo* font) {
+void tft_setFont(struct font *font) {
     tft.cfont = font;
 }
 
@@ -432,14 +355,10 @@ void tft_render() {
 }
 
 uint16_t tft_drawChar(uint16_t x, uint16_t y, uint16_t ch, uint16_t color) {
-    uint16_t charOffset = font_char_index(tft.cfont, ch);
-    charOffset++;  // increment pointer to first character data byte
-
     setWindow(x, y, x + tft.cfont->width - 1, y + tft.cfont->height - 1);
     uint16_t charPixels[6 * 8] = {0};
     for (uint8_t i = 0; i < tft.cfont->width; i++) {  // each font "column"
-        uint8_t charData = font_read_byte(tft.cfont, charOffset);
-        charOffset++;
+        uint8_t charData = font_read_column(tft.cfont, ch, i);
 
         // Process every row in font character
         for (uint8_t k = 0; k < tft.cfont->height; k++) {
@@ -452,7 +371,7 @@ uint16_t tft_drawChar(uint16_t x, uint16_t y, uint16_t ch, uint16_t color) {
         }
     }
     for (uint8_t i = 0; i < 6 * 8; i++) {
-        writeData(charPixels[i] >> 8, charPixels[i]);
+        disp_write_data(disp, charPixels[i]);
     }
     return tft.cfont->width;
 }

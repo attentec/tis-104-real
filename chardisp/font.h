@@ -12,5 +12,5 @@ struct font
 };
 
 void font_init(struct font *font, uint8_t *data);
-uint8_t font_char_column(struct font *font, uint8_t charno, uint8_t column);
+uint8_t font_read_column(struct font *font, uint8_t charno, uint8_t column);
 void font_sprint_char(struct font *font, char *buf, char ch, int line);

@@ -5,7 +5,7 @@ DEVICE ?= /dev/ttyACM0
 out/%.o:%.c
 	mkdir -p $(dir $@)
 	avr-gcc -o $@ -c $^ \
-		-I chardisp\
+		-I chardisp \
 		-std=c11 -mmcu=atmega328p -g -Os -DF_CPU=16000000ul
 
 %.elf:
@@ -27,10 +27,10 @@ out/sender.elf: out/sender.o out/uart.o
 
 out/receiver.elf: out/receiver.o out/uart.o
 
-CHD_SOURCES = $(addprefix chardisp/,font.c indexmap.c screen.c)
+CHD_SOURCES = $(addprefix chardisp/,font.c indexmap.c screen.c mem.c)
 CHD_OBJECTS = $(addprefix out/,$(patsubst %.c,%.o,${CHD_SOURCES}))
 
-TFT_SOURCES = tft.c fonts.c
+TFT_SOURCES = tft.c fonts.c disp.c pin.c spi_sw.c panic.c
 TFT_OBJECTS = $(addprefix out/,$(patsubst %.c,%.o,${TFT_SOURCES}))
 
 out/display.elf: out/display.o ${TFT_OBJECTS} ${CHD_OBJECTS}

@@ -7,12 +7,6 @@
 
 #define DIRTY_MASK (0x80u)
 
-struct indexmap {
-    uint8_t width;
-    uint8_t height;
-    uint8_t *indices;
-};
-
 void indexmap_init(struct indexmap *map, uint8_t width, uint8_t height, uint8_t *buf) {
     map->width = width;
     map->height = height;
