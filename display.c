@@ -9,14 +9,6 @@
 
 #include "tft.h"
 
-static void set_pin_high(void) {
-    PORTB |= (1 << 0);
-}
-
-static void set_pin_low(void) {
-    PORTB &= ~(1 << 0);
-}
-
 int main() {
     struct indexmap indices;
     uint8_t buf[20 * 20];
@@ -28,12 +20,12 @@ int main() {
     screen scr = screen_init(&indices, &font);
 
     // Set up pins
-    pin_t rs = pin_init(PIN_PORT_D, 3, PIN_DIR_OUTPUT);
-    pin_t cs = pin_init(PIN_PORT_D, 4, PIN_DIR_OUTPUT);
-    pin_t rst = pin_init(PIN_PORT_D, 2, PIN_DIR_OUTPUT);
-    pin_t led = pin_init(PIN_PORT_D, 7, PIN_DIR_OUTPUT);
-    pin_t clk = pin_init(PIN_PORT_D, 6, PIN_DIR_OUTPUT);
-    pin_t sdi = pin_init(PIN_PORT_D, 5, PIN_DIR_OUTPUT);
+    pin_t cs = pin_init(PIN_PORT_D, 2, PIN_DIR_OUTPUT);     //  2
+    pin_t rst = pin_init(PIN_PORT_D, 4, PIN_DIR_OUTPUT);    //  4
+    pin_t rs = pin_init(PIN_PORT_D, 6, PIN_DIR_OUTPUT);     //  6
+    pin_t sdi = pin_init(PIN_PORT_B, 0, PIN_DIR_OUTPUT);    //  8
+    pin_t clk = pin_init(PIN_PORT_B, 2, PIN_DIR_OUTPUT);    // 10
+    pin_t led = pin_init(PIN_PORT_B, 4, PIN_DIR_OUTPUT);    // 12
 
     // Use hardware SPI (faster - on Uno: 13-SCK, 12-MISO, 11-MOSI)
     //TFT_22_ILI9225 tft = TFT_22_ILI9225(rst, rs, cs, led);
@@ -66,9 +58,7 @@ int main() {
         sprintf(buffer, "%04d", count);
         buffer[4] = '\0';
         tft_drawText(10, 10, buffer, COLOR_WHITE);
-        set_pin_high();
         tft_render();
-        set_pin_low();
         count += 1;
     }
 
