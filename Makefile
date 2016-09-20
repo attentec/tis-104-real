@@ -30,7 +30,7 @@ out/receiver.elf: out/receiver.o out/uart.o
 CHD_SOURCES = $(addprefix chardisp/,font.c indexmap.c screen.c mem.c)
 CHD_OBJECTS = $(addprefix out/,$(patsubst %.c,%.o,${CHD_SOURCES}))
 
-TFT_SOURCES = tft.c fonts.c disp.c pin.c spi_sw.c panic.c
+TFT_SOURCES = tft.c fonts.c disp.c pin.c spi_sw.c panic.c delay.c
 TFT_OBJECTS = $(addprefix out/,$(patsubst %.c,%.o,${TFT_SOURCES}))
 
 out/display.elf: out/display.o ${TFT_OBJECTS} ${CHD_OBJECTS}

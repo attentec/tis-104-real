@@ -1,7 +1,6 @@
 // Include application, user and local libraries
 #include <stdio.h>
 #include <stdlib.h>
-#include <util/delay.h>
 
 #include <font.h>
 #include <indexmap.h>
@@ -47,10 +46,6 @@ int main() {
         screen_set(scr, 19, i, 0x61);
     }
     tft_render();
-
-    DDRB |= (1 << 0);
-    DDRB |= (1 << 1);
-
 
     int count = 0;
     char buffer[5];

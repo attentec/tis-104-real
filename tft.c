@@ -1,10 +1,10 @@
-#include <util/delay.h>
 #include <string.h>
 #include <stdbool.h>
 
 #include "tft.h"
 #include "pin.h"
 #include "panic.h"
+#include "delay.h"
 
 static void swap(uint16_t *a, uint16_t *b);
 static void setWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
@@ -12,8 +12,6 @@ static void orientCoordinates(uint16_t *x1, uint16_t *y1);
 static uint16_t joinColor(uint8_t red8, uint8_t green8, uint8_t blue8);
 static void splitColor(uint16_t rgb, uint8_t *red, uint8_t *green, uint8_t *blue);
 static void drawPixel(uint16_t x1, uint16_t y1, uint16_t color);
-static void pinMode(uint8_t pin, enum Direction dir);
-static uint8_t bitRead(uint8_t byte, uint8_t index);
 
 static struct tft tft;
 static struct disp_t _disp;
@@ -78,28 +76,6 @@ static void swap(uint16_t *a, uint16_t *b) {
     *b = w;
 }
 
-// Arduino-like functions
-static void pinMode(uint8_t pin, enum Direction dir) {
-    if (pin < 8) {
-        if (dir == INPUT) {
-            DDRD &= ~(1 << pin);
-        } else {
-            DDRD |= (1 << pin);
-        }
-    } else {
-        uint8_t index = pin - 8;
-        if (dir == INPUT) {
-            DDRB &= ~(1 << index);
-        } else {
-            DDRB |= (1 << index);
-        }
-    }
-}
-
-static uint8_t bitRead(uint8_t byte, uint8_t index) {
-    return byte & (1 << index);
-}
-
 // Constructor when using software SPI.  All output pins are configurable.
 void tft_swspi(uint8_t rst, uint8_t rs, uint8_t cs, uint8_t sdi, uint8_t clk, uint8_t led, screen scr) {
     disp_init(disp, rs, cs, rst, led, sdi, clk);
@@ -124,11 +100,11 @@ void tft_begin() {
 
     // Initialization Code
     disp_set_reset(disp, true); // Pull the reset pin high to release the ILI9225C from the reset status
-    _delay_ms(1);
+    delay_ms(1);
     disp_set_reset(disp, false); // Pull the reset pin low to reset ILI9225
-    _delay_ms(10);
+    delay_ms(10);
     disp_set_reset(disp, true); // Pull the reset pin high to release the ILI9225C from the reset status
-    _delay_ms(50);
+    delay_ms(50);
 
     /* Start Initial Sequence */
     /* Set SS bit and direction output from S528 to S1 */
@@ -137,7 +113,7 @@ void tft_begin() {
     disp_write_register(disp, ILI9225_POWER_CTRL3, 0x0000); // Set BT,DC1,DC2,DC3
     disp_write_register(disp, ILI9225_POWER_CTRL4, 0x0000); // Set GVDD
     disp_write_register(disp, ILI9225_POWER_CTRL5, 0x0000); // Set VCOMH/VCOML voltage
-    _delay_ms(40);
+    delay_ms(40);
 
     // Power-on sequence
     disp_write_register(disp, ILI9225_POWER_CTRL2, 0x0018); // Set APON,PON,AON,VCI1EN,VC
@@ -145,9 +121,9 @@ void tft_begin() {
     disp_write_register(disp, ILI9225_POWER_CTRL4, 0x006F); // Set GVDD   /*007F 0088 */
     disp_write_register(disp, ILI9225_POWER_CTRL5, 0x495F); // Set VCOMH/VCOML voltage
     disp_write_register(disp, ILI9225_POWER_CTRL1, 0x0800); // Set SAP,DSTB,STB
-    _delay_ms(10);
+    delay_ms(10);
     disp_write_register(disp, ILI9225_POWER_CTRL2, 0x103B); // Set APON,PON,AON,VCI1EN,VC
-    _delay_ms(50);
+    delay_ms(50);
 
     disp_write_register(disp, ILI9225_DRIVER_OUTPUT_CTRL, 0x011C); // set the display line number and display direction
     disp_write_register(disp, ILI9225_LCD_AC_DRIVING_CTRL, 0x0100); // set 1 line inversion
@@ -186,7 +162,7 @@ void tft_begin() {
     disp_write_register(disp, ILI9225_GAMMA_CTRL10, 0x0710);
 
     disp_write_register(disp, ILI9225_DISP_CTRL1, 0x0012);
-    _delay_ms(50);
+    delay_ms(50);
     disp_write_register(disp, ILI9225_DISP_CTRL1, 0x1017);
 
     tft_setBacklight(true);
@@ -203,7 +179,7 @@ void tft_clear() {
     tft_setOrientation(0);
     tft_fillRectangle(0, 0, tft.maxX - 1, tft.maxY - 1, COLOR_BLACK);
     tft_setOrientation(old);
-    _delay_ms(10);
+    delay_ms(10);
 }
 
 void tft_invert(bool flag) {
@@ -218,15 +194,15 @@ void tft_setDisplay(bool flag) {
     if (flag) {
         disp_write_register(disp, 0x00ff, 0x0000);
         disp_write_register(disp, ILI9225_POWER_CTRL1, 0x0000);
-        _delay_ms(50);
+        delay_ms(50);
         disp_write_register(disp, ILI9225_DISP_CTRL1, 0x1017);
-        _delay_ms(200);
+        delay_ms(200);
     } else {
         disp_write_register(disp, 0x00ff, 0x0000);
         disp_write_register(disp, ILI9225_DISP_CTRL1, 0x0000);
-        _delay_ms(50);
+        delay_ms(50);
         disp_write_register(disp, ILI9225_POWER_CTRL1, 0x0003);
-        _delay_ms(200);
+        delay_ms(200);
     }
 }
 
@@ -338,7 +314,7 @@ void tft_drawText(uint16_t x, uint16_t y, char *s, uint16_t color) {
         screen_set(tft.scr,
                    currx / tft.cfont->width,
                    y / tft.cfont->height,
-                   s[k] - tft.cfont->offset);
+                   s[k]);
         currx += tft.cfont->width;
     }
 }

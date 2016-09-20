@@ -1,6 +1,5 @@
 #pragma once
 
-#include <avr/pgmspace.h>
 #include <stdlib.h>
 #include <font.h>
 #include <screen.h>
@@ -108,7 +107,6 @@ enum Level {
 
 /* Font defines */
 #define FONT_HEADER_SIZE 4 // 1: pixel width of 1 font character, 2: pixel height,
-#define readFontByte(x) pgm_read_byte(&cfont->font[x])
 
 extern uint8_t Terminal6x8[];
 extern uint8_t Terminal11x16[];
