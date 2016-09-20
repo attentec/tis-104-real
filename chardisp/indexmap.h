@@ -1,11 +1,15 @@
 #pragma once
 
-struct IndexMap;
-typedef struct IndexMap* indexmap;
+#include <stdint.h>
+#include <stdbool.h>
 
-indexmap indexmap_init(int width, int height);
-int indexmap_width(indexmap map);
-int indexmap_height(indexmap map);
-void indexmap_set(indexmap map, int x, int y, int val);
-int indexmap_get(indexmap map, int x, int y);
-void indexmap_print(indexmap grid);
+struct indexmap;
+
+void indexmap_init(struct indexmap *map, uint8_t width, uint8_t height, uint8_t *buf);
+uint8_t indexmap_width(struct indexmap *map);
+uint8_t indexmap_height(struct indexmap *map);
+void indexmap_set(struct indexmap *map, uint8_t x, uint8_t y, uint8_t val);
+uint8_t indexmap_get(struct indexmap *map, uint8_t x, uint8_t y);
+bool indexmap_is_dirty(struct indexmap *map, uint8_t x, uint8_t y);
+void indexmap_clear_dirty(struct indexmap *map, uint8_t x, uint8_t y);
+void indexmap_print(struct indexmap *map);
