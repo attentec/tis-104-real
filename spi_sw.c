@@ -19,6 +19,7 @@ void spi_write(struct spi_t *spi, uint8_t byte) {
         pin_write(spi->clk, true);
         delay_us(delay);
         pin_write(spi->clk, false);
+        delay_us(delay);
         byte <<= 1;
     }
     delay_us(delay);
