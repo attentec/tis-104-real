@@ -7,6 +7,7 @@
 #include <screen.h>
 
 #include "tft.h"
+#include "delay.h"
 
 int main() {
     struct indexmap indices;
@@ -35,26 +36,31 @@ int main() {
 
     tft_begin();
 
-    screen_set(scr, 0, 0, 0x63);
-    screen_set(scr, 19, 0, 0x62);
-    screen_set(scr, 0, 19, 0x65);
-    screen_set(scr, 19, 19, 0x64);
+    screen_set(scr, 0, 0, 0x03);
+    screen_set(scr, 19, 0, 0x02);
+    screen_set(scr, 0, 19, 0x05);
+    screen_set(scr, 19, 19, 0x04);
     for (int i = 1; i < 19; ++i) {
-        screen_set(scr, i, 0, 0x60);
-        screen_set(scr, i, 19, 0x60);
-        screen_set(scr, 0, i, 0x61);
-        screen_set(scr, 19, i, 0x61);
+        screen_set(scr, i, 0, 0x00);
+        screen_set(scr, i, 19, 0x00);
+        screen_set(scr, 0, i, 0x01);
+        screen_set(scr, 19, i, 0x01);
     }
     tft_render();
 
-    int count = 0;
+    int count = 0x00;
     char buffer[5];
     while (true) {
-        sprintf(buffer, "%04d", count);
+        if (count >= 0x80) {
+            count = 0x00;
+        }
+        sprintf(buffer, "%03d", count);
+        buffer[3] = count;
         buffer[4] = '\0';
         tft_drawText(10, 10, buffer, COLOR_WHITE);
         tft_render();
         count += 1;
+        delay_ms(500);
     }
 
     tft_setBacklight(false);

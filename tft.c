@@ -346,7 +346,7 @@ uint16_t tft_drawChar(uint16_t x, uint16_t y, uint16_t ch, uint16_t color) {
             charData >>= 1;
         }
     }
-    for (uint8_t i = 0; i < 6 * 8; i++) {
+    for (uint8_t i = 0; i < (6 * 8); i++) {
         disp_write_data(disp, charPixels[i]);
     }
     return tft.cfont->width;

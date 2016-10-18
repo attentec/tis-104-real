@@ -11,6 +11,9 @@ void indexmap_init(struct indexmap *map, uint8_t width, uint8_t height, uint8_t 
     map->width = width;
     map->height = height;
     map->indices = buf;
+    // Set original contents to some 'unused' value
+    size_t size = (size_t)width * (size_t)height;
+    (void)memset(map->indices, 0x7f, size);
 }
 
 static inline uint16_t index(struct indexmap *map, uint8_t x, uint8_t y) {
