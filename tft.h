@@ -138,6 +138,10 @@ void tft_setDisplay(bool flag);
 /// @param  color background color, default=black
 void tft_setBackgroundColor(uint16_t color);
 
+/// Set foreground color
+/// @param  color foreground color, default=white
+void tft_setForegroundColor(uint16_t color);
+
 /// Draw solid rectangle, rectangle coordinates
 /// @param  x1 top left coordinate, x-axis
 /// @param  y1 top left coordinate, y-axis
@@ -150,8 +154,7 @@ void tft_fillRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint1
 /// @param  x point coordinate, x-axis
 /// @param  y point coordinate, y-axis
 /// @param  s text string
-/// @param  color 16-bit color, default=white
-void tft_drawText(uint8_t x, uint8_t y, char *s, uint16_t color);
+void tft_drawText(uint8_t x, uint8_t y, char *s);
 
 /// Set current font
 /// @param  font Font name
@@ -161,8 +164,7 @@ void tft_setFont(struct font* font);
 /// @param  x point coordinate, x-axis
 /// @param  y point coordinate, y-axis
 /// @param  ch ASCII character
-/// @param  color 16-bit color, default=white
-uint16_t tft_drawChar(uint8_t x, uint8_t y, char ch, uint16_t color);
+uint16_t tft_drawChar(uint8_t x, uint8_t y, char ch);
 
 void tft_render();
 
@@ -171,6 +173,7 @@ struct tft {
     uint16_t maxX;
     uint16_t maxY;
     uint16_t bgColor;
+    uint16_t fgColor;
 
     struct font *cfont;
 

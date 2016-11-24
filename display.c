@@ -17,6 +17,10 @@ void draw_background(screen scr) {
     const uint8_t middle = 20;
     const uint8_t right = 25;
     const uint8_t bottom = 15;
+
+
+    tft_setForegroundColor(COLOR_WHITE);
+
     for (int y = 1; y < bottom; ++y) {
         screen_set(scr, 0, y, 0x01);
         screen_set(scr, middle, y, 0x01);
@@ -40,11 +44,23 @@ void draw_background(screen scr) {
     screen_set(scr, middle, bottom, 0x08);
     screen_set(scr, right, bottom, 0x04);
 
-    tft_drawText(middle + 1, 1, "ACC", COLOR_DARKGRAY);
-    tft_drawText(middle + 1, 4, "BAK", COLOR_DARKGRAY);
-    tft_drawText(middle + 1, 7, "LAST", COLOR_DARKGRAY);
-    tft_drawText(middle + 1, 10, "MODE", COLOR_DARKGRAY);
-    tft_drawText(middle + 1, 13, "IDLE", COLOR_DARKGRAY);
+
+    tft_render();
+
+
+    tft_setForegroundColor(COLOR_DARKGRAY);
+
+    tft_drawText(middle + 1, 1, "ACC");
+    tft_drawText(middle + 1, 4, "BAK");
+    tft_drawText(middle + 1, 7, "LAST");
+    tft_drawText(middle + 1, 10, "MODE");
+    tft_drawText(middle + 1, 13, "IDLE");
+
+
+    tft_render();
+
+
+    tft_setForegroundColor(COLOR_WHITE);
 }
 
 int main(void) {
@@ -85,7 +101,7 @@ int main(void) {
         sprintf(buffer, "%03d", count);
         buffer[3] = count;
         buffer[4] = '\0';
-        tft_drawText(10, 10, buffer, COLOR_WHITE);
+        tft_drawText(10, 10, buffer);
         tft_render();
         count += 1;
         delay_ms(500);

@@ -123,6 +123,7 @@ void tft_begin() {
 
     // Initialize variables
     tft_setBackgroundColor(COLOR_BLACK);
+    tft_setForegroundColor(COLOR_WHITE);
 
     tft_clear();
 }
@@ -168,11 +169,15 @@ void tft_setBackgroundColor(uint16_t color) {
     tft.bgColor = color;
 }
 
+void tft_setForegroundColor(uint16_t color) {
+    tft.fgColor = color;
+}
+
 void tft_setFont(struct font *font) {
     tft.cfont = font;
 }
 
-void tft_drawText(uint8_t x, uint8_t y, char *s, uint16_t color) {
+void tft_drawText(uint8_t x, uint8_t y, char *s) {
     uint8_t currx = x;
 
     // Print every character in string
@@ -186,13 +191,11 @@ void tft_render() {
     DirtyIterator dirties;
     screen_get_dirties(tft.scr, &dirties);
     while (screen_get_next_dirty(&dirties)) {
-        tft_drawChar(dirties.x, dirties.y,
-                     screen_get(tft.scr, dirties.x, dirties.y),
-                     COLOR_WHITE);
+        tft_drawChar(dirties.x, dirties.y, screen_get(tft.scr, dirties.x, dirties.y));
     }
 }
 
-uint16_t tft_drawChar(uint8_t x, uint8_t y, char ch, uint16_t color) {
+uint16_t tft_drawChar(uint8_t x, uint8_t y, char ch) {
     uint16_t pixel_x = tft.maxX - (uint16_t)(y + 1) * tft.cfont->height;
     uint16_t pixel_y = (uint16_t)x * tft.cfont->width;
     setWindow(pixel_x, pixel_y, pixel_x + tft.cfont->height - 1, pixel_y + tft.cfont->width - 1);
@@ -204,7 +207,7 @@ uint16_t tft_drawChar(uint8_t x, uint8_t y, char ch, uint16_t color) {
         for (uint8_t k = 0; k < tft.cfont->height; k++) {
             uint8_t j = tft.cfont->height - k - 1;
             if (charData & 1) {
-                charPixels[i * 8 + j] = color;
+                charPixels[i * 8 + j] = tft.fgColor;
             } else {
                 charPixels[i * 8 + j] = tft.bgColor;
             }
