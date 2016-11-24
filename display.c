@@ -12,7 +12,42 @@
 #define WIDTH (29)
 #define HEIGHT (27)
 
-int main() {
+void draw_background(screen scr) {
+    const uint8_t left = 0;
+    const uint8_t middle = 20;
+    const uint8_t right = 25;
+    const uint8_t bottom = 15;
+    for (int y = 1; y < bottom; ++y) {
+        screen_set(scr, 0, y, 0x01);
+        screen_set(scr, middle, y, 0x01);
+        screen_set(scr, right, y, 0x01);
+    }
+    for (int x = 1; x < right; ++x) {
+        screen_set(scr, x, 0, 0x00);
+        screen_set(scr, x, bottom, 0x00);
+    }
+    for (int y = 3; y < bottom; y += 3) {
+        for (int x = middle; x < right; ++x) {
+            screen_set(scr, x, y, 0x00);
+        }
+        screen_set(scr, middle, y, 0x07);
+        screen_set(scr, right, y, 0x06);
+    }
+    screen_set(scr, 0, 0, 0x03);
+    screen_set(scr, middle, 0, 0x09);
+    screen_set(scr, right, 0, 0x02);
+    screen_set(scr, 0, bottom, 0x05);
+    screen_set(scr, middle, bottom, 0x08);
+    screen_set(scr, right, bottom, 0x04);
+
+    tft_drawText(middle + 1, 1, "ACC", COLOR_DARKGRAY);
+    tft_drawText(middle + 1, 4, "BAK", COLOR_DARKGRAY);
+    tft_drawText(middle + 1, 7, "LAST", COLOR_DARKGRAY);
+    tft_drawText(middle + 1, 10, "MODE", COLOR_DARKGRAY);
+    tft_drawText(middle + 1, 13, "IDLE", COLOR_DARKGRAY);
+}
+
+int main(void) {
     struct indexmap indices;
     uint8_t buf[WIDTH * HEIGHT];
     indexmap_init(&indices, WIDTH, HEIGHT, buf);
@@ -38,19 +73,7 @@ int main() {
     tft_setFont(&font);
 
     tft_begin();
-
-    screen_set(scr, 0, 0, 0x03);
-    screen_set(scr, WIDTH - 1, 0, 0x02);
-    screen_set(scr, 0, HEIGHT - 1, 0x05);
-    screen_set(scr, WIDTH - 1, HEIGHT - 1, 0x04);
-    for (int i = 1; i < HEIGHT - 1; ++i) {
-        screen_set(scr, 0, i, 0x01);
-        screen_set(scr, WIDTH - 1, i, 0x01);
-    }
-    for (int i = 1; i < WIDTH - 1; ++i) {
-        screen_set(scr, i, 0, 0x00);
-        screen_set(scr, i, HEIGHT - 1, 0x00);
-    }
+    draw_background(scr);
     tft_render();
 
     int count = 0x00;
