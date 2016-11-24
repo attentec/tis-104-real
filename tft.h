@@ -138,47 +138,9 @@ void tft_setDisplay(bool flag);
 /// @param  orientation orientation, 0=portrait, 1=right rotated landscape, 2=reverse portrait, 3=left rotated landscape
 void tft_setOrientation(uint8_t orientation);
 
-/// Get orientation
-/// @return orientation orientation, 0=portrait, 1=right rotated landscape, 2=reverse portrait, 3=left rotated landscape
-uint8_t tft_getOrientation(void);
-
-/// Font size, x-axis
-/// @return horizontal size of current font, in pixels
-uint8_t tft_fontX(void);
-
-/// Font size, y-axis
-/// @return vertical size of current font, in pixels
-uint8_t tft_fontY(void);
-
-/// Screen size, x-axis
-/// @return horizontal size of the screen, in pixels
-/// @note   240 means 240 pixels and thus 0..239 coordinates (decimal)
-uint16_t tft_maxX(void);
-
-/// Screen size, y-axis
-/// @return vertical size of the screen, in pixels
-/// @note   220 means 220 pixels and thus 0..219 coordinates (decimal)
-uint16_t tft_maxY(void);
-
 /// Set background color
 /// @param  color background color, default=black
 void tft_setBackgroundColor(uint16_t color);
-
-/// Draw line, rectangle coordinates
-/// @param  x1 top left coordinate, x-axis
-/// @param  y1 top left coordinate, y-axis
-/// @param  x2 bottom right coordinate, x-axis
-/// @param  y2 bottom right coordinate, y-axis
-/// @param  color 16-bit color
-void tft_drawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
-
-/// Draw rectangle, rectangle coordinates
-/// @param  x1 top left coordinate, x-axis
-/// @param  y1 top left coordinate, y-axis
-/// @param  x2 bottom right coordinate, x-axis
-/// @param  y2 bottom right coordinate, y-axis
-/// @param  color 16-bit color
-void tft_drawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
 
 /// Draw solid rectangle, rectangle coordinates
 /// @param  x1 top left coordinate, x-axis
@@ -187,12 +149,6 @@ void tft_drawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint1
 /// @param  y2 bottom right coordinate, y-axis
 /// @param  color 16-bit color
 void tft_fillRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
-
-/// Draw pixel
-/// @param  x1 point coordinate, x-axis
-/// @param  y1 point coordinate, y-axis
-/// @param  color 16-bit color
-void tft_drawPixel(uint16_t x1, uint16_t y1, uint16_t color);
 
 /// Draw ASCII Text (pixel coordinates)
 /// @param  x point coordinate, x-axis

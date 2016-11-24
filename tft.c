@@ -6,57 +6,13 @@
 #include "panic.h"
 #include "delay.h"
 
-static void swap(uint16_t *a, uint16_t *b);
 static void setWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
-static void orientCoordinates(uint16_t *x1, uint16_t *y1);
-static uint16_t joinColor(uint8_t red8, uint8_t green8, uint8_t blue8);
-static void splitColor(uint16_t rgb, uint8_t *red, uint8_t *green, uint8_t *blue);
-static void drawPixel(uint16_t x1, uint16_t y1, uint16_t color);
 
 static struct tft tft;
 static struct disp_t _disp;
 static struct disp_t *disp = &_disp;
 
 // Helper functions
-static void drawPixel(uint16_t x1, uint16_t y1, uint16_t color) {
-    if ((x1 < 0) || (x1 >= tft.maxX) || (y1 < 0) || (y1 >= tft.maxY)) {
-        return;
-    }
-
-    disp_write_data(disp, color);
-}
-
-static uint16_t joinColor(uint8_t red8, uint8_t green8, uint8_t blue8) {
-    // rgb16 = red5 green6 blue5
-    return (red8 >> 3) << 11 | (green8 >> 2) << 5 | (blue8 >> 3);
-}
-
-static void splitColor(uint16_t rgb, uint8_t *red, uint8_t *green, uint8_t *blue) {
-    // rgb16 = red5 green6 blue5
-    *red   = (rgb & 0b1111100000000000) >> 11 << 3;
-    *green = (rgb & 0b0000011111100000) >>  5 << 2;
-    *blue  = (rgb & 0b0000000000011111)       << 3;
-}
-
-static void orientCoordinates(uint16_t *x1, uint16_t *y1) {
-    switch (tft.orientation) {
-        case 0:  // ok
-            break;
-        case 1: // ok
-            *y1 = tft.maxY - *y1 - 1;
-            swap(x1, y1);
-            break;
-        case 2: // ok
-            *x1 = tft.maxX - *x1 - 1;
-            *y1 = tft.maxY - *y1 - 1;
-            break;
-        case 3: // ok
-            *x1 = tft.maxX - *x1 - 1;
-            swap(x1, y1);
-            break;
-    }
-}
-
 static void setWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
     disp_write_register(disp, ILI9225_HORIZONTAL_WINDOW_ADDR1, x1);
     disp_write_register(disp, ILI9225_HORIZONTAL_WINDOW_ADDR2, x0);
@@ -68,12 +24,6 @@ static void setWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
     disp_write_register(disp, ILI9225_RAM_ADDR_SET2, y0);
 
     disp_write_command(disp, 0x22);
-}
-
-static void swap(uint16_t *a, uint16_t *b) {
-    uint16_t w = *a;
-    *a = *b;
-    *b = w;
 }
 
 // Constructor when using software SPI.  All output pins are configurable.
@@ -229,73 +179,12 @@ void tft_setOrientation(uint8_t orientation) {
     }
 }
 
-uint8_t tft_getOrientation() {
-    return tft.orientation;
-}
-
-void tft_drawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color) {
-    tft_drawLine(x1, y1, x1, y2, color);
-    tft_drawLine(x1, y1, x2, y1, color);
-    tft_drawLine(x1, y2, x2, y2, color);
-    tft_drawLine(x2, y1, x2, y2, color);
-}
-
 void tft_fillRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color) {
     setWindow(x1, y1, x2, y2);
 
     for(uint16_t t=(y2 - y1 + 1) * (x2 - x1 + 1); t > 0; t--) {
         disp_write_data(disp, color);
     }
-}
-
-void tft_drawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color) {
-    // Classic Bresenham algorithm
-    int16_t steep = abs(y2 - y1) > abs(x2 - x1);
-    int16_t dx, dy;
-
-    if (steep) {
-        swap(&x1, &y1);
-        swap(&x2, &y2);
-    }
-
-    if (x1 > x2) {
-        swap(&x1, &x2);
-        swap(&y1, &y2);
-    }
-
-    dx = x2 - x1;
-    dy = abs(y2 - y1);
-
-    int16_t err = dx / 2;
-    int16_t ystep;
-
-    if (y1 < y2) {
-        ystep = 1;
-    } else {
-        ystep = -1;
-    }
-
-    for (; x1 <= x2; x1++) {
-        if (steep) {
-            drawPixel(y1, x1, color);
-        } else {
-            drawPixel(x1, y1, color);
-        }
-
-        err -= dy;
-        if (err < 0) {
-            y1 += ystep;
-            err += dx;
-        }
-    }
-}
-
-uint16_t tft_maxX() {
-    return tft.maxX;
-}
-
-uint16_t tft_maxY() {
-    return tft.maxY;
 }
 
 void tft_setBackgroundColor(uint16_t color) {
