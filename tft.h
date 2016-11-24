@@ -134,10 +134,6 @@ void tft_setBacklight(bool flag);
 /// @param  flag true=on, false=off
 void tft_setDisplay(bool flag);
 
-/// Set orientation
-/// @param  orientation orientation, 0=portrait, 1=right rotated landscape, 2=reverse portrait, 3=left rotated landscape
-void tft_setOrientation(uint8_t orientation);
-
 /// Set background color
 /// @param  color background color, default=black
 void tft_setBackgroundColor(uint16_t color);
@@ -175,8 +171,6 @@ struct tft {
     uint16_t maxX;
     uint16_t maxY;
     uint16_t bgColor;
-
-    uint8_t orientation;
 
     struct font *cfont;
 

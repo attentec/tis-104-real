@@ -30,6 +30,8 @@ static void setWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
 void tft_swspi(uint8_t rst, uint8_t rs, uint8_t cs, uint8_t sdi, uint8_t clk, uint8_t led, screen scr) {
     disp_init(disp, rs, cs, rst, led, sdi, clk);
     tft.scr = scr;
+    tft.maxX = ILI9225_LCD_WIDTH;
+    tft.maxY = ILI9225_LCD_HEIGHT;
 }
 
 // Constructor when using hardware SPI.  Faster, but must use SPI pins
@@ -42,6 +44,8 @@ void tft_hwspi(uint8_t rst, uint8_t rs, uint8_t cs, uint8_t led) {
     // disp->sdi  = 0;
     // disp->clk = 0;
     disp->led  = led;
+    tft.maxX = ILI9225_LCD_WIDTH;
+    tft.maxY = ILI9225_LCD_HEIGHT;
 }
 
 void tft_begin() {
@@ -116,7 +120,6 @@ void tft_begin() {
     disp_write_register(disp, ILI9225_DISP_CTRL1, 0x1017);
 
     tft_setBacklight(true);
-    tft_setOrientation(0);
 
     // Initialize variables
     tft_setBackgroundColor(COLOR_BLACK);
@@ -125,10 +128,7 @@ void tft_begin() {
 }
 
 void tft_clear() {
-    uint8_t old = tft.orientation;
-    tft_setOrientation(0);
     tft_fillRectangle(0, 0, tft.maxX - 1, tft.maxY - 1, COLOR_BLACK);
-    tft_setOrientation(old);
     delay_ms(10);
 }
 
@@ -153,29 +153,6 @@ void tft_setDisplay(bool flag) {
         delay_ms(50);
         disp_write_register(disp, ILI9225_POWER_CTRL1, 0x0003);
         delay_ms(200);
-    }
-}
-
-void tft_setOrientation(uint8_t orientation) {
-    tft.orientation = orientation % 4;
-
-    switch (tft.orientation) {
-        case 0:
-            tft.maxX = ILI9225_LCD_WIDTH;
-            tft.maxY = ILI9225_LCD_HEIGHT;
-            break;
-        case 1:
-            tft.maxX = ILI9225_LCD_HEIGHT;
-            tft.maxY = ILI9225_LCD_WIDTH;
-            break;
-        case 2:
-            tft.maxX = ILI9225_LCD_WIDTH;
-            tft.maxY = ILI9225_LCD_HEIGHT;
-            break;
-        case 3:
-            tft.maxX = ILI9225_LCD_HEIGHT;
-            tft.maxY = ILI9225_LCD_WIDTH;
-            break;
     }
 }
 
@@ -216,19 +193,20 @@ void tft_render() {
 }
 
 uint16_t tft_drawChar(uint8_t x, uint8_t y, char ch, uint16_t color) {
-    uint16_t pixel_x = (uint16_t)x * tft.cfont->width;
-    uint16_t pixel_y = (uint16_t)y * tft.cfont->height;
-    setWindow(pixel_x, pixel_y, pixel_x + tft.cfont->width - 1, pixel_y + tft.cfont->height - 1);
+    uint16_t pixel_x = tft.maxX - (uint16_t)(y + 1) * tft.cfont->height;
+    uint16_t pixel_y = (uint16_t)x * tft.cfont->width;
+    setWindow(pixel_x, pixel_y, pixel_x + tft.cfont->height - 1, pixel_y + tft.cfont->width - 1);
     uint16_t charPixels[6 * 8] = {0};
     for (uint8_t i = 0; i < tft.cfont->width; i++) {  // each font "column"
         uint8_t charData = font_read_column(tft.cfont, ch, i);
 
         // Process every row in font character
         for (uint8_t k = 0; k < tft.cfont->height; k++) {
+            uint8_t j = tft.cfont->height - k - 1;
             if (charData & 1) {
-                charPixels[k * 6 + i] = color;
+                charPixels[i * 8 + j] = color;
             } else {
-                charPixels[k * 6 + i] = tft.bgColor;
+                charPixels[i * 8 + j] = tft.bgColor;
             }
             charData >>= 1;
         }
