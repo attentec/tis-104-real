@@ -150,23 +150,23 @@ void tft_setBackgroundColor(uint16_t color);
 /// @param  color 16-bit color
 void tft_fillRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
 
-/// Draw ASCII Text (pixel coordinates)
+/// Draw ASCII Text (character coordinates)
 /// @param  x point coordinate, x-axis
 /// @param  y point coordinate, y-axis
 /// @param  s text string
 /// @param  color 16-bit color, default=white
-void tft_drawText(uint16_t x, uint16_t y, char *s, uint16_t color);
+void tft_drawText(uint8_t x, uint8_t y, char *s, uint16_t color);
 
 /// Set current font
 /// @param  font Font name
 void tft_setFont(struct font* font);
 
-/// Draw single character (pixel coordinates)
+/// Draw single character (character coordinates)
 /// @param  x point coordinate, x-axis
 /// @param  y point coordinate, y-axis
 /// @param  ch ASCII character
 /// @param  color 16-bit color, default=white
-uint16_t tft_drawChar(uint16_t x, uint16_t y, uint16_t ch, uint16_t color);
+uint16_t tft_drawChar(uint8_t x, uint8_t y, char ch, uint16_t color);
 
 void tft_render();
 
