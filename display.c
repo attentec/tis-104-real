@@ -9,10 +9,13 @@
 #include "tft.h"
 #include "delay.h"
 
+#define WIDTH (29)
+#define HEIGHT (27)
+
 int main() {
     struct indexmap indices;
-    uint8_t buf[20 * 20];
-    indexmap_init(&indices, 20, 20, buf);
+    uint8_t buf[WIDTH * HEIGHT];
+    indexmap_init(&indices, WIDTH, HEIGHT, buf);
 
     struct font font;
     font_init(&font, Terminal6x8);
@@ -37,14 +40,16 @@ int main() {
     tft_begin();
 
     screen_set(scr, 0, 0, 0x03);
-    screen_set(scr, 19, 0, 0x02);
-    screen_set(scr, 0, 19, 0x05);
-    screen_set(scr, 19, 19, 0x04);
-    for (int i = 1; i < 19; ++i) {
-        screen_set(scr, i, 0, 0x00);
-        screen_set(scr, i, 19, 0x00);
+    screen_set(scr, WIDTH - 1, 0, 0x02);
+    screen_set(scr, 0, HEIGHT - 1, 0x05);
+    screen_set(scr, WIDTH - 1, HEIGHT - 1, 0x04);
+    for (int i = 1; i < HEIGHT - 1; ++i) {
         screen_set(scr, 0, i, 0x01);
-        screen_set(scr, 19, i, 0x01);
+        screen_set(scr, WIDTH - 1, i, 0x01);
+    }
+    for (int i = 1; i < WIDTH - 1; ++i) {
+        screen_set(scr, i, 0, 0x00);
+        screen_set(scr, i, HEIGHT - 1, 0x00);
     }
     tft_render();
 
