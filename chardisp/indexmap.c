@@ -38,6 +38,12 @@ bool indexmap_is_dirty(struct indexmap *map, uint8_t x, uint8_t y) {
     return (val & DIRTY_MASK) != 0u;
 }
 
+void indexmap_set_dirty(struct indexmap *map, uint8_t x, uint8_t y) {
+    uint8_t val = map->indices[index(map, x, y)];
+    uint8_t new_val = val | DIRTY_MASK;
+    map->indices[index(map, x, y)] = new_val;
+}
+
 void indexmap_clear_dirty(struct indexmap *map, uint8_t x, uint8_t y) {
     map->indices[index(map, x, y)] &= ~DIRTY_MASK;
 }
