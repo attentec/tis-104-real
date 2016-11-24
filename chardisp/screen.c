@@ -78,7 +78,7 @@ int screen_get_next_dirty(DirtyIterator *dirties) {
     }
     for (; i < size; ++i) {
         size_t x = i % indexmap_width(indices);
-        size_t y = i / indexmap_height(indices);
+        size_t y = i / indexmap_width(indices);
         if (indexmap_is_dirty(indices, x, y)) {
             dirties->index = i;
             dirties->x = x;
