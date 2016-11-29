@@ -22,7 +22,7 @@ static void transmit_bit(uint16_t bit) {
 
 static void transmit_word(int16_t value) {
     uint16_t bits = (uint16_t) value;
-    for (int i = 0; i < 11; i++) {
+    for (uint8_t i = 0; i < 11; i++) {
         transmit_bit(bits & (1 << 10));
         bits <<= 1;
     }
@@ -65,7 +65,7 @@ int main() {
             read_char();
             read_char();
         }
-            write_line("Sent value");
+        write_line((uint8_t *)"Sent value");
         read_char();
         //2W
 

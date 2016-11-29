@@ -1,11 +1,10 @@
 #pragma once
 
-#include <stdlib.h>
 #include <stdbool.h>
 
 #include "font.h"
+#include "pin.h"
 #include "screen.h"
-#include "disp.h"
 
 enum Direction {
     INPUT,
@@ -67,53 +66,46 @@ enum Level {
 /* RGB 24-bits color table definition (RGB888). */
 #define RGB888_RGB565(color) ((((color) >> 19) & 0x1f) << 11) | ((((color) >> 10) & 0x3f) << 5) | (((color) >> 3) & 0x1f)
 
-#define COLOR_BLACK          RGB888_RGB565(0x000000u)
-#define COLOR_WHITE          RGB888_RGB565(0xFFFFFFu)
-#define COLOR_BLUE           RGB888_RGB565(0x0000FFu)
-#define COLOR_GREEN          RGB888_RGB565(0x00FF00u)
-#define COLOR_RED            RGB888_RGB565(0xFF0000u)
-#define COLOR_NAVY           RGB888_RGB565(0x000080u)
-#define COLOR_DARKBLUE       RGB888_RGB565(0x00008Bu)
-#define COLOR_DARKGREEN      RGB888_RGB565(0x006400u)
-#define COLOR_DARKCYAN       RGB888_RGB565(0x008B8Bu)
-#define COLOR_CYAN           RGB888_RGB565(0x00FFFFu)
-#define COLOR_TURQUOISE      RGB888_RGB565(0x40E0D0u)
-#define COLOR_INDIGO         RGB888_RGB565(0x4B0082u)
-#define COLOR_DARKRED        RGB888_RGB565(0x800000u)
-#define COLOR_OLIVE          RGB888_RGB565(0x808000u)
-#define COLOR_GRAY           RGB888_RGB565(0x808080u)
-#define COLOR_SKYBLUE        RGB888_RGB565(0x87CEEBu)
-#define COLOR_BLUEVIOLET     RGB888_RGB565(0x8A2BE2u)
-#define COLOR_LIGHTGREEN     RGB888_RGB565(0x90EE90u)
-#define COLOR_DARKVIOLET     RGB888_RGB565(0x9400D3u)
-#define COLOR_YELLOWGREEN    RGB888_RGB565(0x9ACD32u)
-#define COLOR_BROWN          RGB888_RGB565(0xA52A2Au)
-#define COLOR_DARKGRAY       RGB888_RGB565(0xA9A9A9u)
-#define COLOR_SIENNA         RGB888_RGB565(0xA0522Du)
-#define COLOR_LIGHTBLUE      RGB888_RGB565(0xADD8E6u)
-#define COLOR_GREENYELLOW    RGB888_RGB565(0xADFF2Fu)
-#define COLOR_SILVER         RGB888_RGB565(0xC0C0C0u)
-#define COLOR_LIGHTGREY      RGB888_RGB565(0xD3D3D3u)
-#define COLOR_LIGHTCYAN      RGB888_RGB565(0xE0FFFFu)
-#define COLOR_VIOLET         RGB888_RGB565(0xEE82EEu)
-#define COLOR_AZUR           RGB888_RGB565(0xF0FFFFu)
-#define COLOR_BEIGE          RGB888_RGB565(0xF5F5DCu)
-#define COLOR_MAGENTA        RGB888_RGB565(0xFF00FFu)
-#define COLOR_TOMATO         RGB888_RGB565(0xFF6347u)
-#define COLOR_GOLD           RGB888_RGB565(0xFFD700u)
-#define COLOR_ORANGE         RGB888_RGB565(0xFFA500u)
-#define COLOR_SNOW           RGB888_RGB565(0xFFFAFAu)
-#define COLOR_YELLOW         RGB888_RGB565(0xFFFF00u)
+#define COLOR_BLACK          RGB888_RGB565(0x000000uL)
+#define COLOR_WHITE          RGB888_RGB565(0xFFFFFFuL)
+#define COLOR_BLUE           RGB888_RGB565(0x0000FFuL)
+#define COLOR_GREEN          RGB888_RGB565(0x00FF00uL)
+#define COLOR_RED            RGB888_RGB565(0xFF0000uL)
+#define COLOR_NAVY           RGB888_RGB565(0x000080uL)
+#define COLOR_DARKBLUE       RGB888_RGB565(0x00008BuL)
+#define COLOR_DARKGREEN      RGB888_RGB565(0x006400uL)
+#define COLOR_DARKCYAN       RGB888_RGB565(0x008B8BuL)
+#define COLOR_CYAN           RGB888_RGB565(0x00FFFFuL)
+#define COLOR_TURQUOISE      RGB888_RGB565(0x40E0D0uL)
+#define COLOR_INDIGO         RGB888_RGB565(0x4B0082uL)
+#define COLOR_DARKRED        RGB888_RGB565(0x800000uL)
+#define COLOR_OLIVE          RGB888_RGB565(0x808000uL)
+#define COLOR_GRAY           RGB888_RGB565(0x808080uL)
+#define COLOR_SKYBLUE        RGB888_RGB565(0x87CEEBuL)
+#define COLOR_BLUEVIOLET     RGB888_RGB565(0x8A2BE2uL)
+#define COLOR_LIGHTGREEN     RGB888_RGB565(0x90EE90uL)
+#define COLOR_DARKVIOLET     RGB888_RGB565(0x9400D3uL)
+#define COLOR_YELLOWGREEN    RGB888_RGB565(0x9ACD32uL)
+#define COLOR_BROWN          RGB888_RGB565(0xA52A2AuL)
+#define COLOR_DARKGRAY       RGB888_RGB565(0xA9A9A9uL)
+#define COLOR_SIENNA         RGB888_RGB565(0xA0522DuL)
+#define COLOR_LIGHTBLUE      RGB888_RGB565(0xADD8E6uL)
+#define COLOR_GREENYELLOW    RGB888_RGB565(0xADFF2FuL)
+#define COLOR_SILVER         RGB888_RGB565(0xC0C0C0uL)
+#define COLOR_LIGHTGREY      RGB888_RGB565(0xD3D3D3uL)
+#define COLOR_LIGHTCYAN      RGB888_RGB565(0xE0FFFFuL)
+#define COLOR_VIOLET         RGB888_RGB565(0xEE82EEuL)
+#define COLOR_AZUR           RGB888_RGB565(0xF0FFFFuL)
+#define COLOR_BEIGE          RGB888_RGB565(0xF5F5DCuL)
+#define COLOR_MAGENTA        RGB888_RGB565(0xFF00FFuL)
+#define COLOR_TOMATO         RGB888_RGB565(0xFF6347uL)
+#define COLOR_GOLD           RGB888_RGB565(0xFFD700uL)
+#define COLOR_ORANGE         RGB888_RGB565(0xFFA500uL)
+#define COLOR_SNOW           RGB888_RGB565(0xFFFAFAuL)
+#define COLOR_YELLOW         RGB888_RGB565(0xFFFF00uL)
 
-/* Font defines */
-#define FONT_HEADER_SIZE 4 // 1: pixel width of 1 font character, 2: pixel height,
-
-extern uint8_t Terminal6x8[];
-extern uint8_t Terminal11x16[];
-extern uint8_t Terminal12x16[];
-extern uint8_t Trebuchet_MS16x21[];
-
-void tft_swspi(uint8_t RST, uint8_t RS, uint8_t CS, uint8_t SDI, uint8_t CLK, uint8_t LED, screen scr);
+/// Setup
+void tft_swspi(uint8_t RST, uint8_t RS, uint8_t CS, uint8_t SDI, uint8_t CLK, uint8_t LED, struct screen *scr);
 void tft_hwspi(uint8_t RST, uint8_t RS, uint8_t CS, uint8_t LED);
 
 /// Initialization
@@ -177,5 +169,5 @@ struct tft {
 
     struct font *cfont;
 
-    screen scr;
+    struct screen *scr;
 };

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "font.h"
+#include "fonts.h"
 #include "indexmap.h"
 #include "screen.h"
 #include "tft.h"
@@ -11,8 +12,7 @@
 #define WIDTH (29)
 #define HEIGHT (27)
 
-void draw_background(screen scr) {
-    const uint8_t left = 0;
+void draw_background(struct screen *scr) {
     const uint8_t middle = 20;
     const uint8_t right = 25;
     const uint8_t bottom = 15;
@@ -20,17 +20,17 @@ void draw_background(screen scr) {
 
     tft_setForegroundColor(COLOR_WHITE);
 
-    for (int y = 1; y < bottom; ++y) {
+    for (uint8_t y = 1; y < bottom; ++y) {
         screen_set(scr, 0, y, 0x01);
         screen_set(scr, middle, y, 0x01);
         screen_set(scr, right, y, 0x01);
     }
-    for (int x = 1; x < right; ++x) {
+    for (uint8_t x = 1; x < right; ++x) {
         screen_set(scr, x, 0, 0x00);
         screen_set(scr, x, bottom, 0x00);
     }
-    for (int y = 3; y < bottom; y += 3) {
-        for (int x = middle; x < right; ++x) {
+    for (uint8_t y = 3; y < bottom; y += 3) {
+        for (uint8_t x = middle; x < right; ++x) {
             screen_set(scr, x, y, 0x00);
         }
         screen_set(scr, middle, y, 0x07);
@@ -63,14 +63,14 @@ void draw_background(screen scr) {
 }
 
 int main(void) {
-    struct indexmap indices;
-    uint8_t buf[WIDTH * HEIGHT];
+    static uint8_t buf[WIDTH * HEIGHT];
+    static struct indexmap indices;
+    static struct font font;
+    static struct screen scr;
+
     indexmap_init(&indices, WIDTH, HEIGHT, buf);
-
-    struct font font;
     font_init(&font, Terminal6x8);
-
-    screen scr = screen_init(&indices, &font);
+    screen_init(&scr, &indices, &font);
 
     // Set up pins
     pin_t cs = pin_init(PIN_PORT_D, 2, PIN_DIR_OUTPUT);     //  2
@@ -83,16 +83,16 @@ int main(void) {
     // Use hardware SPI (faster - on Uno: 13-SCK, 12-MISO, 11-MOSI)
     //TFT_22_ILI9225 tft = TFT_22_ILI9225(rst, rs, cs, led);
     // Use software SPI (slower)
-    tft_swspi(rst, rs, cs, sdi, clk, led, scr);
+    tft_swspi(rst, rs, cs, sdi, clk, led, &scr);
 
     tft_setFont(&font);
 
     tft_begin();
-    draw_background(scr);
+    draw_background(&scr);
     tft_render();
 
-    int count = 0x00;
-    char buffer[5];
+    static uint8_t count = 0x00;
+    static char buffer[5];
     while (true) {
         if (count >= 0x80) {
             count = 0x00;
@@ -100,7 +100,7 @@ int main(void) {
         sprintf(buffer, "%03d", count);
         buffer[3] = count;
         buffer[4] = '\0';
-        tft_drawText(10, 10, buffer);
+        tft_drawText(1, 1, buffer);
         tft_render();
         count += 1;
         delay_ms(500);

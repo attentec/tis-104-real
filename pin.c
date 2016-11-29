@@ -102,6 +102,6 @@ bool pin_read(pin_t pin) {
             return (PIND & bit_pattern) != 0;
         default:
             panic();
-            break;
+            return false;
     }
 }

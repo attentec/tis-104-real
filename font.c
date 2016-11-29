@@ -3,7 +3,7 @@
 
 #define FONT_HEADER_SIZE (4u) // 1: pixel width of 1 font character, 2: pixel height
 
-void font_init(struct font *font, uint8_t *data) {
+void font_init(struct font *font, const uint8_t *data) {
     font->data = data;
     font->width = mem_read_byte(&data[0]);
     font->height = mem_read_byte(&data[1]);

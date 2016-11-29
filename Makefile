@@ -1,14 +1,18 @@
 DEVICE ?= /dev/ttyACM0
 
+.DEFAULT_GOAL = avr/display.hex
+
 avr/%.o:%.c
 	mkdir -p $(dir $@)
 	avr-gcc -o $@ -c $^ \
-		-std=c11 -mmcu=atmega328p -g -Os -DF_CPU=16000000ul
+		-std=c11 -mmcu=atmega328p -g -Os -DF_CPU=16000000ul \
+		-Wall -Wextra -pedantic
 
 pc/%.o:%.c
 	mkdir -p $(dir $@)
 	gcc -o $@ -c $^ \
-		-std=c11 -g -Os
+		-std=c11 -g -Os \
+		-Wall -Wextra -pedantic
 
 avr/%.elf:
 	mkdir -p $(dir $@)

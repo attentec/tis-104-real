@@ -1,10 +1,11 @@
-#include <string.h>
 #include <stdbool.h>
+#include <string.h>
 
-#include "tft.h"
-#include "pin.h"
-#include "panic.h"
 #include "delay.h"
+#include "disp.h"
+#include "panic.h"
+#include "pin.h"
+#include "tft.h"
 
 static void setWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
 
@@ -27,7 +28,7 @@ static void setWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
 }
 
 // Constructor when using software SPI.  All output pins are configurable.
-void tft_swspi(uint8_t rst, uint8_t rs, uint8_t cs, uint8_t sdi, uint8_t clk, uint8_t led, screen scr) {
+void tft_swspi(uint8_t rst, uint8_t rs, uint8_t cs, uint8_t sdi, uint8_t clk, uint8_t led, struct screen *scr) {
     disp_init(disp, rs, cs, rst, led, sdi, clk);
     tft.scr = scr;
     tft.maxX = ILI9225_LCD_WIDTH;

@@ -16,7 +16,7 @@ static int16_t receive_word(void) {
     if (receive_bit()) {
         bits = 0xffff;
     }
-    for (int i = 0; i < 10; ++i) {
+    for (uint8_t i = 0; i < 10; ++i) {
         bits = (bits << 1) | receive_bit();
     }
     return (int16_t) bits;
@@ -54,12 +54,12 @@ int main() {
     while (true) {
         read_char();
         //1R
-            while (!try_receive_value(&value)) {
-                read_char();
-                read_char();
-            }
-            snprintf((char *) mybuf, mysize, "Got value: %" PRId16, value);
-            write_line(mybuf);
+        while (!try_receive_value(&value)) {
+            read_char();
+            read_char();
+        }
+        snprintf((char *) mybuf, mysize, "Got value: %" PRId16, value);
+        write_line(mybuf);
         read_char();
         //1W
     }
