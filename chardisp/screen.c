@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 #include "screen.h"
 #include "indexmap.h"
@@ -87,46 +86,4 @@ int screen_get_next_dirty(DirtyIterator *dirties) {
         }
     }
     return 0;
-}
-
-void screen_print(screen scr) {
-    int height = indexmap_height(scr->indices);
-    int width = indexmap_width(scr->indices);
-    char line[width * scr->font->width + 1];
-    for (int i = 0; i < height; ++i) {
-        for (int k = 0; k < scr->font->height; ++k) {
-            for (int j = 0; j < width; ++j) {
-                font_sprint_char(scr->font, &line[j * scr->font->width], indexmap_get(scr->indices, j, i), k);
-                if (scr->cursor_enabled && scr->cursor_x == j && scr->cursor_y == i && k == scr->font->height - 1) {
-                    memset(&line[j * scr->font->width], '$', scr->font->width);
-                }
-            }
-            line[width * scr->font->width] = '\0';
-            puts(line);
-        }
-    }
-    screen_clear_dirty(scr);
-}
-
-void screen_print_dirty(screen scr) {
-    int height = indexmap_height(scr->indices);
-    int width = indexmap_width(scr->indices);
-    char line[width * scr->font->width + 1];
-    for (int i = 0; i < height; ++i) {
-        for (int k = 0; k < scr->font->height; ++k) {
-            for (int j = 0; j < width; ++j) {
-                if (indexmap_is_dirty(scr->indices, j, i)) {
-                    font_sprint_char(scr->font, &line[j * scr->font->width], indexmap_get(scr->indices, j, i), k);
-                    if (scr->cursor_enabled && scr->cursor_x == j && scr->cursor_y == i && k == scr->font->height - 1) {
-                        memset(&line[j * scr->font->width], '$', scr->font->width);
-                    }
-                } else {
-                    memset(&line[j * scr->font->width], ' ', scr->font->width);
-                }
-            }
-            line[width * scr->font->width] = '\0';
-            puts(line);
-        }
-    }
-    screen_clear_dirty(scr);
 }

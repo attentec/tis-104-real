@@ -30,8 +30,8 @@ static void transmit_word(int16_t value) {
 
 static bool try_transmit_value(int16_t value) {
     if (PIND & (1 << 2)) {
-	// The 'read' pin was high, noone will receive our transmission
-	return false;
+        // The 'read' pin was high, noone will receive our transmission
+        return false;
     }
 
     // Set the 'write' pin high
@@ -54,21 +54,21 @@ int main() {
 
     int16_t counter = -999;
     while (true) {
-	read_char();
-	//1R
-	read_char();
-	//1W
-	signal_value_available();
-	read_char();
-	//2R
-	while (!try_transmit_value(counter)) {
-	    read_char();
-	    read_char();
-	}
-        write_line("Sent value");
-	read_char();
-	//2W
+        read_char();
+        //1R
+        read_char();
+        //1W
+        signal_value_available();
+        read_char();
+        //2R
+        while (!try_transmit_value(counter)) {
+            read_char();
+            read_char();
+        }
+            write_line("Sent value");
+        read_char();
+        //2W
 
-	counter += 1;
+        counter += 1;
     }
 }

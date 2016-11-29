@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include <stdint.h>
 
 #include "indexmap.h"
@@ -54,13 +53,4 @@ uint8_t indexmap_width(struct indexmap *map) {
 
 uint8_t indexmap_height(struct indexmap *map) {
     return map->height;
-}
-
-void indexmap_print(struct indexmap *map) {
-    for (uint8_t y = 0; y < map->height; ++y) {
-        for (uint8_t x = 0; x < map->width; ++x) {
-            printf("%02x ", indexmap_get(map, x, y));
-        }
-        puts("");
-    }
 }

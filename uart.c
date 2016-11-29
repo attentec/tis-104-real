@@ -20,10 +20,10 @@ void uart_init(void) {
     UCSR0A = 0;
     UCSR0B = (1 << RXEN0) | (1 << TXEN0) | (0 << UCSZ02);
     UCSR0C = ((0 << UMSEL01) | (0 << UMSEL00) |
-	      (0 << UPM01) | (0 << UPM00) |
-	      (0 << USBS0) |
-	      (1 << UCSZ01) | (1 << UCSZ00) |
-	      (0 << UCPOL0));
+              (0 << UPM01) | (0 << UPM00) |
+              (0 << USBS0) |
+              (1 << UCSZ01) | (1 << UCSZ00) |
+              (0 << UCPOL0));
 }
 
 void write_char(uint8_t c) {
@@ -39,7 +39,7 @@ uint8_t read_char(void) {
 
 void write_line(uint8_t *s) {
     do {
-	write_char(*s);
+        write_char(*s);
     } while (*++s);
     write_char('\r');
     write_char('\n');

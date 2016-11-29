@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-gcc *.c --std=c11 ../fonts.c -I .

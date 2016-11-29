@@ -52,15 +52,15 @@ int main() {
     const size_t mysize = 100;
     uint8_t mybuf[mysize];
     while (true) {
-	read_char();
-	//1R
-        while (!try_receive_value(&value)) {
-            read_char();
-            read_char();
-        }
-        snprintf((char *) mybuf, mysize, "Got value: %" PRId16, value);
-        write_line(mybuf);
-	read_char();
-	//1W
+        read_char();
+        //1R
+            while (!try_receive_value(&value)) {
+                read_char();
+                read_char();
+            }
+            snprintf((char *) mybuf, mysize, "Got value: %" PRId16, value);
+            write_line(mybuf);
+        read_char();
+        //1W
     }
 }

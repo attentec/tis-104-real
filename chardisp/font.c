@@ -17,21 +17,3 @@ uint8_t font_read_column(struct font *font, uint8_t charno, uint8_t column) {
     uint16_t char_index = (char_width * char_offset) + FONT_HEADER_SIZE;
     return mem_read_byte(&font->data[char_index + column + 1u]);
 }
-
-void font_sprint_char(struct font *font, char *buf, char ch, int line) {
-    uint8_t char_data, char_width;
-    uint8_t i, j;
-
-    for (i = 0; i < font->width; i++) {  // each font "column"
-        char_data = font_read_column(font, ch, i);
-
-        if (line >= font->height) {
-            break;  // No need to process excess bits
-        }
-        if (char_data & (1 << line)) {
-            buf[i] = '#';
-        } else {
-            buf[i] = ' ';
-        }
-    }
-}
