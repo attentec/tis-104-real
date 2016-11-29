@@ -2,10 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <font.h>
-#include <indexmap.h>
-#include <screen.h>
-
+#include "font.h"
+#include "indexmap.h"
+#include "screen.h"
 #include "tft.h"
 #include "delay.h"
 

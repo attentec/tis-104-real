@@ -1,10 +1,10 @@
 #pragma once
 
 #include <stdlib.h>
-#include <font.h>
-#include <screen.h>
 #include <stdbool.h>
 
+#include "font.h"
+#include "screen.h"
 #include "disp.h"
 
 enum Direction {
