@@ -1,36 +1,53 @@
 DEVICE ?= /dev/ttyACM0
 
-.DEFAULT_GOAL := out/${TARGET}.hex
+.DEFAULT_GOAL := ${TARGET}
 
-out/%.o:%.c
+avr/%.o:%.c
 	mkdir -p $(dir $@)
 	avr-gcc -o $@ -c $^ \
 		-I chardisp \
 		-std=c11 -mmcu=atmega328p -g -Os -DF_CPU=16000000ul
 
-%.elf:
+pc/%.o:%.c
+	mkdir -p $(dir $@)
+	gcc -o $@ -c $^ \
+		-I chardisp \
+		-std=c11 -g -Os
+
+avr/%.elf:
 	mkdir -p $(dir $@)
 	avr-gcc -o $@ $^ \
 		-std=c11 -mmcu=atmega328p -g -Os -DF_CPU=16000000ul
-	avr-objdump -d $@ > $(basename $@).s
 
-%.hex: %.elf
+.PRECIOUS: avr/%.s
+avr/%.s: avr/%.elf
+	avr-objdump -d $< > $(basename $@).s
+
+avr/%.hex: avr/%.elf avr/%.s
 	avr-objcopy -j .text -j .data -O ihex $< $@
 
 .PHONY: flash
-flash: out/${TARGET}.hex
+flash: ${TARGET}
 	avrdude -v -p m328p -c arduino -P ${DEVICE} -U flash:w:$<:i
 
-out/blink.elf: out/blink.o
+avr/blink.elf: avr/blink.o
 
-out/sender.elf: out/sender.o out/uart.o
+avr/sender.elf: avr/sender.o avr/uart.o
 
-out/receiver.elf: out/receiver.o out/uart.o
+avr/receiver.elf: avr/receiver.o avr/uart.o
 
 CHD_SOURCES = $(addprefix chardisp/,font.c indexmap.c screen.c mem.c)
-CHD_OBJECTS = $(addprefix out/,$(patsubst %.c,%.o,${CHD_SOURCES}))
+CHD_OBJECTS = $(addprefix avr/,$(patsubst %.c,%.o,${CHD_SOURCES}))
+
+CHD_PC_SOURCES = $(addprefix chardisp/,font.c indexmap.c screen.c mem.c)
+CHD_PC_OBJECTS = $(addprefix pc/,$(patsubst %.c,%.o,${CHD_PC_SOURCES}))
 
 TFT_SOURCES = tft.c fonts.c disp.c pin.c spi_sw.c panic.c
-TFT_OBJECTS = $(addprefix out/,$(patsubst %.c,%.o,${TFT_SOURCES}))
+TFT_OBJECTS = $(addprefix avr/,$(patsubst %.c,%.o,${TFT_SOURCES}))
 
-out/display.elf: out/display.o ${TFT_OBJECTS} ${CHD_OBJECTS}
+TFT_PC_SOURCES = tft.c fonts.c disp.c pin_pc.c spi_pc.c panic.c delay_pc.c
+TFT_PC_OBJECTS = $(addprefix pc/,$(patsubst %.c,%.o,${TFT_PC_SOURCES}))
+
+avr/display.elf: avr/display.o ${TFT_OBJECTS} ${CHD_OBJECTS}
+
+pc/display: pc/display.o ${TFT_PC_OBJECTS} ${CHD_PC_OBJECTS}
