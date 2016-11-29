@@ -1,7 +1,5 @@
 DEVICE ?= /dev/ttyACM0
 
-.DEFAULT_GOAL := ${TARGET}
-
 avr/%.o:%.c
 	mkdir -p $(dir $@)
 	avr-gcc -o $@ -c $^ \
