@@ -12,12 +12,12 @@
 #define WIDTH (29)
 #define HEIGHT (27)
 
+const uint8_t middle = 20;
+const uint8_t right = 27;
+const uint8_t bottom = 15;
+
+
 void draw_background(struct screen *scr) {
-    const uint8_t middle = 20;
-    const uint8_t right = 25;
-    const uint8_t bottom = 15;
-
-
     tft_setForegroundColor(COLOR_WHITE);
 
     for (uint8_t y = 1; y < bottom; ++y) {
@@ -49,17 +49,46 @@ void draw_background(struct screen *scr) {
 
     tft_setForegroundColor(COLOR_DARKGRAY);
 
-    tft_drawText(middle + 1, 1, "ACC");
-    tft_drawText(middle + 1, 4, "BAK");
-    tft_drawText(middle + 1, 7, "LAST");
-    tft_drawText(middle + 1, 10, "MODE");
-    tft_drawText(middle + 1, 13, "IDLE");
+    tft_drawText(middle + 2, 1, "ACC");
+    tft_drawText(middle + 2, 4, "BAK");
+    tft_drawText(middle + 2, 7, "LAST");
+    tft_drawText(middle + 2, 10, "MODE");
+    tft_drawText(middle + 2, 13, "IDLE");
 
 
     tft_render();
 
 
     tft_setForegroundColor(COLOR_WHITE);
+}
+
+void draw_acc(int16_t acc) {
+    char buffer[5];
+    sprintf(buffer, "%4d", acc);
+    buffer[4] = '\0';
+    tft_drawText(middle + 2, 2, buffer);
+}
+
+void draw_bak(int16_t bak) {
+    char buffer[7];
+    sprintf(buffer, "<%4d>", bak);
+    buffer[6] = '\0';
+    tft_drawText(middle + 1, 5, buffer);
+}
+
+void draw_last(char *last) {
+    tft_drawText(middle + 2, 8, last);
+}
+
+void draw_mode(char *mode) {
+    tft_drawText(middle + 2, 11, mode);
+}
+
+void draw_idle(uint8_t idle) {
+    char buffer[5];
+    sprintf(buffer, "%3d%%", idle);
+    buffer[4] = '\0';
+    tft_drawText(middle + 2, 14, buffer);
 }
 
 int main(void) {
@@ -91,19 +120,23 @@ int main(void) {
     draw_background(&scr);
     tft_render();
 
-    static uint8_t count = 0x00;
-    static char buffer[5];
+    static int16_t acc = 0;
+    static int16_t bak = 0;
     while (true) {
-        if (count >= 0x80) {
-            count = 0x00;
+        if (acc >= 999) {
+            acc = -999;
         }
-        sprintf(buffer, "%03d", count);
-        buffer[3] = count;
-        buffer[4] = '\0';
-        tft_drawText(1, 1, buffer);
+        if (bak >= 999) {
+            bak = -999;
+        }
+        draw_acc(acc);
+        draw_bak(bak);
+        draw_last("N/A");
+        draw_mode("IDLE");
+        draw_idle(0);
         tft_render();
-        count += 1;
-        delay_ms(500);
+        acc += 13;
+        bak += 29;
     }
 
     tft_setBacklight(false);
