@@ -20,11 +20,11 @@ const uint8_t right = 27;
 const uint8_t bottom = 15;
 
 
-void render(struct screen *scr) {
+void render(struct screen *scr, struct tft_t *tft) {
     DirtyIterator dirties;
     screen_get_dirties(scr, &dirties);
     while (screen_get_next_dirty(&dirties)) {
-        tft_drawChar(dirties.x, dirties.y, screen_get(scr, dirties.x, dirties.y));
+        tft_drawChar(tft, dirties.x, dirties.y, screen_get(scr, dirties.x, dirties.y));
     }
 }
 
@@ -38,8 +38,8 @@ void draw_text(struct screen *scr, uint8_t x, uint8_t y, char *s) {
     }
 }
 
-void draw_background(struct screen *scr) {
-    tft_setForegroundColor(COLOR_WHITE);
+void draw_background(struct screen *scr, struct tft_t *tft) {
+    tft_setForegroundColor(tft, COLOR_WHITE);
 
     for (uint8_t y = 1; y < bottom; ++y) {
         screen_set(scr, 0, y, 0x01);
@@ -65,10 +65,10 @@ void draw_background(struct screen *scr) {
     screen_set(scr, right, bottom, 0x04);
 
 
-    render(scr);
+    render(scr, tft);
 
 
-    tft_setForegroundColor(COLOR_DARKGRAY);
+    tft_setForegroundColor(tft, COLOR_DARKGRAY);
 
     draw_text(scr, middle + 2, 1, "ACC");
     draw_text(scr, middle + 2, 4, "BAK");
@@ -77,10 +77,10 @@ void draw_background(struct screen *scr) {
     draw_text(scr, middle + 2, 13, "IDLE");
 
 
-    render(scr);
+    render(scr, tft);
 
 
-    tft_setForegroundColor(COLOR_WHITE);
+    tft_setForegroundColor(tft, COLOR_WHITE);
 }
 
 void draw_acc(struct screen *scr, int16_t acc) {
@@ -119,6 +119,7 @@ int main(void) {
     static struct screen scr;
     static struct disp_t disp;
     static struct spi_t spi;
+    static struct tft_t tft;
 
     indexmap_init(&indices, WIDTH, HEIGHT, buf);
     screen_init(&scr, &indices);
@@ -134,11 +135,11 @@ int main(void) {
     spi_init(&spi, sdi, clk);
     disp_init(&disp, &spi, rs, cs, rst, led);
     font_init(&font, Terminal6x8);
-    tft_init(&disp, &scr, &font);
+    tft_init(&tft, &disp, &scr, &font);
 
-    tft_begin();
-    draw_background(&scr);
-    render(&scr);
+    tft_begin(&tft);
+    draw_background(&scr, &tft);
+    render(&scr, &tft);
 
     static int16_t acc = 0;
     static int16_t bak = 0;
@@ -154,13 +155,13 @@ int main(void) {
         draw_last(&scr, "N/A");
         draw_mode(&scr, "IDLE");
         draw_idle(&scr, 0);
-        render(&scr);
+        render(&scr, &tft);
         acc += 13;
         bak += 29;
     }
 
-    tft_setBacklight(false);
-    tft_setDisplay(false);
+    tft_setBacklight(&tft, false);
+    tft_setDisplay(&tft, false);
 
     return 0;
 }

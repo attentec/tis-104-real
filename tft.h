@@ -7,16 +7,6 @@
 #include "pin.h"
 #include "screen.h"
 
-enum Direction {
-    INPUT,
-    OUTPUT,
-};
-
-enum Level {
-    LOW = 0,
-    HIGH = 1,
-};
-
 /* ILI9225 screen size */
 #define ILI9225_LCD_WIDTH  176
 #define ILI9225_LCD_HEIGHT 220
@@ -105,47 +95,7 @@ enum Level {
 #define COLOR_SNOW           RGB888_RGB565(0xFFFAFAuL)
 #define COLOR_YELLOW         RGB888_RGB565(0xFFFF00uL)
 
-/// Setup
-void tft_init(struct disp_t *disp, struct screen *scr, struct font *font);
-
-/// Initialization
-void tft_begin(void);
-
-/// Clear the screen
-void tft_clear(void);
-
-/// Switch backlight on or off
-/// @param  flag true=on, false=off
-void tft_setBacklight(bool flag);
-
-/// Switch display on or off
-/// @param  flag true=on, false=off
-void tft_setDisplay(bool flag);
-
-/// Set background color
-/// @param  color background color, default=black
-void tft_setBackgroundColor(uint16_t color);
-
-/// Set foreground color
-/// @param  color foreground color, default=white
-void tft_setForegroundColor(uint16_t color);
-
-/// Draw solid rectangle, rectangle coordinates
-/// @param  x1 top left coordinate, x-axis
-/// @param  y1 top left coordinate, y-axis
-/// @param  x2 bottom right coordinate, x-axis
-/// @param  y2 bottom right coordinate, y-axis
-/// @param  color 16-bit color
-void tft_fillRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
-
-/// Draw single character (character coordinates)
-/// @param  x point coordinate, x-axis
-/// @param  y point coordinate, y-axis
-/// @param  ch ASCII character
-uint16_t tft_drawChar(uint8_t x, uint8_t y, char ch);
-
-/// Main and core class
-struct tft {
+struct tft_t {
     uint16_t maxX;
     uint16_t maxY;
     uint16_t bgColor;
@@ -155,3 +105,30 @@ struct tft {
     struct disp_t *disp;
     struct screen *scr;
 };
+
+/// Setup
+void tft_init(struct tft_t *tft, struct disp_t *disp, struct screen *scr, struct font *font);
+
+/// Initialization
+void tft_begin(struct tft_t *tft);
+
+/// Clear the screen
+void tft_clear(struct tft_t *tft);
+
+/// Switch backlight on or off
+void tft_setBacklight(struct tft_t *tft, bool flag);
+
+/// Switch display on or off
+void tft_setDisplay(struct tft_t *tft, bool flag);
+
+/// Set background color
+void tft_setBackgroundColor(struct tft_t *tft, uint16_t color);
+
+/// Set foreground color
+void tft_setForegroundColor(struct tft_t *tft, uint16_t color);
+
+/// Draw solid rectangle, rectangle coordinates
+void tft_fillRectangle(struct tft_t *tft, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
+
+/// Draw single character (character coordinates)
+uint16_t tft_drawChar(struct tft_t *tft, uint8_t x, uint8_t y, char ch);
