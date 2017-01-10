@@ -1,18 +1,18 @@
 #include "disp.h"
+#include "spi.h"
 
-void disp_init(struct disp_t *disp, pin_t rs, pin_t cs, pin_t rst, pin_t led, pin_t sdi, pin_t clk) {
+void disp_init(struct disp_t *disp, struct spi_t *spi, pin_t rs, pin_t cs, pin_t rst, pin_t led) {
     disp->rs = rs;
     disp->cs = cs;
     disp->rst = rst;
     disp->led = led;
-
-    spi_init(&disp->spi, sdi, clk);
+    disp->spi = spi;
 }
 
 static void write(struct disp_t *disp, uint16_t x) {
     pin_write(disp->cs, false);
-    spi_write(&disp->spi, x >> 8);
-    spi_write(&disp->spi, x & 0xff);
+    spi_write(disp->spi, x >> 8);
+    spi_write(disp->spi, x & 0xff);
     pin_write(disp->cs, true);
 }
 

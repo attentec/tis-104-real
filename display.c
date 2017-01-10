@@ -10,6 +10,7 @@
 #include "tft.h"
 #include "delay.h"
 #include "disp.h"
+#include "spi.h"
 
 #define WIDTH (29)
 #define HEIGHT (27)
@@ -117,6 +118,7 @@ int main(void) {
     static struct font font;
     static struct screen scr;
     static struct disp_t disp;
+    static struct spi_t spi;
 
     indexmap_init(&indices, WIDTH, HEIGHT, buf);
     font_init(&font, Terminal6x8);
@@ -130,7 +132,8 @@ int main(void) {
     pin_t rst = pin_init(PIN_PORT_D, 6, PIN_DIR_OUTPUT);    // 6
     pin_t cs = pin_init(PIN_PORT_D, 7, PIN_DIR_OUTPUT);     // 7
 
-    disp_init(&disp, rs, cs, rst, led, sdi, clk);
+    spi_init(&spi, sdi, clk);
+    disp_init(&disp, &spi, rs, cs, rst, led);
     tft_init(&disp, &scr);
 
     tft_setFont(&font);
