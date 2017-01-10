@@ -1,6 +1,7 @@
 // Include application, user and local libraries
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "font.h"
 #include "fonts.h"
@@ -17,6 +18,24 @@ const uint8_t middle = 20;
 const uint8_t right = 27;
 const uint8_t bottom = 15;
 
+
+void render(struct screen *scr) {
+    DirtyIterator dirties;
+    screen_get_dirties(scr, &dirties);
+    while (screen_get_next_dirty(&dirties)) {
+        tft_drawChar(dirties.x, dirties.y, screen_get(scr, dirties.x, dirties.y));
+    }
+}
+
+void draw_text(struct screen *scr, uint8_t x, uint8_t y, char *s) {
+    uint8_t currx = x;
+
+    // Print every character in string
+    for (uint8_t k = 0; k < strlen(s); k++) {
+        screen_set(scr, currx, y, s[k]);
+        currx += 1;
+    }
+}
 
 void draw_background(struct screen *scr) {
     tft_setForegroundColor(COLOR_WHITE);
@@ -45,51 +64,51 @@ void draw_background(struct screen *scr) {
     screen_set(scr, right, bottom, 0x04);
 
 
-    tft_render();
+    render(scr);
 
 
     tft_setForegroundColor(COLOR_DARKGRAY);
 
-    tft_drawText(middle + 2, 1, "ACC");
-    tft_drawText(middle + 2, 4, "BAK");
-    tft_drawText(middle + 2, 7, "LAST");
-    tft_drawText(middle + 2, 10, "MODE");
-    tft_drawText(middle + 2, 13, "IDLE");
+    draw_text(scr, middle + 2, 1, "ACC");
+    draw_text(scr, middle + 2, 4, "BAK");
+    draw_text(scr, middle + 2, 7, "LAST");
+    draw_text(scr, middle + 2, 10, "MODE");
+    draw_text(scr, middle + 2, 13, "IDLE");
 
 
-    tft_render();
+    render(scr);
 
 
     tft_setForegroundColor(COLOR_WHITE);
 }
 
-void draw_acc(int16_t acc) {
+void draw_acc(struct screen *scr, int16_t acc) {
     char buffer[5];
     sprintf(buffer, "%4d", acc);
     buffer[4] = '\0';
-    tft_drawText(middle + 2, 2, buffer);
+    draw_text(scr, middle + 2, 2, buffer);
 }
 
-void draw_bak(int16_t bak) {
+void draw_bak(struct screen *scr, int16_t bak) {
     char buffer[7];
     sprintf(buffer, "<%4d>", bak);
     buffer[6] = '\0';
-    tft_drawText(middle + 1, 5, buffer);
+    draw_text(scr, middle + 1, 5, buffer);
 }
 
-void draw_last(char *last) {
-    tft_drawText(middle + 2, 8, last);
+void draw_last(struct screen *scr, char *last) {
+    draw_text(scr, middle + 2, 8, last);
 }
 
-void draw_mode(char *mode) {
-    tft_drawText(middle + 2, 11, mode);
+void draw_mode(struct screen *scr, char *mode) {
+    draw_text(scr, middle + 2, 11, mode);
 }
 
-void draw_idle(uint8_t idle) {
+void draw_idle(struct screen *scr, uint8_t idle) {
     char buffer[5];
     sprintf(buffer, "%3d%%", idle);
     buffer[4] = '\0';
-    tft_drawText(middle + 2, 14, buffer);
+    draw_text(scr, middle + 2, 14, buffer);
 }
 
 int main(void) {
@@ -118,7 +137,7 @@ int main(void) {
 
     tft_begin();
     draw_background(&scr);
-    tft_render();
+    render(&scr);
 
     static int16_t acc = 0;
     static int16_t bak = 0;
@@ -129,12 +148,12 @@ int main(void) {
         if (bak >= 999) {
             bak = -999;
         }
-        draw_acc(acc);
-        draw_bak(bak);
-        draw_last("N/A");
-        draw_mode("IDLE");
-        draw_idle(0);
-        tft_render();
+        draw_acc(&scr, acc);
+        draw_bak(&scr, bak);
+        draw_last(&scr, "N/A");
+        draw_mode(&scr, "IDLE");
+        draw_idle(&scr, 0);
+        render(&scr);
         acc += 13;
         bak += 29;
     }

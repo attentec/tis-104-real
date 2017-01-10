@@ -161,24 +161,6 @@ void tft_setFont(struct font *font) {
     tft.cfont = font;
 }
 
-void tft_drawText(uint8_t x, uint8_t y, char *s) {
-    uint8_t currx = x;
-
-    // Print every character in string
-    for (uint8_t k = 0; k < strlen(s); k++) {
-        screen_set(tft.scr, currx, y, s[k]);
-        currx += 1;
-    }
-}
-
-void tft_render() {
-    DirtyIterator dirties;
-    screen_get_dirties(tft.scr, &dirties);
-    while (screen_get_next_dirty(&dirties)) {
-        tft_drawChar(dirties.x, dirties.y, screen_get(tft.scr, dirties.x, dirties.y));
-    }
-}
-
 uint16_t tft_drawChar(uint8_t x, uint8_t y, char ch) {
     uint16_t pixel_x = tft.maxX - (uint16_t)(y + 1) * tft.cfont->height;
     uint16_t pixel_y = (uint16_t)x * tft.cfont->width;
