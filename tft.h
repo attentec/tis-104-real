@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 
+#include "disp.h"
 #include "font.h"
 #include "pin.h"
 #include "screen.h"
@@ -105,7 +106,7 @@ enum Level {
 #define COLOR_YELLOW         RGB888_RGB565(0xFFFF00uL)
 
 /// Setup
-void tft_swspi(uint8_t RST, uint8_t RS, uint8_t CS, uint8_t SDI, uint8_t CLK, uint8_t LED, struct screen *scr);
+void tft_init(struct disp_t *disp, struct screen *scr);
 
 /// Initialization
 void tft_begin(void);
@@ -168,5 +169,6 @@ struct tft {
 
     struct font *cfont;
 
+    struct disp_t *disp;
     struct screen *scr;
 };

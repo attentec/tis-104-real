@@ -10,26 +10,23 @@
 static void setWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
 
 static struct tft tft;
-static struct disp_t _disp;
-static struct disp_t *disp = &_disp;
 
 // Helper functions
 static void setWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
-    disp_write_register(disp, ILI9225_HORIZONTAL_WINDOW_ADDR1, x1);
-    disp_write_register(disp, ILI9225_HORIZONTAL_WINDOW_ADDR2, x0);
+    disp_write_register(tft.disp, ILI9225_HORIZONTAL_WINDOW_ADDR1, x1);
+    disp_write_register(tft.disp, ILI9225_HORIZONTAL_WINDOW_ADDR2, x0);
 
-    disp_write_register(disp, ILI9225_VERTICAL_WINDOW_ADDR1, y1);
-    disp_write_register(disp, ILI9225_VERTICAL_WINDOW_ADDR2, y0);
+    disp_write_register(tft.disp, ILI9225_VERTICAL_WINDOW_ADDR1, y1);
+    disp_write_register(tft.disp, ILI9225_VERTICAL_WINDOW_ADDR2, y0);
 
-    disp_write_register(disp, ILI9225_RAM_ADDR_SET1, x0);
-    disp_write_register(disp, ILI9225_RAM_ADDR_SET2, y0);
+    disp_write_register(tft.disp, ILI9225_RAM_ADDR_SET1, x0);
+    disp_write_register(tft.disp, ILI9225_RAM_ADDR_SET2, y0);
 
-    disp_write_command(disp, 0x22);
+    disp_write_command(tft.disp, 0x22);
 }
 
-// Constructor when using software SPI.  All output pins are configurable.
-void tft_swspi(uint8_t rst, uint8_t rs, uint8_t cs, uint8_t sdi, uint8_t clk, uint8_t led, struct screen *scr) {
-    disp_init(disp, rs, cs, rst, led, sdi, clk);
+void tft_init(struct disp_t *disp, struct screen *scr) {
+    tft.disp = disp;
     tft.scr = scr;
     tft.maxX = ILI9225_LCD_WIDTH;
     tft.maxY = ILI9225_LCD_HEIGHT;
@@ -37,74 +34,74 @@ void tft_swspi(uint8_t rst, uint8_t rs, uint8_t cs, uint8_t sdi, uint8_t clk, ui
 
 void tft_begin() {
     // Turn on backlight
-    disp_set_backlight(disp, true);
+    disp_set_backlight(tft.disp, true);
 
     // Initialization Code
-    disp_set_reset(disp, true); // Pull the reset pin high to release the ILI9225C from the reset status
+    disp_set_reset(tft.disp, true); // Pull the reset pin high to release the ILI9225C from the reset status
     delay_ms(1);
-    disp_set_reset(disp, false); // Pull the reset pin low to reset ILI9225
+    disp_set_reset(tft.disp, false); // Pull the reset pin low to reset ILI9225
     delay_ms(10);
-    disp_set_reset(disp, true); // Pull the reset pin high to release the ILI9225C from the reset status
+    disp_set_reset(tft.disp, true); // Pull the reset pin high to release the ILI9225C from the reset status
     delay_ms(50);
 
     /* Start Initial Sequence */
     /* Set SS bit and direction output from S528 to S1 */
-    disp_write_register(disp, ILI9225_POWER_CTRL1, 0x0000); // Set SAP,DSTB,STB
-    disp_write_register(disp, ILI9225_POWER_CTRL2, 0x0000); // Set APON,PON,AON,VCI1EN,VC
-    disp_write_register(disp, ILI9225_POWER_CTRL3, 0x0000); // Set BT,DC1,DC2,DC3
-    disp_write_register(disp, ILI9225_POWER_CTRL4, 0x0000); // Set GVDD
-    disp_write_register(disp, ILI9225_POWER_CTRL5, 0x0000); // Set VCOMH/VCOML voltage
+    disp_write_register(tft.disp, ILI9225_POWER_CTRL1, 0x0000); // Set SAP,DSTB,STB
+    disp_write_register(tft.disp, ILI9225_POWER_CTRL2, 0x0000); // Set APON,PON,AON,VCI1EN,VC
+    disp_write_register(tft.disp, ILI9225_POWER_CTRL3, 0x0000); // Set BT,DC1,DC2,DC3
+    disp_write_register(tft.disp, ILI9225_POWER_CTRL4, 0x0000); // Set GVDD
+    disp_write_register(tft.disp, ILI9225_POWER_CTRL5, 0x0000); // Set VCOMH/VCOML voltage
     delay_ms(40);
 
     // Power-on sequence
-    disp_write_register(disp, ILI9225_POWER_CTRL2, 0x0018); // Set APON,PON,AON,VCI1EN,VC
-    disp_write_register(disp, ILI9225_POWER_CTRL3, 0x6121); // Set BT,DC1,DC2,DC3
-    disp_write_register(disp, ILI9225_POWER_CTRL4, 0x006F); // Set GVDD   /*007F 0088 */
-    disp_write_register(disp, ILI9225_POWER_CTRL5, 0x495F); // Set VCOMH/VCOML voltage
-    disp_write_register(disp, ILI9225_POWER_CTRL1, 0x0800); // Set SAP,DSTB,STB
+    disp_write_register(tft.disp, ILI9225_POWER_CTRL2, 0x0018); // Set APON,PON,AON,VCI1EN,VC
+    disp_write_register(tft.disp, ILI9225_POWER_CTRL3, 0x6121); // Set BT,DC1,DC2,DC3
+    disp_write_register(tft.disp, ILI9225_POWER_CTRL4, 0x006F); // Set GVDD   /*007F 0088 */
+    disp_write_register(tft.disp, ILI9225_POWER_CTRL5, 0x495F); // Set VCOMH/VCOML voltage
+    disp_write_register(tft.disp, ILI9225_POWER_CTRL1, 0x0800); // Set SAP,DSTB,STB
     delay_ms(10);
-    disp_write_register(disp, ILI9225_POWER_CTRL2, 0x103B); // Set APON,PON,AON,VCI1EN,VC
+    disp_write_register(tft.disp, ILI9225_POWER_CTRL2, 0x103B); // Set APON,PON,AON,VCI1EN,VC
     delay_ms(50);
 
-    disp_write_register(disp, ILI9225_DRIVER_OUTPUT_CTRL, 0x011C); // set the display line number and display direction
-    disp_write_register(disp, ILI9225_LCD_AC_DRIVING_CTRL, 0x0100); // set 1 line inversion
-    disp_write_register(disp, ILI9225_ENTRY_MODE, 0x1030); // set GRAM write direction and BGR=1.
-    disp_write_register(disp, ILI9225_DISP_CTRL1, 0x0000); // Display off
-    disp_write_register(disp, ILI9225_BLANK_PERIOD_CTRL1, 0x0808); // set the back porch and front porch
-    disp_write_register(disp, ILI9225_FRAME_CYCLE_CTRL, 0x1100); // set the clocks number per line
-    disp_write_register(disp, ILI9225_INTERFACE_CTRL, 0x0000); // CPU interface
-    disp_write_register(disp, ILI9225_OSC_CTRL, 0x0D01); // Set Osc  /*0e01*/
-    disp_write_register(disp, ILI9225_VCI_RECYCLING, 0x0020); // Set VCI recycling
-    disp_write_register(disp, ILI9225_RAM_ADDR_SET1, 0x0000); // RAM Address
-    disp_write_register(disp, ILI9225_RAM_ADDR_SET2, 0x0000); // RAM Address
+    disp_write_register(tft.disp, ILI9225_DRIVER_OUTPUT_CTRL, 0x011C); // set the display line number and display direction
+    disp_write_register(tft.disp, ILI9225_LCD_AC_DRIVING_CTRL, 0x0100); // set 1 line inversion
+    disp_write_register(tft.disp, ILI9225_ENTRY_MODE, 0x1030); // set GRAM write direction and BGR=1.
+    disp_write_register(tft.disp, ILI9225_DISP_CTRL1, 0x0000); // Display off
+    disp_write_register(tft.disp, ILI9225_BLANK_PERIOD_CTRL1, 0x0808); // set the back porch and front porch
+    disp_write_register(tft.disp, ILI9225_FRAME_CYCLE_CTRL, 0x1100); // set the clocks number per line
+    disp_write_register(tft.disp, ILI9225_INTERFACE_CTRL, 0x0000); // CPU interface
+    disp_write_register(tft.disp, ILI9225_OSC_CTRL, 0x0D01); // Set Osc  /*0e01*/
+    disp_write_register(tft.disp, ILI9225_VCI_RECYCLING, 0x0020); // Set VCI recycling
+    disp_write_register(tft.disp, ILI9225_RAM_ADDR_SET1, 0x0000); // RAM Address
+    disp_write_register(tft.disp, ILI9225_RAM_ADDR_SET2, 0x0000); // RAM Address
 
     /* Set GRAM area */
-    disp_write_register(disp, ILI9225_GATE_SCAN_CTRL, 0x0000);
-    disp_write_register(disp, ILI9225_VERTICAL_SCROLL_CTRL1, 0x00DB);
-    disp_write_register(disp, ILI9225_VERTICAL_SCROLL_CTRL2, 0x0000);
-    disp_write_register(disp, ILI9225_VERTICAL_SCROLL_CTRL3, 0x0000);
-    disp_write_register(disp, ILI9225_PARTIAL_DRIVING_POS1, 0x00DB);
-    disp_write_register(disp, ILI9225_PARTIAL_DRIVING_POS2, 0x0000);
-    disp_write_register(disp, ILI9225_HORIZONTAL_WINDOW_ADDR1, 0x00AF);
-    disp_write_register(disp, ILI9225_HORIZONTAL_WINDOW_ADDR2, 0x0000);
-    disp_write_register(disp, ILI9225_VERTICAL_WINDOW_ADDR1, 0x00DB);
-    disp_write_register(disp, ILI9225_VERTICAL_WINDOW_ADDR2, 0x0000);
+    disp_write_register(tft.disp, ILI9225_GATE_SCAN_CTRL, 0x0000);
+    disp_write_register(tft.disp, ILI9225_VERTICAL_SCROLL_CTRL1, 0x00DB);
+    disp_write_register(tft.disp, ILI9225_VERTICAL_SCROLL_CTRL2, 0x0000);
+    disp_write_register(tft.disp, ILI9225_VERTICAL_SCROLL_CTRL3, 0x0000);
+    disp_write_register(tft.disp, ILI9225_PARTIAL_DRIVING_POS1, 0x00DB);
+    disp_write_register(tft.disp, ILI9225_PARTIAL_DRIVING_POS2, 0x0000);
+    disp_write_register(tft.disp, ILI9225_HORIZONTAL_WINDOW_ADDR1, 0x00AF);
+    disp_write_register(tft.disp, ILI9225_HORIZONTAL_WINDOW_ADDR2, 0x0000);
+    disp_write_register(tft.disp, ILI9225_VERTICAL_WINDOW_ADDR1, 0x00DB);
+    disp_write_register(tft.disp, ILI9225_VERTICAL_WINDOW_ADDR2, 0x0000);
 
     /* Set GAMMA curve */
-    disp_write_register(disp, ILI9225_GAMMA_CTRL1, 0x0000);
-    disp_write_register(disp, ILI9225_GAMMA_CTRL2, 0x0808);
-    disp_write_register(disp, ILI9225_GAMMA_CTRL3, 0x080A);
-    disp_write_register(disp, ILI9225_GAMMA_CTRL4, 0x000A);
-    disp_write_register(disp, ILI9225_GAMMA_CTRL5, 0x0A08);
-    disp_write_register(disp, ILI9225_GAMMA_CTRL6, 0x0808);
-    disp_write_register(disp, ILI9225_GAMMA_CTRL7, 0x0000);
-    disp_write_register(disp, ILI9225_GAMMA_CTRL8, 0x0A00);
-    disp_write_register(disp, ILI9225_GAMMA_CTRL9, 0x0710);
-    disp_write_register(disp, ILI9225_GAMMA_CTRL10, 0x0710);
+    disp_write_register(tft.disp, ILI9225_GAMMA_CTRL1, 0x0000);
+    disp_write_register(tft.disp, ILI9225_GAMMA_CTRL2, 0x0808);
+    disp_write_register(tft.disp, ILI9225_GAMMA_CTRL3, 0x080A);
+    disp_write_register(tft.disp, ILI9225_GAMMA_CTRL4, 0x000A);
+    disp_write_register(tft.disp, ILI9225_GAMMA_CTRL5, 0x0A08);
+    disp_write_register(tft.disp, ILI9225_GAMMA_CTRL6, 0x0808);
+    disp_write_register(tft.disp, ILI9225_GAMMA_CTRL7, 0x0000);
+    disp_write_register(tft.disp, ILI9225_GAMMA_CTRL8, 0x0A00);
+    disp_write_register(tft.disp, ILI9225_GAMMA_CTRL9, 0x0710);
+    disp_write_register(tft.disp, ILI9225_GAMMA_CTRL10, 0x0710);
 
-    disp_write_register(disp, ILI9225_DISP_CTRL1, 0x0012);
+    disp_write_register(tft.disp, ILI9225_DISP_CTRL1, 0x0012);
     delay_ms(50);
-    disp_write_register(disp, ILI9225_DISP_CTRL1, 0x1017);
+    disp_write_register(tft.disp, ILI9225_DISP_CTRL1, 0x1017);
 
     tft_setBacklight(true);
 
@@ -121,25 +118,25 @@ void tft_clear() {
 }
 
 void tft_invert(bool flag) {
-    disp_write_command(disp, flag ? ILI9225C_INVON : ILI9225C_INVOFF);
+    disp_write_command(tft.disp, flag ? ILI9225C_INVON : ILI9225C_INVOFF);
 }
 
 void tft_setBacklight(bool flag) {
-    disp_set_backlight(disp, flag);
+    disp_set_backlight(tft.disp, flag);
 }
 
 void tft_setDisplay(bool flag) {
     if (flag) {
-        disp_write_register(disp, 0x00ff, 0x0000);
-        disp_write_register(disp, ILI9225_POWER_CTRL1, 0x0000);
+        disp_write_register(tft.disp, 0x00ff, 0x0000);
+        disp_write_register(tft.disp, ILI9225_POWER_CTRL1, 0x0000);
         delay_ms(50);
-        disp_write_register(disp, ILI9225_DISP_CTRL1, 0x1017);
+        disp_write_register(tft.disp, ILI9225_DISP_CTRL1, 0x1017);
         delay_ms(200);
     } else {
-        disp_write_register(disp, 0x00ff, 0x0000);
-        disp_write_register(disp, ILI9225_DISP_CTRL1, 0x0000);
+        disp_write_register(tft.disp, 0x00ff, 0x0000);
+        disp_write_register(tft.disp, ILI9225_DISP_CTRL1, 0x0000);
         delay_ms(50);
-        disp_write_register(disp, ILI9225_POWER_CTRL1, 0x0003);
+        disp_write_register(tft.disp, ILI9225_POWER_CTRL1, 0x0003);
         delay_ms(200);
     }
 }
@@ -148,7 +145,7 @@ void tft_fillRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint1
     setWindow(x1, y1, x2, y2);
 
     for(uint16_t t=(y2 - y1 + 1) * (x2 - x1 + 1); t > 0; t--) {
-        disp_write_data(disp, color);
+        disp_write_data(tft.disp, color);
     }
 }
 
@@ -202,7 +199,7 @@ uint16_t tft_drawChar(uint8_t x, uint8_t y, char ch) {
         }
     }
     for (uint8_t i = 0; i < (6 * 8); i++) {
-        disp_write_data(disp, charPixels[i]);
+        disp_write_data(tft.disp, charPixels[i]);
     }
     return tft.cfont->width;
 }
