@@ -114,4 +114,4 @@ void tft_set_display(struct tft_t *tft, bool flag);
 void tft_set_background_color(struct tft_t *tft, uint16_t color);
 void tft_set_foreground_color(struct tft_t *tft, uint16_t color);
 void tft_fill_rectangle(struct tft_t *tft, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
-uint16_t tft_draw_char(struct tft_t *tft, uint8_t x, uint8_t y, char ch);
+void tft_draw_char(struct tft_t *tft, uint8_t x, uint8_t y, char ch);

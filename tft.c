@@ -152,7 +152,7 @@ void tft_set_foreground_color(struct tft_t *tft, uint16_t color) {
     tft->fg_color = color;
 }
 
-uint16_t tft_draw_char(struct tft_t *tft, uint8_t x, uint8_t y, char ch) {
+void tft_draw_char(struct tft_t *tft, uint8_t x, uint8_t y, char ch) {
     uint16_t pixel_x = tft->max_x - (uint16_t)(y + 1) * tft->cfont->height;
     uint16_t pixel_y = (uint16_t)x * tft->cfont->width;
     set_window(tft, pixel_x, pixel_y, pixel_x + tft->cfont->height - 1, pixel_y + tft->cfont->width - 1);
@@ -174,5 +174,4 @@ uint16_t tft_draw_char(struct tft_t *tft, uint8_t x, uint8_t y, char ch) {
     for (uint8_t i = 0; i < (6 * 8); i++) {
         disp_write_data(tft->disp, charPixels[i]);
     }
-    return tft->cfont->width;
 }
