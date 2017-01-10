@@ -96,39 +96,22 @@
 #define COLOR_YELLOW         RGB888_RGB565(0xFFFF00uL)
 
 struct tft_t {
-    uint16_t maxX;
-    uint16_t maxY;
-    uint16_t bgColor;
-    uint16_t fgColor;
+    uint16_t max_x;
+    uint16_t max_y;
+    uint16_t bg_color;
+    uint16_t fg_color;
 
     struct font *cfont;
     struct disp_t *disp;
     struct screen *scr;
 };
 
-/// Setup
 void tft_init(struct tft_t *tft, struct disp_t *disp, struct screen *scr, struct font *font);
-
-/// Initialization
 void tft_begin(struct tft_t *tft);
-
-/// Clear the screen
 void tft_clear(struct tft_t *tft);
-
-/// Switch backlight on or off
-void tft_setBacklight(struct tft_t *tft, bool flag);
-
-/// Switch display on or off
-void tft_setDisplay(struct tft_t *tft, bool flag);
-
-/// Set background color
-void tft_setBackgroundColor(struct tft_t *tft, uint16_t color);
-
-/// Set foreground color
-void tft_setForegroundColor(struct tft_t *tft, uint16_t color);
-
-/// Draw solid rectangle, rectangle coordinates
-void tft_fillRectangle(struct tft_t *tft, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
-
-/// Draw single character (character coordinates)
-uint16_t tft_drawChar(struct tft_t *tft, uint8_t x, uint8_t y, char ch);
+void tft_set_backlight(struct tft_t *tft, bool flag);
+void tft_set_display(struct tft_t *tft, bool flag);
+void tft_set_background_color(struct tft_t *tft, uint16_t color);
+void tft_set_foreground_color(struct tft_t *tft, uint16_t color);
+void tft_fill_rectangle(struct tft_t *tft, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
+uint16_t tft_draw_char(struct tft_t *tft, uint8_t x, uint8_t y, char ch);

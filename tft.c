@@ -7,10 +7,10 @@
 #include "pin.h"
 #include "tft.h"
 
-static void setWindow(struct tft_t *tft, uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
+static void set_window(struct tft_t *tft, uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
 
 // Helper functions
-static void setWindow(struct tft_t *tft, uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
+static void set_window(struct tft_t *tft, uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
     disp_write_register(tft->disp, ILI9225_HORIZONTAL_WINDOW_ADDR1, x1);
     disp_write_register(tft->disp, ILI9225_HORIZONTAL_WINDOW_ADDR2, x0);
 
@@ -27,8 +27,8 @@ void tft_init(struct tft_t *tft, struct disp_t *disp, struct screen *scr, struct
     tft->cfont = font;
     tft->disp = disp;
     tft->scr = scr;
-    tft->maxX = ILI9225_LCD_WIDTH;
-    tft->maxY = ILI9225_LCD_HEIGHT;
+    tft->max_x = ILI9225_LCD_WIDTH;
+    tft->max_y = ILI9225_LCD_HEIGHT;
 }
 
 void tft_begin(struct tft_t *tft) {
@@ -102,25 +102,25 @@ void tft_begin(struct tft_t *tft) {
     delay_ms(50);
     disp_write_register(tft->disp, ILI9225_DISP_CTRL1, 0x1017);
 
-    tft_setBacklight(tft, true);
+    tft_set_backlight(tft, true);
 
     // Initialize variables
-    tft_setBackgroundColor(tft, COLOR_BLACK);
-    tft_setForegroundColor(tft, COLOR_WHITE);
+    tft_set_background_color(tft, COLOR_BLACK);
+    tft_set_foreground_color(tft, COLOR_WHITE);
 
     tft_clear(tft);
 }
 
 void tft_clear(struct tft_t *tft) {
-    tft_fillRectangle(tft, 0, 0, tft->maxX - 1, tft->maxY - 1, COLOR_BLACK);
+    tft_fill_rectangle(tft, 0, 0, tft->max_x - 1, tft->max_y - 1, COLOR_BLACK);
     delay_ms(10);
 }
 
-void tft_setBacklight(struct tft_t *tft, bool flag) {
+void tft_set_backlight(struct tft_t *tft, bool flag) {
     disp_set_backlight(tft->disp, flag);
 }
 
-void tft_setDisplay(struct tft_t *tft, bool flag) {
+void tft_set_display(struct tft_t *tft, bool flag) {
     if (flag) {
         disp_write_register(tft->disp, 0x00ff, 0x0000);
         disp_write_register(tft->disp, ILI9225_POWER_CTRL1, 0x0000);
@@ -136,26 +136,26 @@ void tft_setDisplay(struct tft_t *tft, bool flag) {
     }
 }
 
-void tft_fillRectangle(struct tft_t *tft, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color) {
-    setWindow(tft, x1, y1, x2, y2);
+void tft_fill_rectangle(struct tft_t *tft, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color) {
+    set_window(tft, x1, y1, x2, y2);
 
     for(uint16_t t=(y2 - y1 + 1) * (x2 - x1 + 1); t > 0; t--) {
         disp_write_data(tft->disp, color);
     }
 }
 
-void tft_setBackgroundColor(struct tft_t *tft, uint16_t color) {
-    tft->bgColor = color;
+void tft_set_background_color(struct tft_t *tft, uint16_t color) {
+    tft->bg_color = color;
 }
 
-void tft_setForegroundColor(struct tft_t *tft, uint16_t color) {
-    tft->fgColor = color;
+void tft_set_foreground_color(struct tft_t *tft, uint16_t color) {
+    tft->fg_color = color;
 }
 
-uint16_t tft_drawChar(struct tft_t *tft, uint8_t x, uint8_t y, char ch) {
-    uint16_t pixel_x = tft->maxX - (uint16_t)(y + 1) * tft->cfont->height;
+uint16_t tft_draw_char(struct tft_t *tft, uint8_t x, uint8_t y, char ch) {
+    uint16_t pixel_x = tft->max_x - (uint16_t)(y + 1) * tft->cfont->height;
     uint16_t pixel_y = (uint16_t)x * tft->cfont->width;
-    setWindow(tft, pixel_x, pixel_y, pixel_x + tft->cfont->height - 1, pixel_y + tft->cfont->width - 1);
+    set_window(tft, pixel_x, pixel_y, pixel_x + tft->cfont->height - 1, pixel_y + tft->cfont->width - 1);
     uint16_t charPixels[6 * 8] = {0};
     for (uint8_t i = 0; i < tft->cfont->width; i++) {  // each font "column"
         uint8_t charData = font_read_column(tft->cfont, ch, i);
@@ -164,9 +164,9 @@ uint16_t tft_drawChar(struct tft_t *tft, uint8_t x, uint8_t y, char ch) {
         for (uint8_t k = 0; k < tft->cfont->height; k++) {
             uint8_t j = tft->cfont->height - k - 1;
             if (charData & 1) {
-                charPixels[i * 8 + j] = tft->fgColor;
+                charPixels[i * 8 + j] = tft->fg_color;
             } else {
-                charPixels[i * 8 + j] = tft->bgColor;
+                charPixels[i * 8 + j] = tft->bg_color;
             }
             charData >>= 1;
         }
