@@ -1,6 +1,6 @@
 DEVICE ?= /dev/ttyACM0
 
-.DEFAULT_GOAL = avr/display.hex
+.DEFAULT_GOAL = avr/main_avr.hex
 
 avr/%.o:%.c
 	mkdir -p $(dir $@)
@@ -36,18 +36,12 @@ avr/sender.elf: avr/sender.o avr/uart.o
 
 avr/receiver.elf: avr/receiver.o avr/uart.o
 
-CHD_SOURCES = font.c indexmap.c screen.c mem.c
-CHD_OBJECTS = $(addprefix avr/,$(patsubst %.c,%.o,${CHD_SOURCES}))
+AVR_SOURCES = font.c indexmap.c screen.c mem.c tft.c fonts.c disp.c pin.c spi_sw.c panic.c app.c
+AVR_OBJECTS = $(addprefix avr/,$(patsubst %.c,%.o,${AVR_SOURCES}))
 
-CHD_PC_SOURCES = font.c indexmap.c screen.c mem.c
-CHD_PC_OBJECTS = $(addprefix pc/,$(patsubst %.c,%.o,${CHD_PC_SOURCES}))
+PC_SOURCES = font.c indexmap.c screen.c mem.c tft.c fonts.c disp.c pin_pc.c spi_pc.c panic.c delay_pc.c
+PC_OBJECTS = $(addprefix pc/,$(patsubst %.c,%.o,${PC_SOURCES}))
 
-TFT_SOURCES = tft.c fonts.c disp.c pin.c spi_sw.c panic.c
-TFT_OBJECTS = $(addprefix avr/,$(patsubst %.c,%.o,${TFT_SOURCES}))
+avr/main_avr.elf: avr/main_avr.o ${AVR_OBJECTS}
 
-TFT_PC_SOURCES = tft.c fonts.c disp.c pin_pc.c spi_pc.c panic.c delay_pc.c
-TFT_PC_OBJECTS = $(addprefix pc/,$(patsubst %.c,%.o,${TFT_PC_SOURCES}))
-
-avr/display.elf: avr/display.o ${TFT_OBJECTS} ${CHD_OBJECTS}
-
-pc/display: pc/display.o ${TFT_PC_OBJECTS} ${CHD_PC_OBJECTS}
+pc/main_pc.elf: pc/main_pc.o ${PC_OBJECTS}
