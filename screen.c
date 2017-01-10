@@ -4,9 +4,8 @@
 #include "screen.h"
 #include "indexmap.h"
 
-void screen_init(struct screen *scr, struct indexmap *indices, struct font *font) {
+void screen_init(struct screen *scr, struct indexmap *indices) {
     scr->indices = indices;
-    scr->font = font;
     scr->cursor_enabled = false;
     scr->cursor_x = 0;
     scr->cursor_y = 0;

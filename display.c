@@ -121,8 +121,7 @@ int main(void) {
     static struct spi_t spi;
 
     indexmap_init(&indices, WIDTH, HEIGHT, buf);
-    font_init(&font, Terminal6x8);
-    screen_init(&scr, &indices, &font);
+    screen_init(&scr, &indices);
 
     // Set up pins
     pin_t led = pin_init(PIN_PORT_D, 2, PIN_DIR_OUTPUT);    // 2
@@ -134,6 +133,7 @@ int main(void) {
 
     spi_init(&spi, sdi, clk);
     disp_init(&disp, &spi, rs, cs, rst, led);
+    font_init(&font, Terminal6x8);
     tft_init(&disp, &scr, &font);
 
     tft_begin();
