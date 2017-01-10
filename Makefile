@@ -39,7 +39,7 @@ avr/receiver.elf: avr/receiver.o avr/uart.o
 AVR_SOURCES = font.c indexmap.c screen.c mem.c tft.c fonts.c disp.c pin.c spi_sw.c panic.c app.c
 AVR_OBJECTS = $(addprefix avr/,$(patsubst %.c,%.o,${AVR_SOURCES}))
 
-PC_SOURCES = font.c indexmap.c screen.c mem.c tft.c fonts.c disp.c pin_pc.c spi_pc.c panic.c delay_pc.c
+PC_SOURCES = font.c indexmap.c screen.c mem.c tft.c fonts.c disp.c pin_pc.c spi_print.c panic.c delay_pc.c
 PC_OBJECTS = $(addprefix pc/,$(patsubst %.c,%.o,${PC_SOURCES}))
 
 avr/main_avr.elf: avr/main_avr.o ${AVR_OBJECTS}

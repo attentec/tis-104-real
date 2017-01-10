@@ -5,6 +5,7 @@
 #include "indexmap.h"
 #include "screen.h"
 #include "spi.h"
+#include "spi_sw.h"
 #include "tft.h"
 
 #define WIDTH (29)

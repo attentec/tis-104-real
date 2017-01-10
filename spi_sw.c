@@ -1,4 +1,5 @@
 #include "spi.h"
+#include "spi_sw.h"
 
 void spi_init(struct spi_t *spi, pin_t sdi, pin_t clk) {
     spi->sdi = sdi;
