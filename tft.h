@@ -106,7 +106,6 @@ enum Level {
 
 /// Setup
 void tft_swspi(uint8_t RST, uint8_t RS, uint8_t CS, uint8_t SDI, uint8_t CLK, uint8_t LED, struct screen *scr);
-void tft_hwspi(uint8_t RST, uint8_t RS, uint8_t CS, uint8_t LED);
 
 /// Initialization
 void tft_begin(void);

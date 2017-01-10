@@ -35,20 +35,6 @@ void tft_swspi(uint8_t rst, uint8_t rs, uint8_t cs, uint8_t sdi, uint8_t clk, ui
     tft.maxY = ILI9225_LCD_HEIGHT;
 }
 
-// Constructor when using hardware SPI.  Faster, but must use SPI pins
-// specific to each board type (e.g. 11,13 for Uno, 51,52 for Mega, etc.)
-void tft_hwspi(uint8_t rst, uint8_t rs, uint8_t cs, uint8_t led) {
-    panic();
-    disp->rst  = rst;
-    disp->rs   = rs;
-    disp->cs   = cs;
-    // disp->sdi  = 0;
-    // disp->clk = 0;
-    disp->led  = led;
-    tft.maxX = ILI9225_LCD_WIDTH;
-    tft.maxY = ILI9225_LCD_HEIGHT;
-}
-
 void tft_begin() {
     // Turn on backlight
     disp_set_backlight(disp, true);
