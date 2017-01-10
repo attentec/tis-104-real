@@ -117,10 +117,6 @@ void tft_clear() {
     delay_ms(10);
 }
 
-void tft_invert(bool flag) {
-    disp_write_command(tft.disp, flag ? ILI9225C_INVON : ILI9225C_INVOFF);
-}
-
 void tft_setBacklight(bool flag) {
     disp_set_backlight(tft.disp, flag);
 }

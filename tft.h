@@ -114,10 +114,6 @@ void tft_begin(void);
 /// Clear the screen
 void tft_clear(void);
 
-/// Invert screen
-/// @param  flag true to invert, false for normal screen
-void tft_invert(bool flag);
-
 /// Switch backlight on or off
 /// @param  flag true=on, false=off
 void tft_setBacklight(bool flag);
