@@ -106,7 +106,7 @@ enum Level {
 #define COLOR_YELLOW         RGB888_RGB565(0xFFFF00uL)
 
 /// Setup
-void tft_init(struct disp_t *disp, struct screen *scr);
+void tft_init(struct disp_t *disp, struct screen *scr, struct font *font);
 
 /// Initialization
 void tft_begin(void);
@@ -138,10 +138,6 @@ void tft_setForegroundColor(uint16_t color);
 /// @param  color 16-bit color
 void tft_fillRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
 
-/// Set current font
-/// @param  font Font name
-void tft_setFont(struct font* font);
-
 /// Draw single character (character coordinates)
 /// @param  x point coordinate, x-axis
 /// @param  y point coordinate, y-axis
@@ -156,7 +152,6 @@ struct tft {
     uint16_t fgColor;
 
     struct font *cfont;
-
     struct disp_t *disp;
     struct screen *scr;
 };

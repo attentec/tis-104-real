@@ -134,9 +134,7 @@ int main(void) {
 
     spi_init(&spi, sdi, clk);
     disp_init(&disp, &spi, rs, cs, rst, led);
-    tft_init(&disp, &scr);
-
-    tft_setFont(&font);
+    tft_init(&disp, &scr, &font);
 
     tft_begin();
     draw_background(&scr);

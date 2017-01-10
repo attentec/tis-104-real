@@ -25,7 +25,8 @@ static void setWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
     disp_write_command(tft.disp, 0x22);
 }
 
-void tft_init(struct disp_t *disp, struct screen *scr) {
+void tft_init(struct disp_t *disp, struct screen *scr, struct font *font) {
+    tft.cfont = font;
     tft.disp = disp;
     tft.scr = scr;
     tft.maxX = ILI9225_LCD_WIDTH;
@@ -151,10 +152,6 @@ void tft_setBackgroundColor(uint16_t color) {
 
 void tft_setForegroundColor(uint16_t color) {
     tft.fgColor = color;
-}
-
-void tft_setFont(struct font *font) {
-    tft.cfont = font;
 }
 
 uint16_t tft_drawChar(uint8_t x, uint8_t y, char ch) {
