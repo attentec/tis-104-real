@@ -12,12 +12,18 @@ pc/%.o:%.c
 	mkdir -p $(dir $@)
 	gcc -o $@ -c $^ \
 		-std=c11 -g -Os \
-		-Wall -Wextra -pedantic
+		-Wall -Wextra -pedantic \
+		-IUnity/src
 
 avr/%.elf:
 	mkdir -p $(dir $@)
 	avr-gcc -o $@ $^ \
 		-std=c11 -mmcu=atmega328p -g -Os -DF_CPU=16000000ul
+
+pc/%.elf:
+	mkdir -p $(dir $@)
+	gcc -o $@ $^ \
+		-std=c11 -g
 
 .PRECIOUS: avr/%.s
 avr/%.s: avr/%.elf
@@ -29,6 +35,13 @@ avr/%.hex: avr/%.elf avr/%.s
 .PHONY: flash
 flash: ${TARGET}
 	avrdude -v -p m328p -c arduino -P ${DEVICE} -U flash:w:$<:i
+
+%_runner.c: %.c
+	ruby Unity/auto/generate_test_runner.rb $< $@
+
+results/%.txt: pc/%_test_runner.elf
+	mkdir -p $(dir $@)
+	-$< 2>&1 > $@
 
 avr/blink.elf: avr/blink.o
 
@@ -45,3 +58,5 @@ PC_OBJECTS = $(addprefix pc/,$(patsubst %.c,%.o,${PC_SOURCES}))
 avr/main_avr.elf: avr/main_avr.o ${AVR_OBJECTS}
 
 pc/main_pc.elf: pc/main_pc.o ${PC_OBJECTS}
+
+pc/cpu_test_runner.elf: pc/Unity/src/unity.o pc/cpu_test.o pc/cpu_test_runner.o pc/cpu.o
