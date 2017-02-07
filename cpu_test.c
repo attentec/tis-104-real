@@ -57,18 +57,62 @@ void test_Cpu_should_SetPcOnJump(void) {
     TEST_ASSERT_EQUAL_INT(0, state.pc);
 }
 
-void test_Cpu_should_ClampPcOnJumpToNegative(void) {
-    prgm.length = 2;
-    prgm.instrs[0] = INSTR1(OP_JMP, -5);
+void test_Cpu_should_HaltUsingJro(void) {
+    prgm.length = 5;
+    prgm.instrs[0] = INSTR0(OP_NOP);
     prgm.instrs[1] = INSTR0(OP_NOP);
+    prgm.instrs[2] = INSTR1(OP_JRO, 0);
+    prgm.instrs[3] = INSTR0(OP_NOP);
+    prgm.instrs[4] = INSTR0(OP_NOP);
+    state.pc = 2;
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(2, state.pc);
+}
+
+void test_Cpu_should_JumpBackwardUsingJro(void) {
+    prgm.length = 5;
+    prgm.instrs[0] = INSTR0(OP_NOP);
+    prgm.instrs[1] = INSTR0(OP_NOP);
+    prgm.instrs[2] = INSTR1(OP_JRO, -1);
+    prgm.instrs[3] = INSTR0(OP_NOP);
+    prgm.instrs[4] = INSTR0(OP_NOP);
+    state.pc = 2;
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(1, state.pc);
+}
+
+void test_Cpu_should_JumpForwardUsingJro(void) {
+    prgm.length = 5;
+    prgm.instrs[0] = INSTR0(OP_NOP);
+    prgm.instrs[1] = INSTR0(OP_NOP);
+    prgm.instrs[2] = INSTR1(OP_JRO, 1);
+    prgm.instrs[3] = INSTR0(OP_NOP);
+    prgm.instrs[4] = INSTR0(OP_NOP);
+    state.pc = 2;
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(3, state.pc);
+}
+
+void test_Cpu_should_ClampPcOnJroToNegative(void) {
+    prgm.length = 5;
+    prgm.instrs[0] = INSTR0(OP_NOP);
+    prgm.instrs[1] = INSTR0(OP_NOP);
+    prgm.instrs[2] = INSTR1(OP_JRO, -20);
+    prgm.instrs[3] = INSTR0(OP_NOP);
+    prgm.instrs[4] = INSTR0(OP_NOP);
+    state.pc = 2;
     cpu_step(&cpu);
     TEST_ASSERT_EQUAL_INT(0, state.pc);
 }
 
-void test_Cpu_should_ClampPcOnJumpToFarPositive(void) {
-    prgm.length = 2;
-    prgm.instrs[0] = INSTR1(OP_JMP, 20);
+void test_Cpu_should_ClampPcOnJroToFarPositive(void) {
+    prgm.length = 5;
+    prgm.instrs[0] = INSTR0(OP_NOP);
     prgm.instrs[1] = INSTR0(OP_NOP);
+    prgm.instrs[2] = INSTR1(OP_JRO, 20);
+    prgm.instrs[3] = INSTR0(OP_NOP);
+    prgm.instrs[4] = INSTR0(OP_NOP);
+    state.pc = 2;
     cpu_step(&cpu);
     TEST_ASSERT_EQUAL_INT(prgm.length - 1, state.pc);
 }

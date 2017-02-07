@@ -12,8 +12,9 @@ void cpu_step(struct cpu_t *cpu) {
     }
 
     struct instr_t instr = cpu->prgm->instrs[cpu->state->pc];
+    addr_t original_pc = cpu->state->pc;
 
-    cpu->state->pc = (cpu->state->pc + 1) % cpu->prgm->length;
+    cpu->state->pc = (original_pc + 1) % cpu->prgm->length;
 
     if (instr.op == OP_SWP) {
         reg_t temp = cpu->state->acc;
@@ -21,13 +22,17 @@ void cpu_step(struct cpu_t *cpu) {
         cpu->state->bak = temp;
     } else if (instr.op == OP_SAV) {
         cpu->state->bak = cpu->state->acc;
-    } else if (instr.op == OP_JMP) {
-        if (instr.arg1 < 0) {
+    } else if (instr.op == OP_JRO) {
+        reg_t offset = (reg_t) instr.arg1;
+        reg_t unclamped_pc = (reg_t) original_pc + offset;
+        if (unclamped_pc < 0) {
             cpu->state->pc = 0;
-        } else if (instr.arg1 >= cpu->prgm->length) {
+        } else if (unclamped_pc >= (reg_t) cpu->prgm->length) {
             cpu->state->pc = cpu->prgm->length - 1;
         } else {
-            cpu->state->pc = (addr_t) instr.arg1;
+            cpu->state->pc = (addr_t) unclamped_pc;
         }
+    } else if (instr.op == OP_JMP) {
+        cpu->state->pc = (addr_t) instr.arg1;
     }
 }
