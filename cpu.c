@@ -11,7 +11,11 @@ void cpu_step(struct cpu_t *cpu) {
         return;
     }
     struct instr_t instr = cpu->prgm->instrs[cpu->state->pc];
-    if (instr.op == OP_JMP) {
+    if (instr.op == OP_SWP) {
+        reg_t temp = cpu->state->acc;
+        cpu->state->acc = cpu->state->bak;
+        cpu->state->bak = temp;
+    } else if (instr.op == OP_JMP) {
         if (instr.arg1 < 0) {
             cpu->state->pc = 0;
         } else if (instr.arg1 >= cpu->prgm->length) {

@@ -5,6 +5,7 @@
 #define CPU_MAX_PRGM_LENGTH 15
 
 typedef uint8_t addr_t;
+typedef int16_t reg_t;
 
 enum op_t {
     OP_NOP,
@@ -47,6 +48,8 @@ struct prgm_t {
 
 struct state_t {
     addr_t pc;
+    reg_t acc;
+    reg_t bak;
 };
 
 struct cpu_t {
