@@ -42,3 +42,11 @@ void test_Cpu_should_WrapAroundPcOnPrgmEnd(void) {
     cpu_step(&cpu);
     TEST_ASSERT_EQUAL_INT(0, state.pc);
 }
+
+void test_Cpu_should_SetPcOnJump(void) {
+    prgm.length = 2;
+    prgm.instrs[0] = (struct instr_t){OP_JMP, 0, ARG_NONE};
+    prgm.instrs[1] = (struct instr_t){OP_NOP, ARG_NONE, ARG_NONE};
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(0, state.pc);
+}

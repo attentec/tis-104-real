@@ -9,5 +9,10 @@ void cpu_step(struct cpu_t *cpu) {
     if (cpu->prgm->length == 0) {
         return;
     }
-    cpu->state->pc = (cpu->state->pc + 1) % cpu->prgm->length;
+    struct instr_t instr = cpu->prgm->instrs[cpu->state->pc];
+    if (instr.op == OP_JMP) {
+        cpu->state->pc = (addr_t) instr.arg1;
+    } else {
+        cpu->state->pc = (cpu->state->pc + 1) % cpu->prgm->length;
+    }
 }
