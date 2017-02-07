@@ -12,6 +12,8 @@ static struct state_t state;
 void setUp(void) {
     prgm.length = 0;
     state.pc = 0;
+    state.acc = 0;
+    state.bak = 0;
     cpu_init(&cpu, &prgm, &state);
 }
 
