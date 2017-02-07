@@ -34,5 +34,9 @@ void cpu_step(struct cpu_t *cpu) {
         }
     } else if (instr.op == OP_JMP) {
         cpu->state->pc = (addr_t) instr.arg1;
+    } else if (instr.op == OP_JEZ) {
+        if (cpu->state->acc == 0) {
+            cpu->state->pc = (addr_t) instr.arg1;
+        }
     }
 }
