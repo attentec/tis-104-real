@@ -183,6 +183,39 @@ void test_Cpu_should_NotJumpOnJnzIfEqualToZero(void) {
     TEST_ASSERT_EQUAL_INT(2, state.pc);
 }
 
+void test_Cpu_should_JumpOnJgzIfGreaterThanZero(void) {
+    prgm.length = 3;
+    prgm.instrs[0] = INSTR0(OP_NOP);
+    prgm.instrs[1] = INSTR1(OP_JGZ, 0);
+    prgm.instrs[2] = INSTR0(OP_NOP);
+    state.pc = 1;
+    state.acc = 5;
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(0, state.pc);
+}
+
+void test_Cpu_should_JumpToArg1OnJgzIfGreaterThanZero(void) {
+    prgm.length = 3;
+    prgm.instrs[0] = INSTR0(OP_NOP);
+    prgm.instrs[1] = INSTR1(OP_JGZ, 1);
+    prgm.instrs[2] = INSTR0(OP_NOP);
+    state.pc = 1;
+    state.acc = 5;
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(1, state.pc);
+}
+
+void test_Cpu_should_NotJumpOnJgzIfLessThanOrEqualToZero(void) {
+    prgm.length = 3;
+    prgm.instrs[0] = INSTR0(OP_NOP);
+    prgm.instrs[1] = INSTR1(OP_JGZ, 0);
+    prgm.instrs[2] = INSTR0(OP_NOP);
+    state.pc = 1;
+    state.acc = 0;
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(2, state.pc);
+}
+
 void test_Cpu_should_Swap(void) {
     prgm.length = 1;
     prgm.instrs[0] = INSTR0(OP_SWP);

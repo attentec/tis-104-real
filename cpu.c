@@ -42,5 +42,9 @@ void cpu_step(struct cpu_t *cpu) {
         if (cpu->state->acc != 0) {
             cpu->state->pc = (addr_t) instr.arg1;
         }
+    } else if (instr.op == OP_JGZ) {
+        if (cpu->state->acc > 0) {
+            cpu->state->pc = (addr_t) instr.arg1;
+        }
     }
 }
