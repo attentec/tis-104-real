@@ -57,6 +57,16 @@ void test_Cpu_should_SetPcOnJump(void) {
     TEST_ASSERT_EQUAL_INT(0, state.pc);
 }
 
+void test_Cpu_should_ReadZeroFromNil(void) {
+    prgm.length = 3;
+    prgm.instrs[0] = INSTR0(OP_NOP);
+    prgm.instrs[1] = INSTR1(OP_JRO, ARG_NIL);
+    prgm.instrs[2] = INSTR0(OP_NOP);
+    state.pc = 1;
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(1, state.pc);
+}
+
 void test_Cpu_should_HaltUsingJro(void) {
     prgm.length = 5;
     prgm.instrs[0] = INSTR0(OP_NOP);

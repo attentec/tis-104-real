@@ -22,6 +22,8 @@ void cpu_step(struct cpu_t *cpu) {
     reg_t arg1;
     if (instr.arg1 == ARG_ACC) {
         arg1 = cpu->state->acc;
+    } else if (instr.arg1 == ARG_NIL) {
+        arg1 = 0;
     } else {
         arg1 = (reg_t) instr.arg1;
     }
