@@ -117,7 +117,7 @@ void test_Cpu_should_ClampPcOnJroToFarPositive(void) {
     TEST_ASSERT_EQUAL_INT(4, state.pc);
 }
 
-void test_Cpu_should_JumpWithJroAndAcc(void) {
+void test_Cpu_should_JumpOnJroWithAcc(void) {
     prgm.length = 5;
     prgm.instrs[0] = INSTR0(OP_NOP);
     prgm.instrs[1] = INSTR1(OP_JRO, ARG_ACC);
@@ -262,7 +262,7 @@ void test_Cpu_should_NotJumpOnJlzIfGreaterThanOrEqualToZero(void) {
     TEST_ASSERT_EQUAL_INT(2, state.pc);
 }
 
-void test_Cpu_should_Swap(void) {
+void test_Cpu_should_SwapAccAndBakOnSwp(void) {
     prgm.length = 1;
     prgm.instrs[0] = INSTR0(OP_SWP);
     state.acc = 100;
@@ -272,7 +272,7 @@ void test_Cpu_should_Swap(void) {
     TEST_ASSERT_EQUAL_INT(100, state.bak);
 }
 
-void test_Cpu_should_IncPcOnSwap(void) {
+void test_Cpu_should_IncPcOnSwp(void) {
     prgm.length = 2;
     prgm.instrs[0] = INSTR0(OP_SWP);
     prgm.instrs[1] = INSTR0(OP_NOP);
@@ -280,7 +280,7 @@ void test_Cpu_should_IncPcOnSwap(void) {
     TEST_ASSERT_EQUAL_INT(1, state.pc);
 }
 
-void test_Cpu_should_Save(void) {
+void test_Cpu_should_SaveAccToBakOnSav(void) {
     prgm.length = 1;
     prgm.instrs[0] = INSTR0(OP_SAV);
     state.acc = 123;
