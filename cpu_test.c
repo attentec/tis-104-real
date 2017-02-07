@@ -13,7 +13,7 @@ void setUp(void) {
 
 void test_Cpu_should_NotIncPcOnEmptyProgram(void) {
     cpu_step(&cpu);
-    TEST_ASSERT_EQUAL_INT(state.pc, 0);
+    TEST_ASSERT_EQUAL_INT(0, state.pc);
 }
 
 void test_Cpu_should_IncPcOnNop(void) {
@@ -21,7 +21,7 @@ void test_Cpu_should_IncPcOnNop(void) {
     prgm.instrs[0] = (struct instr_t){OP_NOP, ARG_NONE, ARG_NONE};
     prgm.instrs[1] = (struct instr_t){OP_NOP, ARG_NONE, ARG_NONE};
     cpu_step(&cpu);
-    TEST_ASSERT_EQUAL_INT(state.pc, 1);
+    TEST_ASSERT_EQUAL_INT(1, state.pc);
 }
 
 void test_Cpu_should_IncPcTwiceOnTwoNop(void) {
@@ -31,7 +31,7 @@ void test_Cpu_should_IncPcTwiceOnTwoNop(void) {
     prgm.instrs[2] = (struct instr_t){OP_NOP, ARG_NONE, ARG_NONE};
     cpu_step(&cpu);
     cpu_step(&cpu);
-    TEST_ASSERT_EQUAL_INT(state.pc, 2);
+    TEST_ASSERT_EQUAL_INT(2, state.pc);
 }
 
 void test_Cpu_should_WrapAroundPcOnPrgmEnd(void) {
@@ -40,5 +40,5 @@ void test_Cpu_should_WrapAroundPcOnPrgmEnd(void) {
     prgm.instrs[1] = (struct instr_t){OP_NOP, ARG_NONE, ARG_NONE};
     cpu_step(&cpu);
     cpu_step(&cpu);
-    TEST_ASSERT_EQUAL_INT(state.pc, 0);
+    TEST_ASSERT_EQUAL_INT(0, state.pc);
 }
