@@ -88,3 +88,12 @@ void test_Cpu_should_IncPcOnSwap(void) {
     cpu_step(&cpu);
     TEST_ASSERT_EQUAL_INT(prgm.length - 1, state.pc);
 }
+
+void test_Cpu_should_Save(void) {
+    prgm.length = 1;
+    prgm.instrs[0] = INSTR0(OP_SAV);
+    state.acc = 123;
+    state.bak = 456;
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(123, state.bak);
+}

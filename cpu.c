@@ -19,6 +19,8 @@ void cpu_step(struct cpu_t *cpu) {
         reg_t temp = cpu->state->acc;
         cpu->state->acc = cpu->state->bak;
         cpu->state->bak = temp;
+    } else if (instr.op == OP_SAV) {
+        cpu->state->bak = cpu->state->acc;
     } else if (instr.op == OP_JMP) {
         if (instr.arg1 < 0) {
             cpu->state->pc = 0;
