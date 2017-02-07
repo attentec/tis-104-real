@@ -29,16 +29,8 @@ void cpu_step(struct cpu_t *cpu) {
         cpu->state->bak = temp;
     } else if (instr.op == OP_SAV) {
         cpu->state->bak = cpu->state->acc;
-    } else if (instr.op == OP_JRO) {
-        reg_t offset = arg1;
-        reg_t unclamped_pc = (reg_t) original_pc + offset;
-        if (unclamped_pc < 0) {
-            cpu->state->pc = 0;
-        } else if (unclamped_pc >= (reg_t) cpu->prgm->length) {
-            cpu->state->pc = cpu->prgm->length - 1;
-        } else {
-            cpu->state->pc = (addr_t) unclamped_pc;
-        }
+    } else if (instr.op == OP_NEG) {
+        cpu->state->acc = -cpu->state->acc;
     } else if (instr.op == OP_JMP) {
         cpu->state->pc = (addr_t) arg1;
     } else if (instr.op == OP_JEZ) {
@@ -56,6 +48,16 @@ void cpu_step(struct cpu_t *cpu) {
     } else if (instr.op == OP_JLZ) {
         if (cpu->state->acc < 0) {
             cpu->state->pc = (addr_t) arg1;
+        }
+    } else if (instr.op == OP_JRO) {
+        reg_t offset = arg1;
+        reg_t unclamped_pc = (reg_t) original_pc + offset;
+        if (unclamped_pc < 0) {
+            cpu->state->pc = 0;
+        } else if (unclamped_pc >= (reg_t) cpu->prgm->length) {
+            cpu->state->pc = cpu->prgm->length - 1;
+        } else {
+            cpu->state->pc = (addr_t) unclamped_pc;
         }
     }
 }
