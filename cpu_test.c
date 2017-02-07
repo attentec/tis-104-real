@@ -117,6 +117,19 @@ void test_Cpu_should_ClampPcOnJroToFarPositive(void) {
     TEST_ASSERT_EQUAL_INT(4, state.pc);
 }
 
+void test_Cpu_should_JumpWithJroAndAcc(void) {
+    prgm.length = 5;
+    prgm.instrs[0] = INSTR0(OP_NOP);
+    prgm.instrs[1] = INSTR1(OP_JRO, ARG_ACC);
+    prgm.instrs[2] = INSTR0(OP_NOP);
+    prgm.instrs[3] = INSTR0(OP_NOP);
+    prgm.instrs[4] = INSTR0(OP_NOP);
+    state.pc = 1;
+    state.acc = 2;
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(3, state.pc);
+}
+
 void test_Cpu_should_JumpOnJezIfEqualToZero(void) {
     prgm.length = 3;
     prgm.instrs[0] = INSTR0(OP_NOP);
