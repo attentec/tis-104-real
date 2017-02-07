@@ -11,8 +11,13 @@ void cpu_step(struct cpu_t *cpu) {
         return;
     }
 
-    struct instr_t instr = cpu->prgm->instrs[cpu->state->pc];
-    addr_t original_pc = cpu->state->pc;
+    addr_t *pc  = &cpu->state->pc;
+    reg_t  *acc = &cpu->state->acc;
+    reg_t  *bak = &cpu->state->bak;
+    struct instr_t instr = cpu->prgm->instrs[*pc];
+    addr_t length = cpu->prgm->length;
+    enum op_t op = instr.op;
+    addr_t original_pc = *pc;
 
     reg_t arg1;
     if (instr.arg1 == ARG_ACC) {
@@ -21,43 +26,43 @@ void cpu_step(struct cpu_t *cpu) {
         arg1 = (reg_t) instr.arg1;
     }
 
-    cpu->state->pc = (original_pc + 1) % cpu->prgm->length;
+    *pc = (original_pc + 1) % length;
 
-    if (instr.op == OP_SWP) {
-        reg_t temp = cpu->state->acc;
-        cpu->state->acc = cpu->state->bak;
-        cpu->state->bak = temp;
-    } else if (instr.op == OP_SAV) {
-        cpu->state->bak = cpu->state->acc;
-    } else if (instr.op == OP_NEG) {
-        cpu->state->acc = -cpu->state->acc;
-    } else if (instr.op == OP_JMP) {
-        cpu->state->pc = (addr_t) arg1;
-    } else if (instr.op == OP_JEZ) {
-        if (cpu->state->acc == 0) {
-            cpu->state->pc = (addr_t) arg1;
+    if (op == OP_SWP) {
+        reg_t temp = *acc;
+        *acc = *bak;
+        *bak = temp;
+    } else if (op == OP_SAV) {
+        *bak = *acc;
+    } else if (op == OP_NEG) {
+        *acc = -*acc;
+    } else if (op == OP_JMP) {
+        *pc = (addr_t) arg1;
+    } else if (op == OP_JEZ) {
+        if (*acc == 0) {
+            *pc = (addr_t) arg1;
         }
-    } else if (instr.op == OP_JNZ) {
-        if (cpu->state->acc != 0) {
-            cpu->state->pc = (addr_t) arg1;
+    } else if (op == OP_JNZ) {
+        if (*acc != 0) {
+            *pc = (addr_t) arg1;
         }
-    } else if (instr.op == OP_JGZ) {
-        if (cpu->state->acc > 0) {
-            cpu->state->pc = (addr_t) arg1;
+    } else if (op == OP_JGZ) {
+        if (*acc > 0) {
+            *pc = (addr_t) arg1;
         }
-    } else if (instr.op == OP_JLZ) {
-        if (cpu->state->acc < 0) {
-            cpu->state->pc = (addr_t) arg1;
+    } else if (op == OP_JLZ) {
+        if (*acc < 0) {
+            *pc = (addr_t) arg1;
         }
-    } else if (instr.op == OP_JRO) {
+    } else if (op == OP_JRO) {
         reg_t offset = arg1;
         reg_t unclamped_pc = (reg_t) original_pc + offset;
         if (unclamped_pc < 0) {
-            cpu->state->pc = 0;
-        } else if (unclamped_pc >= (reg_t) cpu->prgm->length) {
-            cpu->state->pc = cpu->prgm->length - 1;
+            *pc = 0;
+        } else if (unclamped_pc >= (reg_t) length) {
+            *pc = length - 1;
         } else {
-            cpu->state->pc = (addr_t) unclamped_pc;
+            *pc = (addr_t) unclamped_pc;
         }
     }
 }
