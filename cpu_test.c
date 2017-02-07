@@ -58,3 +58,11 @@ void test_Cpu_should_ClampPcOnJumpToNegative(void) {
     cpu_step(&cpu);
     TEST_ASSERT_EQUAL_INT(0, state.pc);
 }
+
+void test_Cpu_should_ClampPcOnJumpToFarPositive(void) {
+    prgm.length = 2;
+    prgm.instrs[0] = (struct instr_t){OP_JMP, 20, ARG_NONE};
+    prgm.instrs[1] = (struct instr_t){OP_NOP, ARG_NONE, ARG_NONE};
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(prgm.length - 1, state.pc);
+}

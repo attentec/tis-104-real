@@ -14,6 +14,8 @@ void cpu_step(struct cpu_t *cpu) {
     if (instr.op == OP_JMP) {
         if (instr.arg1 < 0) {
             cpu->state->pc = 0;
+        } else if (instr.arg1 >= cpu->prgm->length) {
+            cpu->state->pc = cpu->prgm->length - 1;
         } else {
             cpu->state->pc = (addr_t) instr.arg1;
         }
