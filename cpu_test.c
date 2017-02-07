@@ -80,3 +80,11 @@ void test_Cpu_should_Swap(void) {
     TEST_ASSERT_EQUAL_INT(200, state.acc);
     TEST_ASSERT_EQUAL_INT(100, state.bak);
 }
+
+void test_Cpu_should_IncPcOnSwap(void) {
+    prgm.length = 2;
+    prgm.instrs[0] = INSTR0(OP_SWP);
+    prgm.instrs[1] = INSTR0(OP_NOP);
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(prgm.length - 1, state.pc);
+}
