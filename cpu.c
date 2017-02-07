@@ -1,4 +1,5 @@
 #include "cpu.h"
+#include <stdio.h>
 
 void cpu_init(struct cpu_t *cpu, struct prgm_t *prgm, struct state_t *state) {
     cpu->prgm = prgm;
@@ -11,7 +12,11 @@ void cpu_step(struct cpu_t *cpu) {
     }
     struct instr_t instr = cpu->prgm->instrs[cpu->state->pc];
     if (instr.op == OP_JMP) {
-        cpu->state->pc = (addr_t) instr.arg1;
+        if (instr.arg1 < 0) {
+            cpu->state->pc = 0;
+        } else {
+            cpu->state->pc = (addr_t) instr.arg1;
+        }
     } else {
         cpu->state->pc = (cpu->state->pc + 1) % cpu->prgm->length;
     }

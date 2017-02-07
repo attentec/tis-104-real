@@ -23,8 +23,8 @@ enum op_t {
 };
 
 enum arg_t {
-    ARG_NONE = 1000,
-    ARG_ACC,
+    ARG_NONE = -1000,
+    ARG_ACC = 1000,
     ARG_NIL,
     ARG_LEFT,
     ARG_RIGHT,
