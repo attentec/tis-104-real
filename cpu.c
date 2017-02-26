@@ -106,6 +106,12 @@ void cpu_write(struct cpu_t *cpu) {
         } else {
             *pc = (addr_t) unclamped_pc;
         }
+    } else if (op == OP_MOV) {
+        if (instr.arg2 == ARG_LEFT) {
+            if (!output_offer(cpu->outputs[DIR_LEFT], arg1)) {
+                *pc = original_pc;
+            }
+        }
     }
 }
 

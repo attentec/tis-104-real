@@ -28,6 +28,16 @@ static struct prgm_t test_src_prgm(enum arg_t src) {
     };
 }
 
+static struct prgm_t test_dst_prgm(enum arg_t dst) {
+    return (struct prgm_t) {
+        .length = 2,
+        .instrs = {
+            INSTR2(OP_MOV, ARG_ACC, dst),
+            INSTR0(OP_NOP),
+        },
+    };
+}
+
 void setUp(void) {
     struct pipe_t *input_pointers[CPU_MAX_PIPES];
     struct pipe_t *output_pointers[CPU_MAX_PIPES];
@@ -346,4 +356,21 @@ void test_Cpu_should_WaitOnReadWithoutInput(void) {
     state.pc = 1;
     cpu_step(&cpu);
     TEST_ASSERT_EQUAL_INT(1, state.pc);
+}
+
+void test_Cpu_should_WaitOnWriteWithoutReader(void) {
+    prgm = test_dst_prgm(ARG_LEFT);
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(0, state.pc);
+}
+
+void test_Cpu_should_WriteValuesWhenAsked(void) {
+    prgm = test_dst_prgm(ARG_LEFT);
+    state.acc = 512;
+    input_request(&output_pipes[DIR_LEFT]);
+    cpu_step(&cpu);
+    reg_t value = 0;
+    input_accept(&output_pipes[DIR_LEFT], &value);
+    TEST_ASSERT_EQUAL_INT(1, state.pc);
+    TEST_ASSERT_EQUAL_INT(512, value);
 }
