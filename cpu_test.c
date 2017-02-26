@@ -1,5 +1,6 @@
 #include "unity.h"
 #include "cpu.h"
+#include "pipe_mock.h"
 
 #define QUEUE_SIZE (100)
 
@@ -11,9 +12,8 @@ static struct cpu_t cpu;
 static struct prgm_t prgm;
 static struct state_t state;
 
-static reg_t left_values[QUEUE_SIZE];
-static uint8_t left_read_index;
-static uint8_t left_write_index;
+static struct pipe_t input_pipes[CPU_MAX_PIPES];
+static struct pipe_t output_pipes[CPU_MAX_PIPES];
 
 static struct prgm_t test_src_prgm(enum arg_t src) {
     return (struct prgm_t) {
@@ -28,19 +28,20 @@ static struct prgm_t test_src_prgm(enum arg_t src) {
     };
 }
 
-static void left_sends(reg_t value) {
-    TEST_ASSERT(left_write_index < QUEUE_SIZE);
-    left_values[left_write_index++] = value;
-}
-
 void setUp(void) {
+    struct pipe_t *input_pointers[CPU_MAX_PIPES];
+    struct pipe_t *output_pointers[CPU_MAX_PIPES];
+
+    for (size_t i = 0; i < CPU_MAX_PIPES; ++i) {
+        input_pointers[i] = &input_pipes[i];
+        output_pointers[i] = &output_pipes[i];
+    }
+
     prgm.length = 0;
     state.pc = 0;
     state.acc = 0;
     state.bak = 0;
-    cpu_init(&cpu, &prgm, &state);
-    left_read_index = 0;
-    left_write_index = 0;
+    cpu_init(&cpu, &prgm, &state, input_pointers, output_pointers);
 }
 
 void test_Cpu_should_NotIncPcOnEmptyProgram(void) {
@@ -334,6 +335,15 @@ void test_Cpu_should_ReadZeroFromNil(void) {
 void test_Cpu_should_ReadFromLeftOnJroLeft(void) {
     prgm = test_src_prgm(ARG_LEFT);
     state.pc = 1;
-    left_sends(2);
+    cpu_read(&cpu);
+    output_offer(&input_pipes[DIR_LEFT], 2);
+    cpu_write(&cpu);
     TEST_ASSERT_EQUAL_INT(3, state.pc);
+}
+
+void test_Cpu_should_WaitOnReadWithoutInput(void) {
+    prgm = test_src_prgm(ARG_LEFT);
+    state.pc = 1;
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(1, state.pc);
 }

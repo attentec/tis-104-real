@@ -1,12 +1,36 @@
+#include <stdlib.h>
 #include "cpu.h"
-#include <stdio.h>
+#include "pipe.h"
 
-void cpu_init(struct cpu_t *cpu, struct prgm_t *prgm, struct state_t *state) {
+void cpu_init(struct cpu_t *cpu, struct prgm_t *prgm, struct state_t *state, struct pipe_t *inputs[], struct pipe_t *outputs[]) {
     cpu->prgm = prgm;
     cpu->state = state;
+    for (size_t i = 0; i < CPU_MAX_PIPES; ++i) {
+        cpu->inputs[i] = inputs[i];
+        cpu->outputs[i] = outputs[i];
+    }
 }
 
-void cpu_step(struct cpu_t *cpu) {
+void cpu_read(struct cpu_t *cpu) {
+    if (cpu->prgm->length == 0) {
+        return;
+    }
+
+    addr_t *pc  = &cpu->state->pc;
+    struct instr_t instr = cpu->prgm->instrs[*pc];
+
+    if (instr.arg1 == ARG_LEFT) {
+        input_request(cpu->inputs[DIR_LEFT]);
+    } else if (instr.arg1 == ARG_RIGHT) {
+        input_request(cpu->inputs[DIR_RIGHT]);
+    } else if (instr.arg1 == ARG_UP) {
+        input_request(cpu->inputs[DIR_UP]);
+    } else if (instr.arg1 == ARG_DOWN) {
+        input_request(cpu->inputs[DIR_DOWN]);
+    }
+}
+
+void cpu_write(struct cpu_t *cpu) {
     if (cpu->prgm->length == 0) {
         return;
     }
@@ -24,6 +48,22 @@ void cpu_step(struct cpu_t *cpu) {
         arg1 = cpu->state->acc;
     } else if (instr.arg1 == ARG_NIL) {
         arg1 = 0;
+    } else if (instr.arg1 == ARG_LEFT) {
+        if (!input_accept(cpu->inputs[DIR_LEFT], &arg1)) {
+            return;
+        }
+    } else if (instr.arg1 == ARG_RIGHT) {
+        if (!input_accept(cpu->inputs[DIR_RIGHT], &arg1)) {
+            return;
+        }
+    } else if (instr.arg1 == ARG_UP) {
+        if (!input_accept(cpu->inputs[DIR_UP], &arg1)) {
+            return;
+        }
+    } else if (instr.arg1 == ARG_DOWN) {
+        if (!input_accept(cpu->inputs[DIR_DOWN], &arg1)) {
+            return;
+        }
     } else {
         arg1 = (reg_t) instr.arg1;
     }
@@ -67,4 +107,9 @@ void cpu_step(struct cpu_t *cpu) {
             *pc = (addr_t) unclamped_pc;
         }
     }
+}
+
+void cpu_step(struct cpu_t *cpu) {
+    cpu_read(cpu);
+    cpu_write(cpu);
 }

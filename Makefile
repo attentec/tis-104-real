@@ -59,4 +59,4 @@ avr/main_avr.elf: avr/main_avr.o ${AVR_OBJECTS}
 
 pc/main_pc.elf: pc/main_pc.o ${PC_OBJECTS}
 
-pc/cpu_test_runner.elf: pc/Unity/src/unity.o pc/cpu_test.o pc/cpu_test_runner.o pc/cpu.o
+pc/cpu_test_runner.elf: pc/Unity/src/unity.o pc/cpu_test.o pc/cpu_test_runner.o pc/cpu.o pc/pipe_mock.o
