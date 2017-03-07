@@ -11,7 +11,7 @@ avr/%.o:%.c
 pc/%.o:%.c
 	mkdir -p $(dir $@)
 	gcc -o $@ -c $^ \
-		-std=c11 -g -Os \
+		-std=c11 -g -O0 \
 		-Wall -Wextra -pedantic \
 		-IUnity/src
 
@@ -59,4 +59,6 @@ avr/main_avr.elf: avr/main_avr.o ${AVR_OBJECTS}
 
 pc/main_pc.elf: pc/main_pc.o ${PC_OBJECTS}
 
-pc/cpu_test_runner.elf: pc/Unity/src/unity.o pc/cpu_test.o pc/cpu_test_runner.o pc/cpu.o pc/pipe_mock.o
+pc/cpu_test_runner.elf: pc/Unity/src/unity.o pc/cpu_test.o pc/cpu_test_runner.o pc/cpu.o pc/pipe_mock.o pc/panic.o
+
+pc/integration_test_runner.elf: pc/Unity/src/unity.o pc/integration_test.o pc/integration_test_runner.o pc/cpu.o pc/pipe_mock.o pc/panic.o

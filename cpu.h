@@ -8,6 +8,8 @@
 typedef uint8_t addr_t;
 typedef int16_t reg_t;
 
+#define REG_INVALID_VALUE ((reg_t)(-1000))
+
 enum op_t { OP_NOP,
     OP_MOV,
     OP_SWP,
@@ -40,6 +42,8 @@ enum dir_t {
     DIR_RIGHT,
     DIR_UP,
     DIR_DOWN,
+    DIR_MIN = DIR_LEFT,
+    DIR_MAX = DIR_DOWN,
 };
 
 struct instr_t {
@@ -57,6 +61,7 @@ struct state_t {
     addr_t pc;
     reg_t acc;
     reg_t bak;
+    reg_t rx;
 };
 
 struct cpu_t {

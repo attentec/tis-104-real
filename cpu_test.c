@@ -2,8 +2,6 @@
 #include "cpu.h"
 #include "pipe_mock.h"
 
-#define QUEUE_SIZE (100)
-
 #define INSTR0(op)             ((struct instr_t){(op), ARG_NONE, ARG_NONE})
 #define INSTR1(op, arg1)       ((struct instr_t){(op), (arg1),   ARG_NONE})
 #define INSTR2(op, arg1, arg2) ((struct instr_t){(op), (arg1),   (arg2)})
@@ -45,12 +43,21 @@ void setUp(void) {
     for (size_t i = 0; i < CPU_MAX_PIPES; ++i) {
         input_pointers[i] = &input_pipes[i];
         output_pointers[i] = &output_pipes[i];
+        input_pipes[i].value_available = false;
+        input_pipes[i].reader_waiting = false;
+        input_pipes[i].value_read = false;
+        input_pipes[i].value = 0;
+        output_pipes[i].value_available = false;
+        output_pipes[i].reader_waiting = false;
+        output_pipes[i].value_read = false;
+        output_pipes[i].value = 0;
     }
 
     prgm.length = 0;
     state.pc = 0;
     state.acc = 0;
     state.bak = 0;
+    state.rx = REG_INVALID_VALUE;
     cpu_init(&cpu, &prgm, &state, input_pointers, output_pointers);
 }
 
@@ -345,8 +352,8 @@ void test_Cpu_should_ReadZeroFromNil(void) {
 void test_Cpu_should_ReadFromLeftOnJroLeft(void) {
     prgm = test_src_prgm(ARG_LEFT);
     state.pc = 1;
-    cpu_read(&cpu);
     output_offer(&input_pipes[DIR_LEFT], 2);
+    cpu_read(&cpu);
     cpu_write(&cpu);
     TEST_ASSERT_EQUAL_INT(3, state.pc);
 }
@@ -371,6 +378,7 @@ void test_Cpu_should_WriteValuesWhenAsked(void) {
     cpu_step(&cpu);
     reg_t value = 0;
     input_accept(&output_pipes[DIR_LEFT], &value);
+    cpu_read(&cpu);
     TEST_ASSERT_EQUAL_INT(1, state.pc);
     TEST_ASSERT_EQUAL_INT(512, value);
 }
