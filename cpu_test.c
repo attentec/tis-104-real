@@ -56,6 +56,7 @@ void setUp(void) {
     state.acc = 0;
     state.bak = 0;
     state.rx = REG_INVALID_VALUE;
+    state.io_state = IO_STATE_RUNNING;
     cpu_init(&cpu, &prgm, &state, input_pointers, output_pointers);
 }
 
@@ -361,6 +362,7 @@ void test_Cpu_should_WaitOnReadWithoutInput(void) {
     state.pc = 1;
     cpu_step(&cpu);
     TEST_ASSERT_EQUAL_INT(1, state.pc);
+    TEST_ASSERT_EQUAL_INT(IO_STATE_BLOCKED_READ, state.io_state);
 }
 
 void test_Cpu_should_WaitOnWriteWithoutReader(void) {

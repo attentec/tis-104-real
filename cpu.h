@@ -46,6 +46,12 @@ enum dir_t {
     DIR_MAX = DIR_DOWN,
 };
 
+enum io_state_t {
+    IO_STATE_RUNNING = 0,
+    IO_STATE_BLOCKED_READ,
+    IO_STATE_BLOCKED_WRITE,
+};
+
 struct instr_t {
     enum op_t op;
     enum arg_t arg1;
@@ -62,6 +68,7 @@ struct state_t {
     reg_t acc;
     reg_t bak;
     reg_t rx;
+    enum io_state_t io_state;
 };
 
 struct cpu_t {

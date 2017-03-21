@@ -58,12 +58,20 @@ void cpu_read(struct cpu_t *cpu) {
 
     if (arg_is_dir(instr.arg1)) {
         enum dir_t dir = arg_to_dir(instr.arg1);
-        input_accept(cpu->inputs[dir], &cpu->state->rx);
+        if (input_accept(cpu->inputs[dir], &cpu->state->rx)) {
+            cpu->state->io_state = IO_STATE_RUNNING;
+        } else {
+            cpu->state->io_state = IO_STATE_BLOCKED_READ;
+        }
     }
 }
 
 void cpu_write(struct cpu_t *cpu) {
     if (cpu->prgm->length == 0) {
+        return;
+    }
+
+    if (cpu->state->io_state == IO_STATE_BLOCKED_READ) {
         return;
     }
 

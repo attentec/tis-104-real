@@ -103,6 +103,7 @@ void setUp(void) {
         states[i].acc = 0;
         states[i].bak = 0;
         states[i].rx = REG_INVALID_VALUE;
+        states[i].io_state = IO_STATE_RUNNING;
 
         cpu_init(&cpus[i], &prgms[i], &states[i], input_pointers, output_pointers);
     }
