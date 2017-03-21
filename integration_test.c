@@ -18,6 +18,7 @@ enum {
 #define CPU_SQUARE_SIDE (2)
 #define CPU_BORDER_SIDE (CPU_SQUARE_SIDE + 2)
 #define CPU_BORDER_SIZE (CPU_BORDER_SIDE * CPU_BORDER_SIDE)
+#define NUM_PIPES (CPU_BORDER_SIZE * CPU_MAX_PIPES)
 
 _Static_assert(CPU_SQUARE_SIDE * CPU_SQUARE_SIDE == NUM_CPUS,
                "CPU_SQUARE_SIDE must be sqrt(NUM_CPUS)");
@@ -25,7 +26,7 @@ _Static_assert(CPU_SQUARE_SIDE * CPU_SQUARE_SIDE == NUM_CPUS,
 static struct cpu_t cpus[NUM_CPUS];
 static struct prgm_t prgms[NUM_CPUS];
 static struct state_t states[NUM_CPUS];
-static struct pipe_t pipes[CPU_BORDER_SIZE * CPU_MAX_PIPES];
+static struct pipe_t pipes[NUM_PIPES];
 
 
 static size_t self(size_t i) {
@@ -39,9 +40,9 @@ static size_t neighbor(size_t i, enum dir_t dir) {
         case DIR_RIGHT:
             return self(i + 1);
         case DIR_UP:
-            return self(i - CPU_SQUARE_SIDE);
+            return self(i - CPU_BORDER_SIDE);
         case DIR_DOWN:
-            return self(i + CPU_SQUARE_SIDE);
+            return self(i + CPU_BORDER_SIDE);
         default:
             break;
     }
@@ -72,6 +73,12 @@ static size_t input_index(size_t i, enum dir_t dir) {
     return neighbor(i, dir) + invert_dir(dir);
 }
 
+static size_t index_in_border(size_t i) {
+    size_t x = i % CPU_SQUARE_SIDE;
+    size_t y = i / CPU_SQUARE_SIDE;
+    return (x + 1) + CPU_BORDER_SIDE * (y + 1);
+}
+
 static void read(void) {
     for (size_t i = 0; i < NUM_CPUS; ++i) {
         cpu_read(&cpus[i]);
@@ -93,16 +100,22 @@ void setUp(void) {
     struct pipe_t *input_pointers[CPU_MAX_PIPES];
     struct pipe_t *output_pointers[CPU_MAX_PIPES];
 
+    for (size_t i = 0; i < NUM_PIPES; ++i) {
+        pipes[i].cell = NULL;
+    }
+
     for (size_t i = 0; i < NUM_CPUS; ++i) {
         for (enum dir_t d = DIR_MIN; d <= DIR_MAX; ++d) {
-            output_pointers[d] = &pipes[output_index(i, d)];
-            input_pointers[d] = &pipes[input_index(i, d)];
+            size_t ib = index_in_border(i);
+            output_pointers[d] = &pipes[output_index(ib, d)];
+            input_pointers[d] = &pipes[input_index(ib, d)];
         }
 
         states[i].pc = 0;
         states[i].acc = 0;
         states[i].bak = 0;
         states[i].rx = REG_INVALID_VALUE;
+        states[i].tx = REG_INVALID_VALUE;
         states[i].io_state = IO_STATE_RUNNING;
 
         cpu_init(&cpus[i], &prgms[i], &states[i], input_pointers, output_pointers);
@@ -125,4 +138,21 @@ void test_Integration_should_FollowBasicCommunicationTiming(void) {
     step();
 
     TEST_ASSERT_EQUAL_INT(1, states[CPU_UL].acc);
+}
+
+void test_Integration_should_ProcessAnyInCorrectOrder(void) {
+    prgms[CPU_UL].length = 1;
+    prgms[CPU_UL].instrs[0] = INSTR2(OP_MOV, ARG_ANY, ARG_ACC);
+    prgms[CPU_UR].length = 1;
+    prgms[CPU_UR].instrs[0] = INSTR2(OP_MOV, 1, ARG_ANY);
+    prgms[CPU_LL].length = 1;
+    prgms[CPU_LL].instrs[0] = INSTR2(OP_MOV, 2, ARG_ANY);
+    prgms[CPU_LR].length = 1;
+    prgms[CPU_LR].instrs[0] = INSTR2(OP_MOV, ARG_ANY, ARG_ACC);
+
+    step();
+    step();
+
+    TEST_ASSERT_EQUAL_INT(1, states[CPU_UL].acc);
+    TEST_ASSERT_EQUAL_INT(2, states[CPU_LR].acc);
 }

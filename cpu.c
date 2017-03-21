@@ -50,6 +50,18 @@ void cpu_read(struct cpu_t *cpu) {
         } else {
             cpu->state->io_state = IO_STATE_BLOCKED_READ;
         }
+    } else if (instr.arg1 == ARG_ANY) {
+        if (input_accept(cpu->inputs[DIR_LEFT], &cpu->state->rx)) {
+            cpu->state->io_state = IO_STATE_RUNNING;
+        } else if (input_accept(cpu->inputs[DIR_RIGHT], &cpu->state->rx)) {
+            cpu->state->io_state = IO_STATE_RUNNING;
+        } else if (input_accept(cpu->inputs[DIR_UP], &cpu->state->rx)) {
+            cpu->state->io_state = IO_STATE_RUNNING;
+        } else if (input_accept(cpu->inputs[DIR_DOWN], &cpu->state->rx)) {
+            cpu->state->io_state = IO_STATE_RUNNING;
+        } else {
+            cpu->state->io_state = IO_STATE_BLOCKED_READ;
+        }
     }
 }
 
@@ -76,6 +88,8 @@ void cpu_write(struct cpu_t *cpu) {
     } else if (instr.arg1 == ARG_NIL) {
         arg1 = 0;
     } else if (arg_is_dir(instr.arg1)) {
+        arg1 = cpu->state->rx;
+    } else if (instr.arg1 == ARG_ANY) {
         arg1 = cpu->state->rx;
     } else {
         arg1 = (reg_t) instr.arg1;
@@ -132,6 +146,23 @@ void cpu_write(struct cpu_t *cpu) {
             } else {
                 cpu->state->tx = arg1;
                 output_offer(cpu->outputs[dir], &cpu->state->tx);
+                *pc = original_pc;
+                cpu->state->io_state = IO_STATE_BLOCKED_WRITE;
+            }
+        } else if (instr.arg2 == ARG_ANY) {
+            if (cpu->state->io_state == IO_STATE_BLOCKED_WRITE) {
+                if (output_taken(cpu->outputs[DIR_LEFT])
+                        || output_taken(cpu->outputs[DIR_RIGHT])
+                        || output_taken(cpu->outputs[DIR_UP])
+                        || output_taken(cpu->outputs[DIR_DOWN])) {
+                    cpu->state->io_state = IO_STATE_RUNNING;
+                }
+            } else {
+                cpu->state->tx = arg1;
+                output_offer(cpu->outputs[DIR_LEFT], &cpu->state->tx);
+                output_offer(cpu->outputs[DIR_RIGHT], &cpu->state->tx);
+                output_offer(cpu->outputs[DIR_UP], &cpu->state->tx);
+                output_offer(cpu->outputs[DIR_DOWN], &cpu->state->tx);
                 *pc = original_pc;
                 cpu->state->io_state = IO_STATE_BLOCKED_WRITE;
             }
