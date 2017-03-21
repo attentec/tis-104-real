@@ -43,19 +43,6 @@ void cpu_read(struct cpu_t *cpu) {
     addr_t *pc  = &cpu->state->pc;
     struct instr_t instr = cpu->prgm->instrs[*pc];
 
-    for (size_t i = 0; i < CPU_MAX_PIPES; ++i) {
-        input_mark_not_read(cpu->inputs[i]);
-    }
-
-    if (arg_is_dir(instr.arg2)) {
-        enum dir_t dir = arg_to_dir(instr.arg2);
-        if (output_taken(cpu->outputs[dir])) {
-            // TODO: Do not go to next instruction in read phase!
-            *pc = (*pc + 1) % cpu->prgm->length;
-            instr = cpu->prgm->instrs[*pc];
-        }
-    }
-
     if (arg_is_dir(instr.arg1)) {
         enum dir_t dir = arg_to_dir(instr.arg1);
         if (input_accept(cpu->inputs[dir], &cpu->state->rx)) {
@@ -89,12 +76,7 @@ void cpu_write(struct cpu_t *cpu) {
     } else if (instr.arg1 == ARG_NIL) {
         arg1 = 0;
     } else if (arg_is_dir(instr.arg1)) {
-        enum dir_t dir = arg_to_dir(instr.arg1);
-        if (cpu->state->rx == REG_INVALID_VALUE) {
-            return;
-        }
         arg1 = cpu->state->rx;
-        cpu->state->rx = REG_INVALID_VALUE;
     } else {
         arg1 = (reg_t) instr.arg1;
     }
@@ -143,8 +125,16 @@ void cpu_write(struct cpu_t *cpu) {
         } else if (instr.arg2 == ARG_NIL) {
         } else if (arg_is_dir(instr.arg2)) {
             enum dir_t dir = arg_to_dir(instr.arg2);
-            output_offer(cpu->outputs[dir], arg1);
-            *pc = original_pc;
+            if (cpu->state->io_state == IO_STATE_BLOCKED_WRITE) {
+                if (output_taken(cpu->outputs[dir])) {
+                    cpu->state->io_state = IO_STATE_RUNNING;
+                }
+            } else {
+                cpu->state->tx = arg1;
+                output_offer(cpu->outputs[dir], &cpu->state->tx);
+                *pc = original_pc;
+                cpu->state->io_state = IO_STATE_BLOCKED_WRITE;
+            }
         }
     } else if (op == OP_ADD) {
         cpu->state->acc += arg1;

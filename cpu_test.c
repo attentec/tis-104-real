@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 #include "unity.h"
 #include "cpu.h"
 #include "pipe_mock.h"
@@ -43,12 +45,8 @@ void setUp(void) {
     for (size_t i = 0; i < CPU_MAX_PIPES; ++i) {
         input_pointers[i] = &input_pipes[i];
         output_pointers[i] = &output_pipes[i];
-        input_pipes[i].value_available = false;
-        input_pipes[i].value_read = false;
-        input_pipes[i].value = 0;
-        output_pipes[i].value_available = false;
-        output_pipes[i].value_read = false;
-        output_pipes[i].value = 0;
+        input_pipes[i].cell = NULL;
+        output_pipes[i].cell = NULL;
     }
 
     prgm.length = 0;
@@ -351,7 +349,8 @@ void test_Cpu_should_ReadZeroFromNil(void) {
 void test_Cpu_should_ReadFromLeftOnJroLeft(void) {
     prgm = test_src_prgm(ARG_LEFT);
     state.pc = 1;
-    output_offer(&input_pipes[DIR_LEFT], 2);
+    state.tx = 2;
+    output_offer(&input_pipes[DIR_LEFT], &state.tx);
     cpu_read(&cpu);
     cpu_write(&cpu);
     TEST_ASSERT_EQUAL_INT(3, state.pc);
@@ -369,6 +368,7 @@ void test_Cpu_should_WaitOnWriteWithoutReader(void) {
     prgm = test_dst_prgm(ARG_LEFT);
     cpu_step(&cpu);
     TEST_ASSERT_EQUAL_INT(0, state.pc);
+    TEST_ASSERT_EQUAL_INT(IO_STATE_BLOCKED_WRITE, state.io_state);
 }
 
 void test_Cpu_should_WriteValuesWhenAsked(void) {
@@ -377,7 +377,7 @@ void test_Cpu_should_WriteValuesWhenAsked(void) {
     cpu_step(&cpu);
     reg_t value = 0;
     input_accept(&output_pipes[DIR_LEFT], &value);
-    cpu_read(&cpu);
+    cpu_step(&cpu);
     TEST_ASSERT_EQUAL_INT(1, state.pc);
     TEST_ASSERT_EQUAL_INT(512, value);
 }

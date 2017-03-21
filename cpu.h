@@ -68,6 +68,7 @@ struct state_t {
     reg_t acc;
     reg_t bak;
     reg_t rx;
+    reg_t tx;
     enum io_state_t io_state;
 };
 
