@@ -1,13 +1,8 @@
 #include "pipe.h"
 #include "pipe_mock.h"
 
-void input_request(struct pipe_t *input) {
-    input->reader_waiting = true;
-}
-
 bool input_accept(struct pipe_t *input, reg_t *value) {
     if (input->value_available) {
-        input->reader_waiting = false;
         input->value_available = false;
         input->value_read = true;
         *value = input->value;

@@ -44,11 +44,9 @@ void setUp(void) {
         input_pointers[i] = &input_pipes[i];
         output_pointers[i] = &output_pipes[i];
         input_pipes[i].value_available = false;
-        input_pipes[i].reader_waiting = false;
         input_pipes[i].value_read = false;
         input_pipes[i].value = 0;
         output_pipes[i].value_available = false;
-        output_pipes[i].reader_waiting = false;
         output_pipes[i].value_read = false;
         output_pipes[i].value = 0;
     }
@@ -374,7 +372,6 @@ void test_Cpu_should_WaitOnWriteWithoutReader(void) {
 void test_Cpu_should_WriteValuesWhenAsked(void) {
     prgm = test_dst_prgm(ARG_LEFT);
     state.acc = 512;
-    input_request(&output_pipes[DIR_LEFT]);
     cpu_step(&cpu);
     reg_t value = 0;
     input_accept(&output_pipes[DIR_LEFT], &value);

@@ -98,14 +98,6 @@ void setUp(void) {
             output_pointers[d] = &pipes[output_index(i, d)];
             input_pointers[d] = &pipes[input_index(i, d)];
         }
-        /* output_pointers[DIR_LEFT] = &pipes[i * CPU_MAX_PIPES + DIR_LEFT];
-        output_pointers[DIR_RIGHT] = &pipes[i * CPU_MAX_PIPES + DIR_RIGHT];
-        output_pointers[DIR_UP] = &pipes[i * CPU_MAX_PIPES + DIR_UP];
-        output_pointers[DIR_DOWN] = &pipes[i * CPU_MAX_PIPES + DIR_DOWN];
-        input_pointers[DIR_LEFT] = &pipes[(i - 1) * CPU_MAX_PIPES + DIR_RIGHT];
-        input_pointers[DIR_RIGHT] = &pipes[(i + 1) * CPU_MAX_PIPES + DIR_LEFT];
-        input_pointers[DIR_UP] = &pipes[(i - CPU_SQUARE_SIDE) * CPU_MAX_PIPES + DIR_DOWN];
-        input_pointers[DIR_DOWN] = &pipes[(i + CPU_SQUARE_SIDE) * CPU_MAX_PIPES + DIR_UP]; */
 
         states[i].pc = 0;
         states[i].acc = 0;

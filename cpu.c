@@ -50,6 +50,7 @@ void cpu_read(struct cpu_t *cpu) {
     if (arg_is_dir(instr.arg2)) {
         enum dir_t dir = arg_to_dir(instr.arg2);
         if (output_taken(cpu->outputs[dir])) {
+            // TODO: Do not go to next instruction in read phase!
             *pc = (*pc + 1) % cpu->prgm->length;
             instr = cpu->prgm->instrs[*pc];
         }
@@ -57,9 +58,7 @@ void cpu_read(struct cpu_t *cpu) {
 
     if (arg_is_dir(instr.arg1)) {
         enum dir_t dir = arg_to_dir(instr.arg1);
-        if (!input_accept(cpu->inputs[dir], &cpu->state->rx)) {
-            input_request(cpu->inputs[dir]);
-        }
+        input_accept(cpu->inputs[dir], &cpu->state->rx);
     }
 }
 
