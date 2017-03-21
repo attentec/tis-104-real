@@ -1,0 +1,1 @@
+- In second MOV in MOV 1, ANY; MOV 1, RIGHT all neighbors can receive
