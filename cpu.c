@@ -141,7 +141,10 @@ void cpu_write(struct cpu_t *cpu) {
             enum dir_t dir = arg_to_dir(instr.arg2);
             if (cpu->state->io_state == IO_STATE_BLOCKED_WRITE) {
                 if (output_taken(cpu->outputs[dir])) {
+                    output_abstain(cpu->outputs[dir]);
                     cpu->state->io_state = IO_STATE_RUNNING;
+                } else {
+                    *pc = original_pc;
                 }
             } else {
                 cpu->state->tx = arg1;
