@@ -360,12 +360,21 @@ void test_Cpu_should_WaitOnReadWithoutInput(void) {
     prgm = test_src_prgm(ARG_LEFT);
     state.pc = 1;
     cpu_step(&cpu);
+    cpu_step(&cpu);
     TEST_ASSERT_EQUAL_INT(1, state.pc);
     TEST_ASSERT_EQUAL_INT(IO_STATE_BLOCKED_READ, state.io_state);
 }
 
 void test_Cpu_should_WaitOnWriteWithoutReader(void) {
     prgm = test_dst_prgm(ARG_LEFT);
+    cpu_step(&cpu);
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(0, state.pc);
+    TEST_ASSERT_EQUAL_INT(IO_STATE_BLOCKED_WRITE, state.io_state);
+}
+void test_Cpu_should_WaitOnWriteToAnyWithoutReader(void) {
+    prgm = test_dst_prgm(ARG_ANY);
+    cpu_step(&cpu);
     cpu_step(&cpu);
     TEST_ASSERT_EQUAL_INT(0, state.pc);
     TEST_ASSERT_EQUAL_INT(IO_STATE_BLOCKED_WRITE, state.io_state);

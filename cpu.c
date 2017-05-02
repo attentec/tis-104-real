@@ -158,7 +158,13 @@ void cpu_write(struct cpu_t *cpu) {
                         || output_taken(cpu->outputs[DIR_RIGHT])
                         || output_taken(cpu->outputs[DIR_UP])
                         || output_taken(cpu->outputs[DIR_DOWN])) {
+                    output_abstain(cpu->outputs[DIR_LEFT]);
+                    output_abstain(cpu->outputs[DIR_RIGHT]);
+                    output_abstain(cpu->outputs[DIR_UP]);
+                    output_abstain(cpu->outputs[DIR_DOWN]);
                     cpu->state->io_state = IO_STATE_RUNNING;
+                } else {
+                    *pc = original_pc;
                 }
             } else {
                 cpu->state->tx = arg1;
