@@ -390,3 +390,12 @@ void test_Cpu_should_WriteValuesWhenAsked(void) {
     TEST_ASSERT_EQUAL_INT(1, state.pc);
     TEST_ASSERT_EQUAL_INT(512, value);
 }
+
+void test_Cpu_should_BlockOnReadFromNALast(void) {
+    prgm.length = 2;
+    prgm.instrs[0] = INSTR1(OP_ADD, ARG_LAST);
+    prgm.instrs[1] = INSTR0(OP_NOP);
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(0, state.pc);
+    TEST_ASSERT_EQUAL_INT(IO_STATE_BLOCKED_READ, state.io_state);
+}

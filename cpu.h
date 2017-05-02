@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define CPU_MAX_PRGM_LENGTH (15)
 #define CPU_MAX_PIPES (4)
@@ -69,6 +70,8 @@ struct state_t {
     reg_t bak;
     reg_t rx;
     reg_t tx;
+    bool has_last;
+    enum dir_t last;
     enum io_state_t io_state;
 };
 

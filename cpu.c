@@ -62,16 +62,21 @@ void cpu_read(struct cpu_t *cpu) {
             cpu->state->io_state = IO_STATE_BLOCKED_READ;
         }
     } else if (instr.arg1 == ARG_ANY) {
-        if (input_accept(cpu->inputs[DIR_LEFT], &cpu->state->rx)) {
+        bool got_input = false;
+        for (enum dir_t d = DIR_MIN; d <= DIR_MAX; ++d) {
+            if (input_accept(cpu->inputs[d], &cpu->state->rx)) {
+                got_input = true;
+                cpu->state->has_last = true;
+                cpu->state->last = d;
+                break;
+            }
+        }
+        cpu->state->io_state = got_input ? IO_STATE_RUNNING : IO_STATE_BLOCKED_READ;
+    } else if (instr.arg1 == ARG_LAST) {
+        cpu->state->io_state = IO_STATE_BLOCKED_READ;
+        if (cpu->state->has_last
+                && input_accept(cpu->inputs[cpu->state->last], &cpu->state->rx)) {
             cpu->state->io_state = IO_STATE_RUNNING;
-        } else if (input_accept(cpu->inputs[DIR_RIGHT], &cpu->state->rx)) {
-            cpu->state->io_state = IO_STATE_RUNNING;
-        } else if (input_accept(cpu->inputs[DIR_UP], &cpu->state->rx)) {
-            cpu->state->io_state = IO_STATE_RUNNING;
-        } else if (input_accept(cpu->inputs[DIR_DOWN], &cpu->state->rx)) {
-            cpu->state->io_state = IO_STATE_RUNNING;
-        } else {
-            cpu->state->io_state = IO_STATE_BLOCKED_READ;
         }
     }
 }
@@ -101,6 +106,13 @@ void cpu_write(struct cpu_t *cpu) {
         arg1 = cpu->state->rx;
     } else if (instr.arg1 == ARG_ANY) {
         arg1 = cpu->state->rx;
+    } else if (instr.arg1 == ARG_LAST) {
+        if (cpu->state->has_last) {
+            arg1 = cpu->state->rx;
+        } else {
+            cpu->state->io_state = IO_STATE_BLOCKED_READ;
+            return;
+        }
     } else {
         arg1 = (reg_t) instr.arg1;
     }
