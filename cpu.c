@@ -4,7 +4,7 @@
 #include "panic.h"
 
 enum pc_action_t {
-    PC_ACTION_NEXT = 0,
+    PC_ACTION_INCREMENT = 0,
     PC_ACTION_BLOCK,
     PC_ACTION_JUMP,
 };
@@ -32,6 +32,11 @@ static enum dir_t arg_to_dir(enum arg_t arg) {
             break;
     }
     panic();
+}
+
+static bool dir_matches(enum dir_t dir, enum arg_t arg) {
+    return arg == ARG_ANY
+        || arg_to_dir(arg) == dir;
 }
 
 bool arg_is_dir(enum arg_t arg) {
@@ -100,7 +105,7 @@ void cpu_write(struct cpu_t *cpu) {
         arg1 = (reg_t) instr.arg1;
     }
 
-    enum pc_action_t pc_action = PC_ACTION_NEXT;
+    enum pc_action_t pc_action = PC_ACTION_INCREMENT;
     addr_t jump_pc = 0;
 
     if (op == OP_SWP) {
@@ -151,50 +156,32 @@ void cpu_write(struct cpu_t *cpu) {
         if (instr.arg2 == ARG_ACC) {
             cpu->state->acc = arg1;
         } else if (instr.arg2 == ARG_NIL) {
-        } else if (arg_is_dir(instr.arg2)) {
-            enum dir_t dir = arg_to_dir(instr.arg2);
+        } else if (arg_is_dir(instr.arg2) || instr.arg2 == ARG_ANY) {
             if (cpu->state->io_state == IO_STATE_BLOCKED_WRITE) {
-                if (output_taken(cpu->outputs[dir])) {
-                    output_abstain(cpu->outputs[dir]);
-                    cpu->state->io_state = IO_STATE_RUNNING;
-                } else {
-                    pc_action = PC_ACTION_BLOCK;
+                pc_action = PC_ACTION_BLOCK;
+                for (enum dir_t d = DIR_MIN; d <= DIR_MAX; ++d) {
+                    if (dir_matches(d, instr.arg2) && output_taken(cpu->outputs[d])) {
+                        output_abstain(cpu->outputs[d]);
+                        cpu->state->io_state = IO_STATE_RUNNING;
+                        pc_action = PC_ACTION_INCREMENT;
+                    }
                 }
             } else {
                 cpu->state->tx = arg1;
-                output_offer(cpu->outputs[dir], &cpu->state->tx);
                 pc_action = PC_ACTION_BLOCK;
                 cpu->state->io_state = IO_STATE_BLOCKED_WRITE;
-            }
-        } else if (instr.arg2 == ARG_ANY) {
-            if (cpu->state->io_state == IO_STATE_BLOCKED_WRITE) {
-                if (output_taken(cpu->outputs[DIR_LEFT])
-                        || output_taken(cpu->outputs[DIR_RIGHT])
-                        || output_taken(cpu->outputs[DIR_UP])
-                        || output_taken(cpu->outputs[DIR_DOWN])) {
-                    output_abstain(cpu->outputs[DIR_LEFT]);
-                    output_abstain(cpu->outputs[DIR_RIGHT]);
-                    output_abstain(cpu->outputs[DIR_UP]);
-                    output_abstain(cpu->outputs[DIR_DOWN]);
-                    cpu->state->io_state = IO_STATE_RUNNING;
-                } else {
-                    pc_action = PC_ACTION_BLOCK;
+                for (enum dir_t d = DIR_MIN; d <= DIR_MAX; ++d) {
+                    if (dir_matches(d, instr.arg2)) {
+                        output_offer(cpu->outputs[d], &cpu->state->tx);
+                    }
                 }
-            } else {
-                cpu->state->tx = arg1;
-                output_offer(cpu->outputs[DIR_LEFT], &cpu->state->tx);
-                output_offer(cpu->outputs[DIR_RIGHT], &cpu->state->tx);
-                output_offer(cpu->outputs[DIR_UP], &cpu->state->tx);
-                output_offer(cpu->outputs[DIR_DOWN], &cpu->state->tx);
-                pc_action = PC_ACTION_BLOCK;
-                cpu->state->io_state = IO_STATE_BLOCKED_WRITE;
             }
         }
     } else if (op == OP_ADD) {
         cpu->state->acc += arg1;
     }
 
-    if (pc_action == PC_ACTION_NEXT) {
+    if (pc_action == PC_ACTION_INCREMENT) {
         *pc = (*pc + 1) % length;
     } else if (pc_action == PC_ACTION_JUMP) {
         *pc = jump_pc;
