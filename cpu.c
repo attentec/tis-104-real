@@ -34,6 +34,22 @@ static enum dir_t arg_to_dir(enum arg_t arg) {
     panic();
 }
 
+static enum arg_t dir_to_arg(enum dir_t dir) {
+    switch (dir) {
+        case DIR_LEFT:
+            return ARG_LEFT;
+        case DIR_RIGHT:
+            return ARG_RIGHT;
+        case DIR_UP:
+            return ARG_UP;
+        case DIR_DOWN:
+            return ARG_DOWN;
+        default:
+            break;
+    }
+    panic();
+}
+
 static bool dir_matches(enum dir_t dir, enum arg_t arg) {
     return arg == ARG_ANY
         || arg_to_dir(arg) == dir;
@@ -168,11 +184,18 @@ void cpu_write(struct cpu_t *cpu) {
         if (instr.arg2 == ARG_ACC) {
             cpu->state->acc = arg1;
         } else if (instr.arg2 == ARG_NIL) {
-        } else if (arg_is_dir(instr.arg2) || instr.arg2 == ARG_ANY) {
-            if (cpu->state->io_state == IO_STATE_BLOCKED_WRITE) {
+        } else if (arg_is_dir(instr.arg2) || instr.arg2 == ARG_ANY || instr.arg2 == ARG_LAST) {
+            enum arg_t arg2 = instr.arg2;
+            if (instr.arg2 == ARG_LAST && cpu->state->has_last) {
+                arg2 = dir_to_arg(cpu->state->last);
+            }
+            if (instr.arg2 == ARG_LAST && !cpu->state->has_last) {
+                pc_action = PC_ACTION_BLOCK;
+                cpu->state->io_state = IO_STATE_BLOCKED_WRITE;
+            } else if (cpu->state->io_state == IO_STATE_BLOCKED_WRITE) {
                 pc_action = PC_ACTION_BLOCK;
                 for (enum dir_t d = DIR_MIN; d <= DIR_MAX; ++d) {
-                    if (dir_matches(d, instr.arg2) && output_taken(cpu->outputs[d])) {
+                    if (dir_matches(d, arg2) && output_taken(cpu->outputs[d])) {
                         output_abstain(cpu->outputs[d]);
                         cpu->state->io_state = IO_STATE_RUNNING;
                         pc_action = PC_ACTION_INCREMENT;
@@ -183,7 +206,7 @@ void cpu_write(struct cpu_t *cpu) {
                 pc_action = PC_ACTION_BLOCK;
                 cpu->state->io_state = IO_STATE_BLOCKED_WRITE;
                 for (enum dir_t d = DIR_MIN; d <= DIR_MAX; ++d) {
-                    if (dir_matches(d, instr.arg2)) {
+                    if (dir_matches(d, arg2)) {
                         output_offer(cpu->outputs[d], &cpu->state->tx);
                     }
                 }

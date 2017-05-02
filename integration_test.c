@@ -215,3 +215,24 @@ void test_Integration_should_ReadFromLast(void) {
     TEST_ASSERT_EQUAL_INT(2, states[CPU_UL].pc);
     TEST_ASSERT_EQUAL_INT(7, states[CPU_UL].acc);
 }
+
+void test_Integration_should_WriteToLast(void) {
+    prgms[CPU_UL].length = 3;
+    prgms[CPU_UL].instrs[0] = INSTR2(OP_MOV, 5, ARG_ANY);
+    prgms[CPU_UL].instrs[1] = INSTR2(OP_MOV, 7, ARG_LAST);
+    prgms[CPU_UL].instrs[2] = INSTR1(OP_JRO, 0);
+    prgms[CPU_UR].length = 3;
+    prgms[CPU_UR].instrs[0] = INSTR2(OP_MOV, ARG_LEFT, ARG_ACC);
+    prgms[CPU_UR].instrs[1] = INSTR2(OP_MOV, ARG_LEFT, ARG_ACC);
+    prgms[CPU_UR].instrs[2] = INSTR1(OP_JRO, 0);
+    prgms[CPU_LL].length = 0;
+    prgms[CPU_LR].length = 0;
+
+    step();
+    step();
+    step();
+    step();
+
+    TEST_ASSERT_EQUAL_INT(2, states[CPU_UL].pc);
+    TEST_ASSERT_EQUAL_INT(7, states[CPU_UR].acc);
+}
