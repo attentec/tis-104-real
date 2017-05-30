@@ -1,29 +1,28 @@
+CC := gcc
+AVR_CC := avr-gcc
+CFLAGS := -std=c11 -g -Wall -Wextra -pedantic
+PC_CFLAGS := -O0 -IUnity/src
+AVR_CFLAGS := -mmcu=atmega328p -Os -DF_CPU=16000000ul
+
 DEVICE ?= /dev/ttyACM0
 
 .DEFAULT_GOAL = avr/main_avr.hex
 
 avr/%.o:%.c
 	mkdir -p $(dir $@)
-	avr-gcc -o $@ -c $^ \
-		-std=c11 -mmcu=atmega328p -g -Os -DF_CPU=16000000ul \
-		-Wall -Wextra -pedantic
+	$(AVR_CC) $(CFLAGS) $(AVR_CFLAGS) -o $@ -c $^
 
 pc/%.o:%.c
 	mkdir -p $(dir $@)
-	gcc -o $@ -c $^ \
-		-std=c11 -g -O0 \
-		-Wall -Wextra -pedantic \
-		-IUnity/src
+	$(CC) $(CFLAGS) $(PC_CFLAGS) -o $@ -c $^
 
 avr/%.elf:
 	mkdir -p $(dir $@)
-	avr-gcc -o $@ $^ \
-		-std=c11 -mmcu=atmega328p -g -Os -DF_CPU=16000000ul
+	$(AVR_CC) $(CFLAGS) $(AVR_CFLAGS) -o $@ $^
 
 pc/%.elf:
 	mkdir -p $(dir $@)
-	gcc -o $@ $^ \
-		-std=c11 -g
+	$(CC) $(CFLAGS) $(PC_CFLAGS) -o $@ $^
 
 .PRECIOUS: avr/%.s
 avr/%.s: avr/%.elf
