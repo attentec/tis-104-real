@@ -330,12 +330,20 @@ void test_Cpu_should_SaveAccToBakOnSav(void) {
     TEST_ASSERT_EQUAL_INT(123, state.bak);
 }
 
-void test_Cpu_should_Add(void) {
+void test_Cpu_should_AddToAccOnAdd(void) {
     prgm.length = 1;
     prgm.instrs[0] = INSTR1(OP_ADD, 10);
     state.acc = 100;
     cpu_step(&cpu);
     TEST_ASSERT_EQUAL_INT(110, state.acc);
+}
+
+void test_Cpu_should_SubtractFromAccOnSub(void) {
+    prgm.length = 1;
+    prgm.instrs[0] = INSTR1(OP_SUB, 10);
+    state.acc = 100;
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(90, state.acc);
 }
 
 void test_Cpu_should_NegateAccOnNeg(void) {
@@ -380,6 +388,7 @@ void test_Cpu_should_WaitOnWriteWithoutReader(void) {
     TEST_ASSERT_EQUAL_INT(0, state.pc);
     TEST_ASSERT_EQUAL_INT(IO_STATE_BLOCKED_WRITE, state.io_state);
 }
+
 void test_Cpu_should_WaitOnWriteToAnyWithoutReader(void) {
     prgm = test_dst_prgm(ARG_ANY);
     cpu_step(&cpu);
