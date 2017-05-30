@@ -61,4 +61,4 @@ pc/main_pc.elf: pc/main_pc.o ${PC_OBJECTS}
 
 pc/cpu_test_runner.elf: pc/Unity/src/unity.o pc/cpu_test.o pc/cpu_test_runner.o pc/cpu.o pc/pipe_mock.o pc/panic_pc.o
 
-pc/integration_test_runner.elf: pc/Unity/src/unity.o pc/integration_test.o pc/integration_test_runner.o pc/cpu.o pc/pipe_mock.o pc/panic_pc.o
+pc/integration_test_runner.elf: pc/Unity/src/unity.o pc/integration_test.o pc/grid.o pc/integration_test_runner.o pc/cpu.o pc/pipe_mock.o pc/panic_pc.o
