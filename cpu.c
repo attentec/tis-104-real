@@ -89,9 +89,10 @@ void cpu_read(struct cpu_t *cpu) {
         }
         cpu->state->io_state = got_input ? IO_STATE_RUNNING : IO_STATE_BLOCKED_READ;
     } else if (instr.arg1 == ARG_LAST) {
-        cpu->state->io_state = IO_STATE_BLOCKED_READ;
         if (cpu->state->has_last
-                && input_accept(cpu->inputs[cpu->state->last], &cpu->state->rx)) {
+                && !input_accept(cpu->inputs[cpu->state->last], &cpu->state->rx)) {
+            cpu->state->io_state = IO_STATE_BLOCKED_READ;
+        } else {
             cpu->state->io_state = IO_STATE_RUNNING;
         }
     }
@@ -126,8 +127,7 @@ void cpu_write(struct cpu_t *cpu) {
         if (cpu->state->has_last) {
             arg1 = cpu->state->rx;
         } else {
-            cpu->state->io_state = IO_STATE_BLOCKED_READ;
-            return;
+            arg1 = 0;
         }
     } else {
         arg1 = (reg_t) instr.arg1;
@@ -190,12 +190,15 @@ void cpu_write(struct cpu_t *cpu) {
                 arg2 = dir_to_arg(cpu->state->last);
             }
             if (instr.arg2 == ARG_LAST && !cpu->state->has_last) {
-                pc_action = PC_ACTION_BLOCK;
-                cpu->state->io_state = IO_STATE_BLOCKED_WRITE;
+                pc_action = PC_ACTION_INCREMENT;
             } else if (cpu->state->io_state == IO_STATE_BLOCKED_WRITE) {
                 pc_action = PC_ACTION_BLOCK;
                 for (enum dir_t d = DIR_MIN; d <= DIR_MAX; ++d) {
                     if (dir_matches(d, arg2) && output_taken(cpu->outputs[d])) {
+                        if (output_used(cpu->outputs[d])) {
+                            cpu->state->last = d;
+                            cpu->state->has_last = true;
+                        }
                         output_abstain(cpu->outputs[d]);
                         cpu->state->io_state = IO_STATE_RUNNING;
                         pc_action = PC_ACTION_INCREMENT;

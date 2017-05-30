@@ -8,10 +8,15 @@ bool input_accept(struct pipe_t *input, reg_t *value) {
     if (input->cell && *(input->cell) != REG_INVALID_VALUE) {
         *value = *(input->cell);
         *(input->cell) = REG_INVALID_VALUE;
+        input->used = true;
         return true;
     } else {
         return false;
     }
+}
+
+bool output_used(struct pipe_t *output) {
+    return output->used;
 }
 
 bool output_taken(struct pipe_t *output) {
@@ -22,6 +27,7 @@ bool output_taken(struct pipe_t *output) {
 }
 
 void output_offer(struct pipe_t *output, reg_t *cell) {
+    output->used = false;
     output->cell = cell;
 }
 

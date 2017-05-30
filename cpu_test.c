@@ -54,6 +54,8 @@ void setUp(void) {
     state.acc = 0;
     state.bak = 0;
     state.rx = REG_INVALID_VALUE;
+    state.has_last = false;
+    state.last = DIR_LEFT;
     state.io_state = IO_STATE_RUNNING;
     cpu_init(&cpu, &prgm, &state, input_pointers, output_pointers);
 }
@@ -414,11 +416,20 @@ void test_Cpu_should_WriteValuesWhenAsked(void) {
     TEST_ASSERT_EQUAL_INT(512, value);
 }
 
-void test_Cpu_should_BlockOnReadFromNALast(void) {
+void test_Cpu_should_ReadZeroFromNALast(void) {
     prgm.length = 2;
-    prgm.instrs[0] = INSTR1(OP_ADD, ARG_LAST);
+    prgm.instrs[0] = INSTR2(OP_MOV, ARG_LAST, ARG_ACC);
+    prgm.instrs[1] = INSTR0(OP_NOP);
+    state.acc = 123;
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(1, state.pc);
+    TEST_ASSERT_EQUAL_INT(0, state.acc);
+}
+
+void test_Cpu_should_AcceptWritesToNALast(void) {
+    prgm.length = 2;
+    prgm.instrs[0] = INSTR2(OP_MOV, 38, ARG_LAST);
     prgm.instrs[1] = INSTR0(OP_NOP);
     cpu_step(&cpu);
-    TEST_ASSERT_EQUAL_INT(0, state.pc);
-    TEST_ASSERT_EQUAL_INT(IO_STATE_BLOCKED_READ, state.io_state);
+    TEST_ASSERT_EQUAL_INT(1, state.pc);
 }

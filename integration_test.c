@@ -116,6 +116,8 @@ void setUp(void) {
         states[i].bak = 0;
         states[i].rx = REG_INVALID_VALUE;
         states[i].tx = REG_INVALID_VALUE;
+        states[i].has_last = false;
+        states[i].last = DIR_LEFT;
         states[i].io_state = IO_STATE_RUNNING;
 
         cpu_init(&cpus[i], &prgms[i], &states[i], input_pointers, output_pointers);
@@ -214,6 +216,23 @@ void test_Integration_should_ReadFromLast(void) {
 
     TEST_ASSERT_EQUAL_INT(2, states[CPU_UL].pc);
     TEST_ASSERT_EQUAL_INT(7, states[CPU_UL].acc);
+}
+
+void test_Integration_should_SetLastOnWriteToAny(void) {
+    prgms[CPU_UL].length = 2;
+    prgms[CPU_UL].instrs[0] = INSTR2(OP_MOV, 5, ARG_ANY);
+    prgms[CPU_UL].instrs[1] = INSTR1(OP_JRO, 0);
+    prgms[CPU_UR].length = 2;
+    prgms[CPU_UR].instrs[0] = INSTR2(OP_MOV, ARG_LEFT, ARG_ACC);
+    prgms[CPU_UR].instrs[1] = INSTR1(OP_JRO, 0);
+    prgms[CPU_LL].length = 0;
+    prgms[CPU_LR].length = 0;
+
+    step();
+    step();
+
+    TEST_ASSERT_TRUE(states[CPU_UL].has_last);
+    TEST_ASSERT_EQUAL_INT(DIR_RIGHT, states[CPU_UL].last);
 }
 
 void test_Integration_should_WriteToLast(void) {

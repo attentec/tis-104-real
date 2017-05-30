@@ -4,4 +4,5 @@
 
 struct pipe_t {
     reg_t *cell;
+    bool used;
 };
