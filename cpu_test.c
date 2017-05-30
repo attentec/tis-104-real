@@ -362,6 +362,12 @@ void test_Cpu_should_ReadZeroFromNil(void) {
     TEST_ASSERT_EQUAL_INT(1, state.pc);
 }
 
+void test_Cpu_shoud_AccepWritesTotNil(void) {
+    prgm = test_dst_prgm(ARG_NIL);
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(1, state.pc);
+}
+
 void test_Cpu_should_ReadFromLeftOnJroLeft(void) {
     prgm = test_src_prgm(ARG_LEFT);
     state.pc = 1;
