@@ -214,6 +214,9 @@ void cpu_write(struct cpu_t *cpu) {
         }
     } else if (op == OP_ADD) {
         cpu->state->acc += arg1;
+    } else if (op == OP_NOP) {
+    } else {
+        panic();
     }
 
     if (pc_action == PC_ACTION_INCREMENT) {
