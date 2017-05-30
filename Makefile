@@ -49,16 +49,16 @@ avr/sender.elf: avr/sender.o avr/uart.o
 
 avr/receiver.elf: avr/receiver.o avr/uart.o
 
-AVR_SOURCES = font.c indexmap.c screen.c mem.c tft.c fonts.c disp.c pin.c spi_sw.c panic.c app.c
+AVR_SOURCES = font.c indexmap.c screen.c mem.c tft.c fonts.c disp.c pin.c spi_sw.c panic_avr.c app.c
 AVR_OBJECTS = $(addprefix avr/,$(patsubst %.c,%.o,${AVR_SOURCES}))
 
-PC_SOURCES = font.c indexmap.c screen.c mem.c tft.c fonts.c disp.c pin_pc.c spi_print.c panic.c delay_pc.c
+PC_SOURCES = font.c indexmap.c screen.c mem.c tft.c fonts.c disp.c pin_pc.c spi_print.c panic_pc.c delay_pc.c
 PC_OBJECTS = $(addprefix pc/,$(patsubst %.c,%.o,${PC_SOURCES}))
 
 avr/main_avr.elf: avr/main_avr.o ${AVR_OBJECTS}
 
 pc/main_pc.elf: pc/main_pc.o ${PC_OBJECTS}
 
-pc/cpu_test_runner.elf: pc/Unity/src/unity.o pc/cpu_test.o pc/cpu_test_runner.o pc/cpu.o pc/pipe_mock.o pc/panic.o
+pc/cpu_test_runner.elf: pc/Unity/src/unity.o pc/cpu_test.o pc/cpu_test_runner.o pc/cpu.o pc/pipe_mock.o pc/panic_pc.o
 
-pc/integration_test_runner.elf: pc/Unity/src/unity.o pc/integration_test.o pc/integration_test_runner.o pc/cpu.o pc/pipe_mock.o pc/panic.o
+pc/integration_test_runner.elf: pc/Unity/src/unity.o pc/integration_test.o pc/integration_test_runner.o pc/cpu.o pc/pipe_mock.o pc/panic_pc.o
