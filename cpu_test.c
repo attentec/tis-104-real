@@ -330,6 +330,14 @@ void test_Cpu_should_SaveAccToBakOnSav(void) {
     TEST_ASSERT_EQUAL_INT(123, state.bak);
 }
 
+void test_Cpu_should_Add(void) {
+    prgm.length = 1;
+    prgm.instrs[0] = INSTR1(OP_ADD, 10);
+    state.acc = 100;
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(110, state.acc);
+}
+
 void test_Cpu_should_NegateAccOnNeg(void) {
     prgm.length = 2;
     prgm.instrs[0] = INSTR0(OP_NEG);
