@@ -9,6 +9,17 @@ enum pc_action_t {
     PC_ACTION_JUMP,
 };
 
+void cpu_state_init(struct state_t *state) {
+    state->pc = 0;
+    state->acc = 0;
+    state->bak = 0;
+    state->rx = REG_INVALID_VALUE;
+    state->tx = REG_INVALID_VALUE;
+    state->has_last = false;
+    state->last = DIR_LEFT;
+    state->io_state = IO_STATE_RUNNING;
+}
+
 void cpu_init(struct cpu_t *cpu, struct prgm_t *prgm, struct state_t *state, struct pipe_t *inputs[], struct pipe_t *outputs[]) {
     cpu->prgm = prgm;
     cpu->state = state;
