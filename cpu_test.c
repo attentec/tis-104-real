@@ -60,6 +60,9 @@ void setUp(void) {
     cpu_init(&cpu, &prgm, &state, input_pointers, output_pointers);
 }
 
+void tearDown(void) {
+}
+
 void test_Cpu_should_NotIncPcOnEmptyProgram(void) {
     cpu_step(&cpu);
     TEST_ASSERT_EQUAL_INT(0, state.pc);
