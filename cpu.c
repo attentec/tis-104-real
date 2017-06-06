@@ -67,7 +67,7 @@ void cpu_read(struct cpu_t *cpu) {
         return;
     }
 
-    addr_t *pc  = &cpu->state->pc;
+    address_t *pc  = &cpu->state->pc;
     struct instr_t instr = cpu->prgm->instrs[*pc];
 
     if (arg_is_dir(instr.arg1)) {
@@ -107,11 +107,11 @@ void cpu_write(struct cpu_t *cpu) {
         return;
     }
 
-    addr_t *pc  = &cpu->state->pc;
+    address_t *pc  = &cpu->state->pc;
     reg_t  *acc = &cpu->state->acc;
     reg_t  *bak = &cpu->state->bak;
     struct instr_t instr = cpu->prgm->instrs[*pc];
-    addr_t length = cpu->prgm->length;
+    address_t length = cpu->prgm->length;
     enum op_t op = instr.op;
 
     reg_t arg1;
@@ -134,7 +134,7 @@ void cpu_write(struct cpu_t *cpu) {
     }
 
     enum pc_action_t pc_action = PC_ACTION_INCREMENT;
-    addr_t jump_pc = 0;
+    address_t jump_pc = 0;
 
     if (op == OP_SWP) {
         reg_t temp = *acc;
@@ -146,26 +146,26 @@ void cpu_write(struct cpu_t *cpu) {
         *acc = -*acc;
     } else if (op == OP_JMP) {
         pc_action = PC_ACTION_JUMP;
-        jump_pc = (addr_t) arg1;
+        jump_pc = (address_t) arg1;
     } else if (op == OP_JEZ) {
         if (*acc == 0) {
             pc_action = PC_ACTION_JUMP;
-            jump_pc = (addr_t) arg1;
+            jump_pc = (address_t) arg1;
         }
     } else if (op == OP_JNZ) {
         if (*acc != 0) {
             pc_action = PC_ACTION_JUMP;
-            jump_pc = (addr_t) arg1;
+            jump_pc = (address_t) arg1;
         }
     } else if (op == OP_JGZ) {
         if (*acc > 0) {
             pc_action = PC_ACTION_JUMP;
-            jump_pc = (addr_t) arg1;
+            jump_pc = (address_t) arg1;
         }
     } else if (op == OP_JLZ) {
         if (*acc < 0) {
             pc_action = PC_ACTION_JUMP;
-            jump_pc = (addr_t) arg1;
+            jump_pc = (address_t) arg1;
         }
     } else if (op == OP_JRO) {
         reg_t offset = arg1;
@@ -178,7 +178,7 @@ void cpu_write(struct cpu_t *cpu) {
             jump_pc = length - 1;
         } else {
             pc_action = PC_ACTION_JUMP;
-            jump_pc = (addr_t) unclamped_pc;
+            jump_pc = (address_t) unclamped_pc;
         }
     } else if (op == OP_MOV) {
         if (instr.arg2 == ARG_ACC) {
