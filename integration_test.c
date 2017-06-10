@@ -18,6 +18,9 @@ void setUp(void) {
     grid_init();
 }
 
+void tearDown(void) {
+}
+
 void test_Integration_should_FollowBasicCommunicationTiming(void) {
     grid_prgms[CPU_UL].length = 2;
     grid_prgms[CPU_UL].instrs[0] = INSTR2(OP_MOV, 1, ARG_RIGHT);

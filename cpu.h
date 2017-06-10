@@ -6,7 +6,7 @@
 #define CPU_MAX_PRGM_LENGTH (15)
 #define CPU_MAX_PIPES (4)
 
-typedef uint8_t addr_t;
+typedef uint8_t address_t;
 typedef int16_t reg_t;
 
 #define REG_INVALID_VALUE ((reg_t)(-1000))
@@ -60,12 +60,12 @@ struct instr_t {
 };
 
 struct prgm_t {
-    addr_t length;
+    address_t length;
     struct instr_t instrs[CPU_MAX_PRGM_LENGTH];
 };
 
 struct state_t {
-    addr_t pc;
+    address_t pc;
     reg_t acc;
     reg_t bak;
     reg_t rx;
@@ -82,6 +82,7 @@ struct cpu_t {
     struct pipe_t *outputs[CPU_MAX_PIPES];
 };
 
+void cpu_state_init(struct state_t *state);
 void cpu_init(struct cpu_t *cpu, struct prgm_t *prgm, struct state_t *state, struct pipe_t *inputs[], struct pipe_t *outputs[]);
 void cpu_read(struct cpu_t *cpu);
 void cpu_write(struct cpu_t *cpu);

@@ -97,15 +97,7 @@ void grid_init(void) {
             input_pointers[d] = &pipes[input_index(ib, d)];
         }
 
-        grid_states[i].pc = 0;
-        grid_states[i].acc = 0;
-        grid_states[i].bak = 0;
-        grid_states[i].rx = REG_INVALID_VALUE;
-        grid_states[i].tx = REG_INVALID_VALUE;
-        grid_states[i].has_last = false;
-        grid_states[i].last = DIR_LEFT;
-        grid_states[i].io_state = IO_STATE_RUNNING;
-
+        cpu_state_init(&grid_states[i]);
         cpu_init(&cpus[i], &grid_prgms[i], &grid_states[i], input_pointers, output_pointers);
     }
 }

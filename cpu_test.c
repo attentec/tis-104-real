@@ -50,14 +50,11 @@ void setUp(void) {
     }
 
     prgm.length = 0;
-    state.pc = 0;
-    state.acc = 0;
-    state.bak = 0;
-    state.rx = REG_INVALID_VALUE;
-    state.has_last = false;
-    state.last = DIR_LEFT;
-    state.io_state = IO_STATE_RUNNING;
+    cpu_state_init(&state);
     cpu_init(&cpu, &prgm, &state, input_pointers, output_pointers);
+}
+
+void tearDown(void) {
 }
 
 void test_Cpu_should_NotIncPcOnEmptyProgram(void) {
