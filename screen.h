@@ -1,8 +1,9 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stdint.h>
 
-#include "indexmap.h"
+struct indexmap;
 
 struct screen {
     struct indexmap *indices;

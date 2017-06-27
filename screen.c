@@ -1,8 +1,5 @@
-#include <stdlib.h>
-#include <string.h>
-
-#include "screen.h"
 #include "indexmap.h"
+#include "screen.h"
 
 void screen_init(struct screen *scr, struct indexmap *indices) {
     scr->indices = indices;

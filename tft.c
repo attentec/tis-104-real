@@ -2,7 +2,10 @@
 
 #include "delay.h"
 #include "disp.h"
+#include "font.h"
 #include "tft.h"
+
+struct screen;
 
 static void set_window(struct tft_t *tft, uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
 

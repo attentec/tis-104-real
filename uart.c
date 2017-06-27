@@ -1,5 +1,5 @@
 #include <avr/io.h>
-#include <stdbool.h>
+
 #include "uart.h"
 
 static void uart_9600(void) {

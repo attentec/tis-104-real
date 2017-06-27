@@ -1,8 +1,8 @@
 #include <avr/io.h>
 #include <stdbool.h>
 
-#include "pin.h"
 #include "panic.h"
+#include "pin.h"
 
 #define PORT_MASK (0x0Fu)
 #define PIN_MASK  (0x0Fu)

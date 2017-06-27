@@ -1,6 +1,8 @@
 #include <avr/io.h>
 #include <util/delay.h>
+
 #include <stdbool.h>
+
 #include "uart.h"
 
 static void signal_value_available(void) {

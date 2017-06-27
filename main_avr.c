@@ -1,10 +1,12 @@
+#include <stdint.h>
+
 #include "app.h"
 #include "disp.h"
 #include "font.h"
 #include "fonts.h"
 #include "indexmap.h"
+#include "pin.h"
 #include "screen.h"
-#include "spi.h"
 #include "spi_sw.h"
 #include "tft.h"
 

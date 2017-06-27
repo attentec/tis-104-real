@@ -1,8 +1,8 @@
 #include <stddef.h>
 
+#include "panic.h"
 #include "pipe.h"
 #include "pipe_mock.h"
-#include "panic.h"
 
 bool input_accept(struct pipe_t *input, reg_t *value) {
     if (input->cell && *(input->cell) != REG_INVALID_VALUE) {

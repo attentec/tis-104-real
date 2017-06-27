@@ -1,6 +1,8 @@
 #pragma once
 
-#include "pipe.h"
+#include <stdbool.h>
+
+#include "cpu.h"
 
 struct pipe_t {
     reg_t *cell;

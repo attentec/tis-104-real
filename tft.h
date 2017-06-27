@@ -1,10 +1,11 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stdint.h>
 
-#include "disp.h"
-#include "font.h"
-#include "screen.h"
+struct disp_t;
+struct font;
+struct screen;
 
 #define TFT_WIDTH  (176u)
 #define TFT_HEIGHT (220u)

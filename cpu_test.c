@@ -1,8 +1,9 @@
 #include <stddef.h>
 
-#include "unity.h"
 #include "cpu.h"
+#include "pipe.h"
 #include "pipe_mock.h"
+#include "unity.h"
 
 #define INSTR0(op)             ((struct instr_t){(op), ARG_NONE, ARG_NONE})
 #define INSTR1(op, arg1)       ((struct instr_t){(op), (arg1),   ARG_NONE})

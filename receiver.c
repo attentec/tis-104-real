@@ -1,7 +1,10 @@
 #include <avr/io.h>
-#include <stdbool.h>
-#include <stdio.h>
+
 #include <inttypes.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+
 #include "uart.h"
 
 static uint16_t receive_bit(void) {

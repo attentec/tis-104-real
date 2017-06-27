@@ -1,7 +1,9 @@
 #pragma once
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
+
+struct pipe_t;
 
 #define CPU_MAX_PRGM_LENGTH (15)
 #define CPU_MAX_PIPES (4)

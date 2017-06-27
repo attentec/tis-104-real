@@ -1,7 +1,8 @@
-#include <stdlib.h>
+#include <stddef.h>
+
 #include "cpu.h"
-#include "pipe.h"
 #include "panic.h"
+#include "pipe.h"
 
 enum pc_action_t {
     PC_ACTION_INCREMENT = 0,

@@ -1,9 +1,11 @@
 #pragma once
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "pin.h"
+
+struct spi_t;
 
 struct disp_t {
     pin_t rs;

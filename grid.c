@@ -1,8 +1,10 @@
-#include "grid.h"
-#include "cpu.h"
-#include "pipe_mock.h"
 #include <assert.h>
+#include <stdbool.h>
 #include <stdlib.h>
+
+#include "cpu.h"
+#include "grid.h"
+#include "pipe_mock.h"
 
 #define CPU_RECT_WIDTH (4)
 #define CPU_RECT_HEIGHT (3)
