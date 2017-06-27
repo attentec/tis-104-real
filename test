@@ -2,8 +2,8 @@
 
 result=0
 
-make -B pc/cpu_test_runner.elf pc/integration_test_runner.elf || exit 1
-./pc/cpu_test_runner.elf || result=$?
-./pc/integration_test_runner.elf || result=$?
+make -B build/pc/cpu_test_runner.elf build/pc/integration_test_runner.elf || exit 1
+build/pc/cpu_test_runner.elf || result=$?
+build/pc/integration_test_runner.elf || result=$?
 (( $result == 0 )) || echo TEST FAILED
 exit $result
