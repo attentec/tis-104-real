@@ -99,7 +99,7 @@ void tft_begin(struct tft_t *tft) {
 }
 
 void tft_clear(struct tft_t *tft) {
-    tft_fill_rectangle(tft, 0, 0, tft->max_x - 1, tft->max_y - 1, COLOR_BLACK);
+    tft_fill_rectangle(tft, 0, 0, tft->max_x - 1, tft->max_y - 1, tft->bg_color);
     delay_ms(10);
 }
 
