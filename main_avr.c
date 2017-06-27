@@ -32,7 +32,7 @@ int main(void) {
     screen_init(&scr, &indices);
     spi_init(&spi, sdi, clk);
     disp_init(&disp, &spi, rs, cs, rst, led);
-    font_init(&font, Terminal6x8);
+    font_init(&font, monoblipp6x8);
     tft_init(&tft, &disp, &scr, &font);
 
     app_init(&scr, &tft);

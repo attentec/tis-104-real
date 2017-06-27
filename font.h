@@ -7,8 +7,6 @@ struct font
     const uint8_t* data;
     uint8_t width;
     uint8_t height;
-    uint8_t offset;
-    uint8_t numchars;
 };
 
 void font_init(struct font *font, const uint8_t *data);

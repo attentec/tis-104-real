@@ -2,4 +2,4 @@
 
 #include <stdint.h>
 
-extern const uint8_t Terminal6x8[];
+extern const uint8_t monoblipp6x8[];

@@ -59,7 +59,7 @@ static void draw_background(struct screen *scr, struct tft_t *tft) {
     render(scr, tft);
 
 
-    tft_set_foreground_color(tft, COLOR_DARKGRAY);
+    tft_set_foreground_color(tft, COLOR_DARKGREY);
 
     draw_text(scr, middle + 2, 1, "ACC");
     draw_text(scr, middle + 2, 4, "BAK");
@@ -133,5 +133,4 @@ bool app_loop(struct screen *scr, struct tft_t *tft) {
 
 void app_deinit(struct tft_t *tft) {
     tft_set_backlight(tft, false);
-    tft_set_display(tft, false);
 }
