@@ -1,2 +1,10 @@
+/.tup
 *.sw*
-build
+*.o
+*.a
+*.elf
+*.s
+*.hex
+/tests/*_runner.c
+/tests/*_results.txt
+/tests/results.txt

@@ -1,0 +1,13 @@
+CFLAGS     = -std=c11 -g -Wall -Wextra -pedantic
+PC_CFLAGS  = -O0
+AVR_CFLAGS = -mmcu=atmega328p -Os -DF_CPU=16000000ul
+
+!cc_pc = |> ^ CC %o^   gcc $(CFLAGS) $(PC_CFLAGS) -c %f -o %o |>
+!ld_pc = |> ^ LD %o^   gcc $(CFLAGS) $(PC_CFLAGS)    %f -o %o |>
+!ar_pc = |> ^ AR %o^   ar crs %o %f                           |>
+
+!cc_avr  = |> ^ CC %o^    avr-gcc $(CFLAGS) $(AVR_CFLAGS) -c %f -o %o |>
+!ld_avr  = |> ^ LD %o^    avr-gcc $(CFLAGS) $(AVR_CFLAGS)    %f -o %o |>
+!ar_avr  = |> ^ AR %o^    avr-ar crs %o %f                            |>
+!dis_avr = |> ^ DIS %o^   avr-objdump -d %f > %o                      |>
+!hex_avr = |> ^ HEX %o^   avr-objcopy -j .text -j .data -O ihex %f %o |>

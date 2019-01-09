@@ -1,0 +1,9 @@
+include_rules
+
+INCLUDES = -I../src
+LIBS = ../src/tis104_avr.a
+
+: foreach *.c              |> !cc_avr $(INCLUDES) |> %B.o   {objs}
+: foreach {objs} | $(LIBS) |> !ld_avr $(LIBS)     |> %B.elf {bins}
+: foreach {bins}           |> !dis_avr            |> %B.s
+: foreach {bins}           |> !hex_avr            |> %B.hex
