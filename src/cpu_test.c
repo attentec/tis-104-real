@@ -362,7 +362,7 @@ void test_Cpu_should_ReadZeroFromNil(void) {
     TEST_ASSERT_EQUAL_INT(1, state.pc);
 }
 
-void test_Cpu_shoud_AccepWritesTotNil(void) {
+void test_Cpu_should_AcceptWritesToNil(void) {
     prgm = test_dst_prgm(ARG_NIL);
     cpu_step(&cpu);
     TEST_ASSERT_EQUAL_INT(1, state.pc);
