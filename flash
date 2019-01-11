@@ -6,6 +6,9 @@
 # Custom programmer device:
 #     DEVICE=/dev/ttyXXX ./flash <app name> [avrdude args...]
 
+set -e
+set -u
+
 tup
 
 filename=apps/"$1".hex
