@@ -89,18 +89,10 @@ void tft_begin(struct tft_t *tft) {
     disp_write_register(tft->disp, 0x07u, 0x0012u);
     delay_ms(50);
     disp_write_register(tft->disp, 0x07u, 0x1017u);
-
-    tft_set_backlight(tft, true);
-
-    tft_set_background_color(tft, COLOR_BLACK);
-    tft_set_foreground_color(tft, COLOR_WHITE);
-
-    tft_clear(tft);
 }
 
 void tft_clear(struct tft_t *tft) {
     tft_fill_rectangle(tft, 0, 0, tft->max_x - 1, tft->max_y - 1, tft->bg_color);
-    delay_ms(10);
 }
 
 void tft_set_backlight(struct tft_t *tft, bool flag) {

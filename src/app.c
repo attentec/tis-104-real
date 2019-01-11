@@ -105,7 +105,11 @@ static void draw_idle(struct screen *scr, uint8_t idle) {
 
 void app_init(struct screen *scr, struct tft_t *tft) {
     tft_begin(tft);
+    tft_set_background_color(tft, COLOR_BLACK);
+    tft_set_foreground_color(tft, COLOR_WHITE);
+    tft_clear(tft);
     draw_background(scr, tft);
+    tft_set_backlight(tft, true);
     render(scr, tft);
 }
 
