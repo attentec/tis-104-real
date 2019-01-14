@@ -11,8 +11,7 @@ void disp_init(struct disp_t *disp, struct spi_t *spi, pin_t rs, pin_t cs, pin_t
 
 static void write(struct disp_t *disp, uint16_t x) {
     pin_write(disp->cs, false);
-    spi_write(disp->spi, x >> 8);
-    spi_write(disp->spi, x & 0xff);
+    spi_write(disp->spi, x);
     pin_write(disp->cs, true);
 }
 

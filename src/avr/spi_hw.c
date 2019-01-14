@@ -21,9 +21,12 @@ void spi_init(struct spi_t *spi) {
     SPSR = (1<<SPI2X);
 }
 
-void spi_write(struct spi_t *spi, uint8_t byte) {
+void spi_write(struct spi_t *spi, uint16_t word) {
     (void) spi;
-    SPDR = byte;
+    SPDR = word >> 8;
+    while ((SPSR & (1<<SPIF)) == 0) {
+    }
+    SPDR = word & 0xFF;
     while ((SPSR & (1<<SPIF)) == 0) {
     }
 }
