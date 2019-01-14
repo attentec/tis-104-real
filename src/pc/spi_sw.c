@@ -3,7 +3,7 @@
 
 #include "spi_sw.h"
 
-void spi_init(struct spi_t *spi, pin_t sdi, pin_t clk) {
+void spi_init(struct spi_t *spi, struct pin_t *sdi, struct pin_t *clk) {
     spi->sdi = sdi;
     spi->clk = clk;
 }
