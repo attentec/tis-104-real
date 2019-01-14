@@ -7,11 +7,13 @@
 #include "indexmap.h"
 #include "pin.h"
 #include "screen.h"
-#include "spi_sw.h"
+#include "spi_hw.h"
 #include "tft.h"
 
 #define WIDTH (29)
 #define HEIGHT (27)
+
+#define LAYOUT (2)
 
 int main(void) {
     static uint8_t buf[WIDTH * HEIGHT];
@@ -22,6 +24,8 @@ int main(void) {
     static struct spi_t spi;
     static struct tft_t tft;
 
+#if LAYOUT == 1
+    // Display module on prototype shield
                                                             // Arduino pin
     pin_t led = pin_init(PIN_PORT_D, 2, PIN_DIR_OUTPUT);    // 2
     pin_t clk = pin_init(PIN_PORT_D, 3, PIN_DIR_OUTPUT);    // 3
@@ -29,10 +33,22 @@ int main(void) {
     pin_t rs  = pin_init(PIN_PORT_D, 5, PIN_DIR_OUTPUT);    // 5
     pin_t rst = pin_init(PIN_PORT_D, 6, PIN_DIR_OUTPUT);    // 6
     pin_t cs  = pin_init(PIN_PORT_D, 7, PIN_DIR_OUTPUT);    // 7
+#elif LAYOUT == 2
+    // Display module plugged directly into Arduino headers
+                                                            // Arduino pin
+    pin_t led = pin_init(PIN_PORT_C, 0, PIN_DIR_OUTPUT);    // A0
+    //pin_t clk = pin_init(PIN_PORT_C, 1, PIN_DIR_OUTPUT);    // A1
+    //pin_t sdi = pin_init(PIN_PORT_C, 2, PIN_DIR_OUTPUT);    // A2
+    pin_t rs  = pin_init(PIN_PORT_C, 3, PIN_DIR_OUTPUT);    // A3
+    pin_t rst = pin_init(PIN_PORT_C, 4, PIN_DIR_OUTPUT);    // A4
+    pin_t cs  = pin_init(PIN_PORT_C, 5, PIN_DIR_OUTPUT);    // A5
+#else
+#error Invalid pinout
+#endif
 
     indexmap_init(&indices, WIDTH, HEIGHT, buf);
     screen_init(&scr, &indices);
-    spi_init(&spi, sdi, clk);
+    spi_init(&spi);
     disp_init(&disp, &spi, rs, cs, rst, led);
     font_init(&font, monoblipp6x8);
     tft_init(&tft, &disp, &scr, &font);
