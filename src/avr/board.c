@@ -1,5 +1,5 @@
 #include "board.h"
-#include "disp.h"
+#include "dispif.h"
 #include "font.h"
 #include "fonts.h"
 #include "indexmap.h"
@@ -15,7 +15,7 @@ static uint8_t buf[WIDTH * HEIGHT];
 static struct indexmap indices;
 static struct font font;
 static struct screen scr;
-static struct disp_t disp;
+static struct dispif_t dispif;
 static struct spi_t spi;
 static struct tft_t tft;
 
@@ -33,11 +33,11 @@ void board_init(struct board_t *board)
     indexmap_init(&indices, WIDTH, HEIGHT, buf);
     screen_init(&scr, &indices);
     spi_init(&spi);
-    disp_init(&disp, &spi, &rs, &cs, &rst, &led);
+    dispif_init(&dispif, &spi, &rs, &cs, &rst, &led);
     font_init(&font, monoblipp6x8);
-    tft_init(&tft, &disp, &scr, &font);
+    tft_init(&tft, &dispif, &scr, &font);
 
-    board->disp = &disp;
+    board->dispif = &dispif;
     board->scr = &scr;
     board->tft = &tft;
 }

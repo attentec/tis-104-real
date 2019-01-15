@@ -1,7 +1,7 @@
 #include <stdbool.h>
 
 #include "delay.h"
-#include "disp.h"
+#include "dispif.h"
 #include "font.h"
 #include "tft.h"
 
@@ -10,18 +10,18 @@ struct screen;
 static void set_window(struct tft_t *tft, uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
 
 static void set_window(struct tft_t *tft, uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
-    disp_write_register(tft->disp, 0x36u, x1);
-    disp_write_register(tft->disp, 0x37u, x0);
-    disp_write_register(tft->disp, 0x38u, y1);
-    disp_write_register(tft->disp, 0x39u, y0);
-    disp_write_register(tft->disp, 0x20u, x0);
-    disp_write_register(tft->disp, 0x21u, y0);
-    disp_write_command(tft->disp, 0x22u);
+    dispif_write_register(tft->dispif, 0x36u, x1);
+    dispif_write_register(tft->dispif, 0x37u, x0);
+    dispif_write_register(tft->dispif, 0x38u, y1);
+    dispif_write_register(tft->dispif, 0x39u, y0);
+    dispif_write_register(tft->dispif, 0x20u, x0);
+    dispif_write_register(tft->dispif, 0x21u, y0);
+    dispif_write_command(tft->dispif, 0x22u);
 }
 
-void tft_init(struct tft_t *tft, struct disp_t *disp, struct screen *scr, struct font *font) {
+void tft_init(struct tft_t *tft, struct dispif_t *dispif, struct screen *scr, struct font *font) {
     tft->font = font;
-    tft->disp = disp;
+    tft->dispif = dispif;
     tft->scr = scr;
     tft->max_x = TFT_WIDTH;
     tft->max_y = TFT_HEIGHT;
@@ -30,65 +30,65 @@ void tft_init(struct tft_t *tft, struct disp_t *disp, struct screen *scr, struct
 }
 
 void tft_begin(struct tft_t *tft) {
-    disp_set_reset(tft->disp, true);
+    dispif_set_reset(tft->dispif, true);
     delay_ms(1);
-    disp_set_reset(tft->disp, false);
+    dispif_set_reset(tft->dispif, false);
     delay_ms(10);
-    disp_set_reset(tft->disp, true);
+    dispif_set_reset(tft->dispif, true);
     delay_ms(50);
 
-    disp_write_register(tft->disp, 0x10u, 0x0000u);
-    disp_write_register(tft->disp, 0x11u, 0x0000u);
-    disp_write_register(tft->disp, 0x12u, 0x0000u);
-    disp_write_register(tft->disp, 0x13u, 0x0000u);
-    disp_write_register(tft->disp, 0x14u, 0x0000u);
+    dispif_write_register(tft->dispif, 0x10u, 0x0000u);
+    dispif_write_register(tft->dispif, 0x11u, 0x0000u);
+    dispif_write_register(tft->dispif, 0x12u, 0x0000u);
+    dispif_write_register(tft->dispif, 0x13u, 0x0000u);
+    dispif_write_register(tft->dispif, 0x14u, 0x0000u);
 
-    disp_write_register(tft->disp, 0x11u, 0x0018u);
-    disp_write_register(tft->disp, 0x12u, 0x6121u);
-    disp_write_register(tft->disp, 0x13u, 0x006Fu);
-    disp_write_register(tft->disp, 0x14u, 0x495Fu);
-    disp_write_register(tft->disp, 0x10u, 0x0800u);
+    dispif_write_register(tft->dispif, 0x11u, 0x0018u);
+    dispif_write_register(tft->dispif, 0x12u, 0x6121u);
+    dispif_write_register(tft->dispif, 0x13u, 0x006Fu);
+    dispif_write_register(tft->dispif, 0x14u, 0x495Fu);
+    dispif_write_register(tft->dispif, 0x10u, 0x0800u);
     delay_ms(10);
-    disp_write_register(tft->disp, 0x11u, 0x103Bu);
+    dispif_write_register(tft->dispif, 0x11u, 0x103Bu);
     delay_ms(50);
 
-    disp_write_register(tft->disp, 0x01u, 0x011Cu);
-    disp_write_register(tft->disp, 0x02u, 0x0100u);
-    disp_write_register(tft->disp, 0x03u, 0x1030u);
-    disp_write_register(tft->disp, 0x07u, 0x0000u);
-    disp_write_register(tft->disp, 0x08u, 0x0808u);
-    disp_write_register(tft->disp, 0x0Bu, 0x1100u);
-    disp_write_register(tft->disp, 0x0Cu, 0x0000u);
-    disp_write_register(tft->disp, 0x0Fu, 0x0D01u);
-    disp_write_register(tft->disp, 0x15u, 0x0020u);
-    disp_write_register(tft->disp, 0x20u, 0x0000u);
-    disp_write_register(tft->disp, 0x21u, 0x0000u);
+    dispif_write_register(tft->dispif, 0x01u, 0x011Cu);
+    dispif_write_register(tft->dispif, 0x02u, 0x0100u);
+    dispif_write_register(tft->dispif, 0x03u, 0x1030u);
+    dispif_write_register(tft->dispif, 0x07u, 0x0000u);
+    dispif_write_register(tft->dispif, 0x08u, 0x0808u);
+    dispif_write_register(tft->dispif, 0x0Bu, 0x1100u);
+    dispif_write_register(tft->dispif, 0x0Cu, 0x0000u);
+    dispif_write_register(tft->dispif, 0x0Fu, 0x0D01u);
+    dispif_write_register(tft->dispif, 0x15u, 0x0020u);
+    dispif_write_register(tft->dispif, 0x20u, 0x0000u);
+    dispif_write_register(tft->dispif, 0x21u, 0x0000u);
 
-    disp_write_register(tft->disp, 0x30u, 0x0000u);
-    disp_write_register(tft->disp, 0x31u, 0x00DBu);
-    disp_write_register(tft->disp, 0x32u, 0x0000u);
-    disp_write_register(tft->disp, 0x33u, 0x0000u);
-    disp_write_register(tft->disp, 0x34u, 0x00DBu);
-    disp_write_register(tft->disp, 0x35u, 0x0000u);
-    disp_write_register(tft->disp, 0x36u, 0x00AFu);
-    disp_write_register(tft->disp, 0x37u, 0x0000u);
-    disp_write_register(tft->disp, 0x38u, 0x00DBu);
-    disp_write_register(tft->disp, 0x39u, 0x0000u);
+    dispif_write_register(tft->dispif, 0x30u, 0x0000u);
+    dispif_write_register(tft->dispif, 0x31u, 0x00DBu);
+    dispif_write_register(tft->dispif, 0x32u, 0x0000u);
+    dispif_write_register(tft->dispif, 0x33u, 0x0000u);
+    dispif_write_register(tft->dispif, 0x34u, 0x00DBu);
+    dispif_write_register(tft->dispif, 0x35u, 0x0000u);
+    dispif_write_register(tft->dispif, 0x36u, 0x00AFu);
+    dispif_write_register(tft->dispif, 0x37u, 0x0000u);
+    dispif_write_register(tft->dispif, 0x38u, 0x00DBu);
+    dispif_write_register(tft->dispif, 0x39u, 0x0000u);
 
-    disp_write_register(tft->disp, 0x50u, 0x0000u);
-    disp_write_register(tft->disp, 0x51u, 0x0808u);
-    disp_write_register(tft->disp, 0x52u, 0x080Au);
-    disp_write_register(tft->disp, 0x53u, 0x000Au);
-    disp_write_register(tft->disp, 0x54u, 0x0A08u);
-    disp_write_register(tft->disp, 0x55u, 0x0808u);
-    disp_write_register(tft->disp, 0x56u, 0x0000u);
-    disp_write_register(tft->disp, 0x57u, 0x0A00u);
-    disp_write_register(tft->disp, 0x58u, 0x0710u);
-    disp_write_register(tft->disp, 0x59u, 0x0710u);
+    dispif_write_register(tft->dispif, 0x50u, 0x0000u);
+    dispif_write_register(tft->dispif, 0x51u, 0x0808u);
+    dispif_write_register(tft->dispif, 0x52u, 0x080Au);
+    dispif_write_register(tft->dispif, 0x53u, 0x000Au);
+    dispif_write_register(tft->dispif, 0x54u, 0x0A08u);
+    dispif_write_register(tft->dispif, 0x55u, 0x0808u);
+    dispif_write_register(tft->dispif, 0x56u, 0x0000u);
+    dispif_write_register(tft->dispif, 0x57u, 0x0A00u);
+    dispif_write_register(tft->dispif, 0x58u, 0x0710u);
+    dispif_write_register(tft->dispif, 0x59u, 0x0710u);
 
-    disp_write_register(tft->disp, 0x07u, 0x0012u);
+    dispif_write_register(tft->dispif, 0x07u, 0x0012u);
     delay_ms(50);
-    disp_write_register(tft->disp, 0x07u, 0x1017u);
+    dispif_write_register(tft->dispif, 0x07u, 0x1017u);
 }
 
 void tft_clear(struct tft_t *tft) {
@@ -96,14 +96,14 @@ void tft_clear(struct tft_t *tft) {
 }
 
 void tft_set_backlight(struct tft_t *tft, bool flag) {
-    disp_set_backlight(tft->disp, flag);
+    dispif_set_backlight(tft->dispif, flag);
 }
 
 void tft_fill_rectangle(struct tft_t *tft, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color) {
     set_window(tft, x1, y1, x2, y2);
 
     for(uint16_t t=(y2 - y1 + 1) * (x2 - x1 + 1); t > 0; t--) {
-        disp_write_data(tft->disp, color);
+        dispif_write_data(tft->dispif, color);
     }
 }
 
@@ -136,6 +136,6 @@ void tft_draw_char(struct tft_t *tft, uint8_t x, uint8_t y, char ch) {
         }
     }
     for (uint8_t i = 0; i < (6 * 8); i++) {
-        disp_write_data(tft->disp, charPixels[i]);
+        dispif_write_data(tft->dispif, charPixels[i]);
     }
 }

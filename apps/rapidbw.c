@@ -1,7 +1,7 @@
 #include <stdint.h>
 
 #include "board.h"
-#include "disp.h"
+#include "dispif.h"
 #include "tft.h"
 
 int main(void) {
@@ -12,16 +12,16 @@ int main(void) {
     tft_set_backlight(board.tft, true);
 
     for (;;) {
-        disp_write_command(board.disp, 0x22u);
+        dispif_write_command(board.dispif, 0x22u);
         for (uint8_t y = 0; y < TFT_HEIGHT; y++) {
             for (uint8_t x = 0; x < TFT_WIDTH; x++) {
-                disp_write_data(board.disp, COLOR_WHITE);
+                dispif_write_data(board.dispif, COLOR_WHITE);
             }
         }
-        disp_write_command(board.disp, 0x22u);
+        dispif_write_command(board.dispif, 0x22u);
         for (uint8_t y = 0; y < TFT_HEIGHT; y++) {
             for (uint8_t x = 0; x < TFT_WIDTH; x++) {
-                disp_write_data(board.disp, COLOR_BLACK);
+                dispif_write_data(board.dispif, COLOR_BLACK);
             }
         }
     }

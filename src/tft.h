@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-struct disp_t;
+struct dispif_t;
 struct font;
 struct screen;
 
@@ -25,11 +25,11 @@ struct tft_t {
     uint16_t fg_color;
 
     struct font *font;
-    struct disp_t *disp;
+    struct dispif_t *dispif;
     struct screen *scr;
 };
 
-void tft_init(struct tft_t *tft, struct disp_t *disp, struct screen *scr, struct font *font);
+void tft_init(struct tft_t *tft, struct dispif_t *dispif, struct screen *scr, struct font *font);
 void tft_begin(struct tft_t *tft);
 void tft_clear(struct tft_t *tft);
 void tft_set_backlight(struct tft_t *tft, bool flag);

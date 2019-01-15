@@ -1,12 +1,12 @@
 #pragma once
 
 #include "screen.h"
-#include "disp.h"
+#include "dispif.h"
 #include "tft.h"
 
 struct board_t {
     struct screen *scr;
-    struct disp_t *disp;
+    struct dispif_t *dispif;
     struct tft_t *tft;
 };
 
