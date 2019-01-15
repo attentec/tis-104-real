@@ -1,26 +1,26 @@
-#include <stdint.h>
-
+#include "board.h"
 #include "disp.h"
 #include "font.h"
 #include "fonts.h"
 #include "indexmap.h"
-#include "pin.h"
 #include "screen.h"
+#include "spi.h"
 #include "spi_hw.h"
 #include "tft.h"
 
 #define WIDTH (29)
 #define HEIGHT (27)
 
-int main(void) {
-    static uint8_t buf[WIDTH * HEIGHT];
-    static struct indexmap indices;
-    static struct font font;
-    static struct screen scr;
-    static struct disp_t disp;
-    static struct spi_t spi;
-    static struct tft_t tft;
+static uint8_t buf[WIDTH * HEIGHT];
+static struct indexmap indices;
+static struct font font;
+static struct screen scr;
+static struct disp_t disp;
+static struct spi_t spi;
+static struct tft_t tft;
 
+void board_init(struct board_t *board)
+{
     // Display module plugged directly into Arduino headers
                                                             // Arduino pin
     struct pin_t led = pin_init(PIN_PORT_C, 0, PIN_DIR_OUTPUT);    // A0
@@ -37,22 +37,7 @@ int main(void) {
     font_init(&font, monoblipp6x8);
     tft_init(&tft, &disp, &scr, &font);
 
-    tft_begin(&tft);
-    tft_set_backlight(&tft, true);
-
-    for (;;) {
-        disp_write_command(&disp, 0x22u);
-        for (uint8_t y = 0; y < TFT_HEIGHT; y++) {
-            for (uint8_t x = 0; x < TFT_WIDTH; x++) {
-                disp_write_data(&disp, COLOR_WHITE);
-            }
-        }
-        disp_write_command(&disp, 0x22u);
-        for (uint8_t y = 0; y < TFT_HEIGHT; y++) {
-            for (uint8_t x = 0; x < TFT_WIDTH; x++) {
-                disp_write_data(&disp, COLOR_BLACK);
-            }
-        }
-    }
-    return 0;
+    board->disp = &disp;
+    board->scr = &scr;
+    board->tft = &tft;
 }

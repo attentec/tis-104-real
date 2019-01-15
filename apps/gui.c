@@ -2,14 +2,13 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "app.h"
+#include "board.h"
 #include "screen.h"
 #include "tft.h"
 
 const uint8_t middle = 20;
 const uint8_t right = 27;
 const uint8_t bottom = 15;
-
 
 static void render(struct screen *scr, struct tft_t *tft) {
     DirtyIterator dirties;
@@ -103,7 +102,8 @@ static void draw_idle(struct screen *scr, uint8_t idle) {
     draw_text(scr, middle + 2, 14, buffer);
 }
 
-void app_init(struct screen *scr, struct tft_t *tft) {
+
+static void gui_init(struct screen *scr, struct tft_t *tft) {
     tft_begin(tft);
     tft_set_background_color(tft, COLOR_BLACK);
     tft_set_foreground_color(tft, COLOR_WHITE);
@@ -113,7 +113,7 @@ void app_init(struct screen *scr, struct tft_t *tft) {
     render(scr, tft);
 }
 
-bool app_loop(struct screen *scr, struct tft_t *tft) {
+static bool gui_loop(struct screen *scr, struct tft_t *tft) {
     static int16_t acc = 0;
     static int16_t bak = 0;
 
@@ -135,6 +135,18 @@ bool app_loop(struct screen *scr, struct tft_t *tft) {
     return true;
 }
 
-void app_deinit(struct tft_t *tft) {
+static void gui_deinit(struct tft_t *tft) {
     tft_set_backlight(tft, false);
+}
+
+int main(void) {
+    struct board_t board;
+    board_init(&board);
+
+    gui_init(board.scr, board.tft);
+    while (gui_loop(board.scr, board.tft)) {
+    }
+    gui_deinit(board.tft);
+
+    return 0;
 }
