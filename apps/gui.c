@@ -10,15 +10,15 @@ const uint8_t middle = 20;
 const uint8_t right = 27;
 const uint8_t bottom = 15;
 
-static void render(struct screen *scr, struct tft_t *tft) {
-    DirtyIterator dirties;
+static void render(struct screen_t *scr, struct tft_t *tft) {
+    struct dirties_t dirties;
     screen_get_dirties(scr, &dirties);
     while (screen_get_next_dirty(&dirties)) {
         tft_draw_char(tft, dirties.x, dirties.y, screen_get(scr, dirties.x, dirties.y));
     }
 }
 
-static void draw_text(struct screen *scr, uint8_t x, uint8_t y, char *s) {
+static void draw_text(struct screen_t *scr, uint8_t x, uint8_t y, char *s) {
     uint8_t currx = x;
 
     // Print every character in string
@@ -28,7 +28,7 @@ static void draw_text(struct screen *scr, uint8_t x, uint8_t y, char *s) {
     }
 }
 
-static void draw_background(struct screen *scr, struct tft_t *tft) {
+static void draw_background(struct screen_t *scr, struct tft_t *tft) {
     tft_set_foreground_color(tft, COLOR_WHITE);
 
     for (uint8_t y = 1; y < bottom; ++y) {
@@ -73,29 +73,29 @@ static void draw_background(struct screen *scr, struct tft_t *tft) {
     tft_set_foreground_color(tft, COLOR_WHITE);
 }
 
-static void draw_acc(struct screen *scr, int16_t acc) {
+static void draw_acc(struct screen_t *scr, int16_t acc) {
     char buffer[5];
     sprintf(buffer, "%4d", acc);
     buffer[4] = '\0';
     draw_text(scr, middle + 2, 2, buffer);
 }
 
-static void draw_bak(struct screen *scr, int16_t bak) {
+static void draw_bak(struct screen_t *scr, int16_t bak) {
     char buffer[7];
     sprintf(buffer, "<%4d>", bak);
     buffer[6] = '\0';
     draw_text(scr, middle + 1, 5, buffer);
 }
 
-static void draw_last(struct screen *scr, char *last) {
+static void draw_last(struct screen_t *scr, char *last) {
     draw_text(scr, middle + 2, 8, last);
 }
 
-static void draw_mode(struct screen *scr, char *mode) {
+static void draw_mode(struct screen_t *scr, char *mode) {
     draw_text(scr, middle + 2, 11, mode);
 }
 
-static void draw_idle(struct screen *scr, uint8_t idle) {
+static void draw_idle(struct screen_t *scr, uint8_t idle) {
     char buffer[5];
     sprintf(buffer, "%3d%%", idle);
     buffer[4] = '\0';
@@ -103,7 +103,7 @@ static void draw_idle(struct screen *scr, uint8_t idle) {
 }
 
 
-static void gui_init(struct screen *scr, struct tft_t *tft) {
+static void gui_init(struct screen_t *scr, struct tft_t *tft) {
     tft_begin(tft);
     tft_set_background_color(tft, COLOR_BLACK);
     tft_set_foreground_color(tft, COLOR_WHITE);
@@ -113,7 +113,7 @@ static void gui_init(struct screen *scr, struct tft_t *tft) {
     render(scr, tft);
 }
 
-static bool gui_loop(struct screen *scr, struct tft_t *tft) {
+static bool gui_loop(struct screen_t *scr, struct tft_t *tft) {
     static int16_t acc = 0;
     static int16_t bak = 0;
 

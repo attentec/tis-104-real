@@ -12,9 +12,9 @@
 #define HEIGHT (27)
 
 static uint8_t buf[WIDTH * HEIGHT];
-static struct indexmap indices;
-static struct font font;
-static struct screen scr;
+static struct indexmap_t indices;
+static struct font_t font;
+static struct screen_t scr;
 static struct dispif_t dispif;
 static struct spi_t spi;
 static struct tft_t tft;

@@ -5,7 +5,7 @@
 #include "font.h"
 #include "tft.h"
 
-struct screen;
+struct screen_t;
 
 static void set_window(struct tft_t *tft, uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
 
@@ -19,7 +19,7 @@ static void set_window(struct tft_t *tft, uint16_t x0, uint16_t y0, uint16_t x1,
     dispif_write_command(tft->dispif, 0x22u);
 }
 
-void tft_init(struct tft_t *tft, struct dispif_t *dispif, struct screen *scr, struct font *font) {
+void tft_init(struct tft_t *tft, struct dispif_t *dispif, struct screen_t *scr, struct font_t *font) {
     tft->font = font;
     tft->dispif = dispif;
     tft->scr = scr;

@@ -6,7 +6,7 @@
 
 #define DIRTY_MASK (0x80u)
 
-void indexmap_init(struct indexmap *map, uint8_t width, uint8_t height, uint8_t *buf) {
+void indexmap_init(struct indexmap_t *map, uint8_t width, uint8_t height, uint8_t *buf) {
     map->width = width;
     map->height = height;
     map->indices = buf;
@@ -15,42 +15,42 @@ void indexmap_init(struct indexmap *map, uint8_t width, uint8_t height, uint8_t 
     (void)memset(map->indices, 0x7f, size);
 }
 
-static inline uint16_t idx(struct indexmap *map, uint8_t x, uint8_t y) {
+static inline uint16_t idx(struct indexmap_t *map, uint8_t x, uint8_t y) {
     uint16_t w16 = map->width;
     uint16_t x16 = x;
     uint16_t y16 = y;
     return y16 * w16 + x16;
 }
 
-void indexmap_set(struct indexmap *map, uint8_t x, uint8_t y, uint8_t val) {
+void indexmap_set(struct indexmap_t *map, uint8_t x, uint8_t y, uint8_t val) {
     uint8_t new_val = val | DIRTY_MASK;
     map->indices[idx(map, x, y)] = new_val;
 }
 
-uint8_t indexmap_get(struct indexmap *map, uint8_t x, uint8_t y) {
+uint8_t indexmap_get(struct indexmap_t *map, uint8_t x, uint8_t y) {
     uint8_t val = map->indices[idx(map, x, y)];
     return val & ~DIRTY_MASK;
 }
 
-bool indexmap_is_dirty(struct indexmap *map, uint8_t x, uint8_t y) {
+bool indexmap_is_dirty(struct indexmap_t *map, uint8_t x, uint8_t y) {
     uint8_t val = map->indices[idx(map, x, y)];
     return (val & DIRTY_MASK) != 0u;
 }
 
-void indexmap_set_dirty(struct indexmap *map, uint8_t x, uint8_t y) {
+void indexmap_set_dirty(struct indexmap_t *map, uint8_t x, uint8_t y) {
     uint8_t val = map->indices[idx(map, x, y)];
     uint8_t new_val = val | DIRTY_MASK;
     map->indices[idx(map, x, y)] = new_val;
 }
 
-void indexmap_clear_dirty(struct indexmap *map, uint8_t x, uint8_t y) {
+void indexmap_clear_dirty(struct indexmap_t *map, uint8_t x, uint8_t y) {
     map->indices[idx(map, x, y)] &= ~DIRTY_MASK;
 }
 
-uint8_t indexmap_width(struct indexmap *map) {
+uint8_t indexmap_width(struct indexmap_t *map) {
     return map->width;
 }
 
-uint8_t indexmap_height(struct indexmap *map) {
+uint8_t indexmap_height(struct indexmap_t *map) {
     return map->height;
 }

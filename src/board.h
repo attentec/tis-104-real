@@ -5,7 +5,7 @@
 #include "tft.h"
 
 struct board_t {
-    struct screen *scr;
+    struct screen_t *scr;
     struct dispif_t *dispif;
     struct tft_t *tft;
 };

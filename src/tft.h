@@ -4,8 +4,8 @@
 #include <stdint.h>
 
 struct dispif_t;
-struct font;
-struct screen;
+struct font_t;
+struct screen_t;
 
 #define TFT_WIDTH  (176u)
 #define TFT_HEIGHT (220u)
@@ -24,12 +24,12 @@ struct tft_t {
     uint16_t bg_color;
     uint16_t fg_color;
 
-    struct font *font;
+    struct font_t *font;
     struct dispif_t *dispif;
-    struct screen *scr;
+    struct screen_t *scr;
 };
 
-void tft_init(struct tft_t *tft, struct dispif_t *dispif, struct screen *scr, struct font *font);
+void tft_init(struct tft_t *tft, struct dispif_t *dispif, struct screen_t *scr, struct font_t *font);
 void tft_begin(struct tft_t *tft);
 void tft_clear(struct tft_t *tft);
 void tft_set_backlight(struct tft_t *tft, bool flag);
