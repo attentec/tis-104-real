@@ -1,10 +1,11 @@
-/.tup
-*.sw*
-*.o
 *.a
 *.elf
-*.s
 *.hex
-/tests/*_runner.c
+*.o
+*.s
+*.sw*
+*.vscode
+/.tup
 /tests/*_results.txt
+/tests/*_runner.c
 /tests/results.txt
