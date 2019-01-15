@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pin.h"
+struct pin_t;
 
 struct spi_t {
     struct pin_t *sdi;

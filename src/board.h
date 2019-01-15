@@ -1,8 +1,8 @@
 #pragma once
 
-#include "screen.h"
-#include "dispif.h"
-#include "tft.h"
+struct screen_t;
+struct dispif_t;
+struct tft_t;
 
 struct board_t {
     struct screen_t *scr;

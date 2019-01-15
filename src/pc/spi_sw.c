@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "pin.h"
 #include "spi_sw.h"
 
 void spi_init(struct spi_t *spi, struct pin_t *sdi, struct pin_t *clk) {

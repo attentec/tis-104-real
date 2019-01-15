@@ -3,8 +3,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "pin.h"
-
+struct pin_t;
 struct spi_t;
 
 struct dispif_t {

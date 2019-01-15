@@ -1,4 +1,5 @@
 #include "dispif.h"
+#include "pin.h"
 #include "spi.h"
 
 void dispif_init(struct dispif_t *dispif, struct spi_t *spi, struct pin_t *rs, struct pin_t *cs, struct pin_t *rst, struct pin_t *led) {
