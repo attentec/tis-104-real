@@ -381,3 +381,11 @@ void display_write_pixel(struct display_t *display, uint16_t color)
 {
     dispif_write_data(display->dispif, color);
 }
+
+void display_fill_rectangle(struct display_t *display, uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color)
+{
+    display_set_window(display, x, y, w, h);
+    for (uint16_t i = 0; i < (uint16_t) w * (uint16_t) h; i++) {
+        dispif_write_data(display->dispif, color);
+    }
+}
