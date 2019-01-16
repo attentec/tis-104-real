@@ -10,7 +10,7 @@ int main(void)
     struct display_t display;
 
     board_init(&board);
-    display_init(&display, board.dispif, ORIENTATION_RIBBON_LEFT);
+    display_init(&display, board.dispif, ORIENTATION_RIBBON_LEFT, WRITE_ORDER_X_MAJOR);
     display_clear(&display, 0xFFFF);
     display_set_window(&display, 24, 0, 128, 128);
     for (uint8_t y = 0; y < 128; y++) {

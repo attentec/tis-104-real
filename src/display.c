@@ -156,7 +156,7 @@
 #define REG_GAMMA_CONTROL_9  (0x58)
 #define REG_GAMMA_CONTROL_10 (0x59)
 
-void display_init(struct display_t *display, struct dispif_t *dispif, enum orientation_t orientation)
+void display_init(struct display_t *display, struct dispif_t *dispif, enum orientation_t orientation, enum write_order_t write_order)
 {
     display->dispif = dispif;
     display->orientation = orientation;
@@ -220,22 +220,22 @@ void display_init(struct display_t *display, struct dispif_t *dispif, enum orien
     case ORIENTATION_RIBBON_BOTTOM:
         inc_row = 1;
         inc_col = 1;
-        column_major = 0;
+        column_major = (write_order == WRITE_ORDER_Y_MAJOR);
         break;
     case ORIENTATION_RIBBON_LEFT:
         inc_row = 0;
         inc_col = 1;
-        column_major = 1;
+        column_major = (write_order == WRITE_ORDER_X_MAJOR);
         break;
     case ORIENTATION_RIBBON_TOP:
         inc_row = 0;
         inc_col = 0;
-        column_major = 0;
+        column_major = (write_order == WRITE_ORDER_Y_MAJOR);
         break;
     case ORIENTATION_RIBBON_RIGHT:
         inc_row = 1;
         inc_col = 0;
-        column_major = 1;
+        column_major = (write_order == WRITE_ORDER_X_MAJOR);
         break;
     default:
         panic();
