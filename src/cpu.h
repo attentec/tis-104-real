@@ -13,7 +13,8 @@ typedef int16_t reg_t;
 
 #define REG_INVALID_VALUE ((reg_t)(-1000))
 
-enum op_t { OP_NOP,
+enum op_t {
+    OP_NOP,
     OP_MOV,
     OP_SWP,
     OP_SAV,
