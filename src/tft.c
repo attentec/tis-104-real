@@ -30,7 +30,6 @@ void tft_init(struct tft_t *tft, struct dispif_t *dispif, struct screen_t *scr, 
 }
 
 void tft_begin(struct tft_t *tft) {
-    dispif_set_reset(tft->dispif, true);
     delay_ms(1);
     dispif_set_reset(tft->dispif, false);
     delay_ms(10);
