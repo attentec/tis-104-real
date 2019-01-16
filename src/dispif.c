@@ -8,7 +8,10 @@ void dispif_init(struct dispif_t *dispif, struct spi_t *spi, struct pin_t *rs, s
     dispif->rst = rst;
     dispif->led = led;
     dispif->spi = spi;
-    pin_write(dispif->cs, false);
+    pin_write(rs, false);
+    pin_write(cs, false);
+    pin_write(rst, true);
+    pin_write(led, false);
 }
 
 static void write(struct dispif_t *dispif, uint16_t x) {
