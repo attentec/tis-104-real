@@ -278,6 +278,21 @@ void display_activate(struct display_t *display)
     dispif_set_backlight(display->dispif, true);
 }
 
+void display_clear(struct display_t *display, uint16_t color)
+{
+    struct dispif_t *dispif = display->dispif;
+    dispif_write_register(dispif, REG_WINDOW_COLUMN_START, 0);
+    dispif_write_register(dispif, REG_WINDOW_COLUMN_END, DISPLAY_COLS);
+    dispif_write_register(dispif, REG_WINDOW_ROW_START, 0);
+    dispif_write_register(dispif, REG_WINDOW_ROW_END, DISPLAY_ROWS);
+    dispif_write_register(dispif, REG_CURRENT_COLUMN, 0);
+    dispif_write_register(dispif, REG_CURRENT_ROW, 0);
+    dispif_write_command(dispif, REG_WRITE_TO_GRAM);
+    for (uint16_t i = 0; i < DISPLAY_COLS * DISPLAY_ROWS    ; i++) {
+        dispif_write_data(display->dispif, color);
+    }
+}
+
 void display_set_window(struct display_t *display, uint8_t x, uint8_t y, uint8_t w, uint8_t h)
 {
     struct dispif_t *dispif = display->dispif;

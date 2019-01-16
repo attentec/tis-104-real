@@ -15,5 +15,6 @@ struct display_t {
 
 void display_init(struct display_t *display, struct dispif_t *dispif);
 void display_activate(struct display_t *display);
+void display_clear(struct display_t *display, uint16_t color);
 void display_set_window(struct display_t *display, uint8_t x, uint8_t y, uint8_t w, uint8_t h);
 void display_write_pixel(struct display_t *display, uint16_t color);
