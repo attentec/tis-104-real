@@ -1,6 +1,10 @@
 #include "delay.h"
 #include "dispif.h"
 #include "display.h"
+#include "panic.h"
+
+#define DISPLAY_COLS (176u)
+#define DISPLAY_ROWS (220u)
 
 #define REG_DRIVER_CODE_READ (0x00)
 
@@ -125,21 +129,21 @@
 // ...
 #define BIT_VML0 (0)
 
-#define REG_HORIZONTAL_POSITION   (0x20)
-#define REG_VERTICAL_POSITION     (0x21)
-#define REG_WRITE_TO_GRAM         (0x22)
-#define REG_SOFTWARE_RESET        (0x28)
+#define REG_CURRENT_COLUMN (0x20)
+#define REG_CURRENT_ROW    (0x21)
+#define REG_WRITE_TO_GRAM  (0x22)
+#define REG_SOFTWARE_RESET (0x28)
 
-#define REG_GATE_SCAN_CONTROL       (0x30)
-#define REG_SCROLL_VERTICAL_END     (0x31)
-#define REG_SCROLL_VERTICAL_START   (0x32)
-#define REG_SCROLL_VERTICAL_STEPS   (0x33)
-#define REG_PARTIAL_VERTICAL_END    (0x34)
-#define REG_PARTIAL_VERTICAL_START  (0x35)
-#define REG_WINDOW_HORIZONTAL_END   (0x36)
-#define REG_WINDOW_HORIZONTAL_START (0x37)
-#define REG_WINDOW_VERTICAL_END     (0x38)
-#define REG_WINDOW_VERTICAL_START   (0x39)
+#define REG_GATE_SCAN_CONTROL   (0x30)
+#define REG_SCROLL_ROW_END      (0x31)
+#define REG_SCROLL_ROW_START    (0x32)
+#define REG_SCROLL_ROW_STEPS    (0x33)
+#define REG_PARTIAL_ROW_END     (0x34)
+#define REG_PARTIAL_ROW_START   (0x35)
+#define REG_WINDOW_COLUMN_END   (0x36)
+#define REG_WINDOW_COLUMN_START (0x37)
+#define REG_WINDOW_ROW_END      (0x38)
+#define REG_WINDOW_ROW_START    (0x39)
 
 #define REG_GAMMA_CONTROL_1  (0x50)
 #define REG_GAMMA_CONTROL_2  (0x51)
@@ -152,9 +156,11 @@
 #define REG_GAMMA_CONTROL_9  (0x58)
 #define REG_GAMMA_CONTROL_10 (0x59)
 
-void display_init(struct display_t *display, struct dispif_t *dispif)
+void display_init(struct display_t *display, struct dispif_t *dispif, enum orientation_t orientation)
 {
     display->dispif = dispif;
+    display->orientation = orientation;
+
     // This procedure is based on the "Hydis 2.2 inch Panel Initial Code"
     // from the application note.
     dispif_set_backlight(dispif, false);
@@ -209,13 +215,39 @@ void display_init(struct display_t *display, struct dispif_t *dispif)
         (1<<BIT_INV0) |
         (0<<BIT_FLD)
     );
+    uint8_t inc_row, inc_col, column_major;
+    switch (orientation) {
+    case ORIENTATION_RIBBON_BOTTOM:
+        inc_row = 1;
+        inc_col = 1;
+        column_major = 0;
+        break;
+    case ORIENTATION_RIBBON_LEFT:
+        inc_row = 0;
+        inc_col = 1;
+        column_major = 1;
+        break;
+    case ORIENTATION_RIBBON_TOP:
+        inc_row = 0;
+        inc_col = 0;
+        column_major = 0;
+        break;
+    case ORIENTATION_RIBBON_RIGHT:
+        inc_row = 1;
+        inc_col = 0;
+        column_major = 1;
+        break;
+    default:
+        panic();
+        break;
+    }
     dispif_write_register(dispif, REG_ENTRY_MODE,
         (1<<BIT_BGR)  |
         (0<<BIT_MTD1) |
         (0<<BIT_MTD0) |
-        (1<<BIT_ID1)  |
-        (1<<BIT_ID0)  |
-        (0<<BIT_AM)
+        (inc_row<<BIT_ID1)  |
+        (inc_col<<BIT_ID0)  |
+        (column_major<<BIT_AM)
     );
     dispif_write_register(dispif, REG_DISPLAY_CONTROL_1,
         (0<<BIT_TEMON) |
@@ -245,21 +277,21 @@ void display_init(struct display_t *display, struct dispif_t *dispif)
         (1<<BIT_OSCON)
     );
 
-    dispif_write_register(dispif, REG_HORIZONTAL_POSITION,     0x0000);
-    dispif_write_register(dispif, REG_VERTICAL_POSITION,       0x0000);
+    dispif_write_register(dispif, REG_CURRENT_COLUMN, 0x0000);
+    dispif_write_register(dispif, REG_CURRENT_ROW,    0x0000);
 
-    dispif_write_register(dispif, REG_GATE_SCAN_CONTROL,       0x0000);
-    dispif_write_register(dispif, REG_SCROLL_VERTICAL_END,     0x00DB);
-    dispif_write_register(dispif, REG_SCROLL_VERTICAL_START,   0x0000);
-    dispif_write_register(dispif, REG_SCROLL_VERTICAL_STEPS,   0x0000);
-    dispif_write_register(dispif, REG_PARTIAL_VERTICAL_END,    0x00DB);
-    dispif_write_register(dispif, REG_PARTIAL_VERTICAL_START,  0x0000);
-    dispif_write_register(dispif, REG_PARTIAL_VERTICAL_END,    0x00DB);
-    dispif_write_register(dispif, REG_PARTIAL_VERTICAL_START,  0x0000);
-    dispif_write_register(dispif, REG_WINDOW_HORIZONTAL_END,   0x00AF);
-    dispif_write_register(dispif, REG_WINDOW_HORIZONTAL_START, 0x0000);
-    dispif_write_register(dispif, REG_WINDOW_VERTICAL_END,     0x00DB);
-    dispif_write_register(dispif, REG_WINDOW_VERTICAL_START,   0x0000);
+    dispif_write_register(dispif, REG_GATE_SCAN_CONTROL,   0x0000);
+    dispif_write_register(dispif, REG_SCROLL_ROW_END,      0x00DB);
+    dispif_write_register(dispif, REG_SCROLL_ROW_START,    0x0000);
+    dispif_write_register(dispif, REG_SCROLL_ROW_STEPS,    0x0000);
+    dispif_write_register(dispif, REG_PARTIAL_ROW_END,     0x00DB);
+    dispif_write_register(dispif, REG_PARTIAL_ROW_START,   0x0000);
+    dispif_write_register(dispif, REG_PARTIAL_ROW_END,     0x00DB);
+    dispif_write_register(dispif, REG_PARTIAL_ROW_START,   0x0000);
+    dispif_write_register(dispif, REG_WINDOW_COLUMN_END,   0x00AF);
+    dispif_write_register(dispif, REG_WINDOW_COLUMN_START, 0x0000);
+    dispif_write_register(dispif, REG_WINDOW_ROW_END,      0x00DB);
+    dispif_write_register(dispif, REG_WINDOW_ROW_START,    0x0000);
 
     dispif_write_register(dispif, REG_GAMMA_CONTROL_1,  0x0000);
     dispif_write_register(dispif, REG_GAMMA_CONTROL_2,  0x0808);
@@ -296,12 +328,52 @@ void display_clear(struct display_t *display, uint16_t color)
 void display_set_window(struct display_t *display, uint8_t x, uint8_t y, uint8_t w, uint8_t h)
 {
     struct dispif_t *dispif = display->dispif;
-    dispif_write_register(dispif, REG_WINDOW_HORIZONTAL_START, x);
-    dispif_write_register(dispif, REG_WINDOW_HORIZONTAL_END, x + w - 1);
-    dispif_write_register(dispif, REG_WINDOW_VERTICAL_START, y);
-    dispif_write_register(dispif, REG_WINDOW_VERTICAL_END, y + h - 1);
-    dispif_write_register(dispif, REG_HORIZONTAL_POSITION, x);
-    dispif_write_register(dispif, REG_VERTICAL_POSITION, y);
+    uint8_t start_col, start_row, end_col, end_row, current_col, current_row;
+
+    switch (display->orientation) {
+    case ORIENTATION_RIBBON_BOTTOM:
+        start_col   = x;
+        end_col     = x + w - 1;
+        current_col = x;
+        start_row   = y;
+        end_row     = y + h - 1;
+        current_row = y;
+        break;
+    case ORIENTATION_RIBBON_LEFT:
+        start_col   = y;
+        end_col     = y + h - 1;
+        current_col = y;
+        start_row   = DISPLAY_ROWS - x - w;
+        end_row     = DISPLAY_ROWS - x - 1;
+        current_row = DISPLAY_ROWS - x - 1;
+        break;
+    case ORIENTATION_RIBBON_TOP:
+        start_col   = DISPLAY_COLS - x - w;
+        end_col     = DISPLAY_COLS - x - 1;
+        current_col = DISPLAY_COLS - x - 1;
+        start_row   = DISPLAY_ROWS - y - h;
+        end_row     = DISPLAY_ROWS - y - 1;
+        current_row = DISPLAY_ROWS - y - 1;
+        break;
+    case ORIENTATION_RIBBON_RIGHT:
+        start_col   = DISPLAY_COLS - y - h;
+        end_col     = DISPLAY_COLS - y - 1;
+        current_col = DISPLAY_COLS - y - 1;
+        start_row   = x;
+        end_row     = x + w - 1;
+        current_row = x;
+        break;
+    default:
+        panic();
+        break;
+    }
+
+    dispif_write_register(dispif, REG_WINDOW_COLUMN_START, start_col);
+    dispif_write_register(dispif, REG_WINDOW_COLUMN_END, end_col);
+    dispif_write_register(dispif, REG_WINDOW_ROW_START, start_row);
+    dispif_write_register(dispif, REG_WINDOW_ROW_END, end_row);
+    dispif_write_register(dispif, REG_CURRENT_COLUMN, current_col);
+    dispif_write_register(dispif, REG_CURRENT_ROW, current_row);
     dispif_write_command(dispif, REG_WRITE_TO_GRAM);
 }
 
