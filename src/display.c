@@ -310,18 +310,33 @@ void display_activate(struct display_t *display)
     dispif_set_backlight(display->dispif, true);
 }
 
-void display_clear(struct display_t *display, uint16_t color)
+uint8_t display_get_width(struct display_t *display)
 {
-    struct dispif_t *dispif = display->dispif;
-    dispif_write_register(dispif, REG_WINDOW_COLUMN_START, 0);
-    dispif_write_register(dispif, REG_WINDOW_COLUMN_END, DISPLAY_COLS);
-    dispif_write_register(dispif, REG_WINDOW_ROW_START, 0);
-    dispif_write_register(dispif, REG_WINDOW_ROW_END, DISPLAY_ROWS);
-    dispif_write_register(dispif, REG_CURRENT_COLUMN, 0);
-    dispif_write_register(dispif, REG_CURRENT_ROW, 0);
-    dispif_write_command(dispif, REG_WRITE_TO_GRAM);
-    for (uint16_t i = 0; i < DISPLAY_COLS * DISPLAY_ROWS    ; i++) {
-        dispif_write_data(display->dispif, color);
+    switch (display->orientation) {
+    case ORIENTATION_RIBBON_BOTTOM:
+    case ORIENTATION_RIBBON_TOP:
+        return DISPLAY_COLS;
+    case ORIENTATION_RIBBON_LEFT:
+    case ORIENTATION_RIBBON_RIGHT:
+        return DISPLAY_ROWS;
+    default:
+        panic();
+        break;
+    }
+}
+
+uint8_t display_get_height(struct display_t *display)
+{
+    switch (display->orientation) {
+    case ORIENTATION_RIBBON_BOTTOM:
+    case ORIENTATION_RIBBON_TOP:
+        return DISPLAY_ROWS;
+    case ORIENTATION_RIBBON_LEFT:
+    case ORIENTATION_RIBBON_RIGHT:
+        return DISPLAY_COLS;
+    default:
+        panic();
+        break;
     }
 }
 
@@ -388,4 +403,11 @@ void display_fill_rectangle(struct display_t *display, uint8_t x, uint8_t y, uin
     for (uint16_t i = 0; i < (uint16_t) w * (uint16_t) h; i++) {
         dispif_write_data(display->dispif, color);
     }
+}
+
+void display_clear(struct display_t *display, uint16_t color)
+{
+    uint8_t w = display_get_width(display);
+    uint8_t h = display_get_height(display);
+    display_fill_rectangle(display, 0, 0, w, h, color);
 }
