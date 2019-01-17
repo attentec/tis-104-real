@@ -1,19 +1,23 @@
 #include <stdint.h>
 
 #include "board.h"
+#include "canvas.h"
 #include "display.h"
 #include "dispif.h"
 
-static void draw_static(struct display_t *display);
+static void draw_static(struct canvas_t *canvas);
 
 int main(void)
 {
     struct board_t board;
     struct display_t display;
+    struct canvas_t canvas;
 
     board_init(&board);
     display_init(&display, board.dispif, ORIENTATION_RIBBON_LEFT, WRITE_ORDER_X_MAJOR);
-    draw_static(&display);
+    canvas_init(&canvas, &display);
+
+    draw_static(&canvas);
     display_activate(&display);
 
     for (;;) {
@@ -35,9 +39,9 @@ static uint8_t status_height_chars =  2;
 static uint16_t white = RGB888_TO_RGB565(0xFFFFFFul);
 static uint16_t black = RGB888_TO_RGB565(0x000000ul);
 
-static void draw_static(struct display_t *display)
+static void draw_static(struct canvas_t *canvas)
 {
-    display_clear(display, black);
+    canvas_clear(canvas, black);
 
     uint8_t x0 = main_x_pixels + 3;
     uint8_t w1 = char_width * (code_width_chars + 1);
@@ -46,23 +50,23 @@ static void draw_static(struct display_t *display)
     uint8_t h  = char_height * (code_height_chars + 1);
     uint8_t hs = char_height * (status_height_chars + 1);
 
-    display_draw_hline(display, x0,    y0,          w1+w2, white, 3);
-    display_draw_hline(display, x0+w1, y0+(1*hs)+1, w2,    white, 3);
-    display_draw_hline(display, x0+w1, y0+(2*hs)+3, w2,    white, 3);
-    display_draw_hline(display, x0+w1, y0+(3*hs)+5, w2,    white, 3);
-    display_draw_hline(display, x0+w1, y0+(4*hs)+7, w2,    white, 3);
-    display_draw_hline(display, x0,    y0+h,        w1+w2, white, 3);
-    display_draw_vline(display, x0,       y0, h, white, 3);
-    display_draw_vline(display, x0+w1,    y0, h, white, 3);
-    display_draw_vline(display, x0+w1+w2, y0, h, white, 3);
+    canvas_draw_hline(canvas, x0,    y0,          w1+w2, white, 3);
+    canvas_draw_hline(canvas, x0+w1, y0+(1*hs)+1, w2,    white, 3);
+    canvas_draw_hline(canvas, x0+w1, y0+(2*hs)+3, w2,    white, 3);
+    canvas_draw_hline(canvas, x0+w1, y0+(3*hs)+5, w2,    white, 3);
+    canvas_draw_hline(canvas, x0+w1, y0+(4*hs)+7, w2,    white, 3);
+    canvas_draw_hline(canvas, x0,    y0+h,        w1+w2, white, 3);
+    canvas_draw_vline(canvas, x0,       y0, h, white, 3);
+    canvas_draw_vline(canvas, x0+w1,    y0, h, white, 3);
+    canvas_draw_vline(canvas, x0+w1+w2, y0, h, white, 3);
 
-    display_draw_hline(display, x0,    y0,          w1+w2, black, 1);
-    display_draw_hline(display, x0+w1, y0+(1*hs)+1, w2,    black, 1);
-    display_draw_hline(display, x0+w1, y0+(2*hs)+3, w2,    black, 1);
-    display_draw_hline(display, x0+w1, y0+(3*hs)+5, w2,    black, 1);
-    display_draw_hline(display, x0+w1, y0+(4*hs)+7, w2,    black, 1);
-    display_draw_hline(display, x0,    y0+h,        w1+w2, black, 1);
-    display_draw_vline(display, x0,       y0, h, black, 1);
-    display_draw_vline(display, x0+w1,    y0, h, black, 1);
-    display_draw_vline(display, x0+w1+w2, y0, h, black, 1);
+    canvas_draw_hline(canvas, x0,    y0,          w1+w2, black, 1);
+    canvas_draw_hline(canvas, x0+w1, y0+(1*hs)+1, w2,    black, 1);
+    canvas_draw_hline(canvas, x0+w1, y0+(2*hs)+3, w2,    black, 1);
+    canvas_draw_hline(canvas, x0+w1, y0+(3*hs)+5, w2,    black, 1);
+    canvas_draw_hline(canvas, x0+w1, y0+(4*hs)+7, w2,    black, 1);
+    canvas_draw_hline(canvas, x0,    y0+h,        w1+w2, black, 1);
+    canvas_draw_vline(canvas, x0,       y0, h, black, 1);
+    canvas_draw_vline(canvas, x0+w1,    y0, h, black, 1);
+    canvas_draw_vline(canvas, x0+w1+w2, y0, h, black, 1);
 }

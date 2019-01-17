@@ -29,7 +29,3 @@ uint8_t display_get_width(struct display_t *display);
 uint8_t display_get_height(struct display_t *display);
 void display_set_window(struct display_t *display, uint8_t x, uint8_t y, uint8_t w, uint8_t h);
 void display_write_pixel(struct display_t *display, uint16_t color);
-void display_fill_rectangle(struct display_t *display, uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color);
-void display_clear(struct display_t *display, uint16_t color);
-void display_draw_hline(struct display_t *display, uint8_t x, uint8_t y, uint8_t w, uint16_t color, uint8_t thickness);
-void display_draw_vline(struct display_t *display, uint8_t x, uint8_t y, uint8_t h, uint16_t color, uint8_t thickness);

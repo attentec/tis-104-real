@@ -396,30 +396,3 @@ void display_write_pixel(struct display_t *display, uint16_t color)
 {
     dispif_write_data(display->dispif, color);
 }
-
-void display_fill_rectangle(struct display_t *display, uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color)
-{
-    display_set_window(display, x, y, w, h);
-    for (uint16_t i = 0; i < (uint16_t) w * (uint16_t) h; i++) {
-        dispif_write_data(display->dispif, color);
-    }
-}
-
-void display_clear(struct display_t *display, uint16_t color)
-{
-    uint8_t w = display_get_width(display);
-    uint8_t h = display_get_height(display);
-    display_fill_rectangle(display, 0, 0, w, h, color);
-}
-
-void display_draw_hline(struct display_t *display, uint8_t x, uint8_t y, uint8_t w, uint16_t color, uint8_t thickness)
-{
-    uint8_t t = thickness / 2;
-    display_fill_rectangle(display, x - t, y - t, w + (2 * t) + 1, (2 * t) + 1, color);
-}
-
-void display_draw_vline(struct display_t *display, uint8_t x, uint8_t y, uint8_t h, uint16_t color, uint8_t thickness)
-{
-    uint8_t t = thickness / 2;
-    display_fill_rectangle(display, x - t, y - t, (2 * t) + 1, h + (2 * t) + 1, color);
-}
