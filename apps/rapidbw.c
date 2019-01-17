@@ -1,27 +1,29 @@
 #include <stdint.h>
 
 #include "board.h"
-#include "dispif.h"
-#include "tft.h"
+#include "display.h"
 
 int main(void) {
     struct board_t board;
+    struct display_t display;
     board_init(&board);
+    display_init(&display, board.dispif, ORIENTATION_RIBBON_BOTTOM, WRITE_ORDER_X_MAJOR);
+    display_activate(&display);
 
-    tft_begin(board.tft);
-    tft_set_backlight(board.tft, true);
-
+    uint16_t white = RGB888_TO_RGB565(0xFFFFFFul);
+    uint16_t black = RGB888_TO_RGB565(0x000000ul);
+    uint8_t w = display_get_width(&display);
+    uint8_t h = display_get_height(&display);
+    display_set_window(&display, 0, 0, w, h);
     for (;;) {
-        dispif_write_command(board.dispif, 0x22u);
-        for (uint8_t y = 0; y < TFT_HEIGHT; y++) {
-            for (uint8_t x = 0; x < TFT_WIDTH; x++) {
-                dispif_write_data(board.dispif, COLOR_WHITE);
+        for (uint8_t y = 0; y < h; y++) {
+            for (uint8_t x = 0; x < w; x++) {
+                display_write_pixel(&display, white);
             }
         }
-        dispif_write_command(board.dispif, 0x22u);
-        for (uint8_t y = 0; y < TFT_HEIGHT; y++) {
-            for (uint8_t x = 0; x < TFT_WIDTH; x++) {
-                dispif_write_data(board.dispif, COLOR_BLACK);
+        for (uint8_t y = 0; y < h; y++) {
+            for (uint8_t x = 0; x < w; x++) {
+                display_write_pixel(&display, black);
             }
         }
     }
