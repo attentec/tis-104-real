@@ -7,3 +7,4 @@ LIBS = ../src/tis104_avr.a
 : foreach {objs} | $(LIBS) |> !ld_avr $(LIBS)     |> %B.elf {bins}
 : foreach {bins}           |> !dis_avr            |> %B.s
 : foreach {bins}           |> !hex_avr            |> %B.hex
+: foreach {bins}           |> !size_avr           |> %B_size.txt

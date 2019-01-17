@@ -7,8 +7,9 @@ AVR_ARFLAGS = --plugin /usr/lib/gcc/avr/4.9.2/liblto_plugin.so
 !ld_pc = |> ^ LD %o^   gcc $(CFLAGS) $(PC_CFLAGS)    %f -o %o |>
 !ar_pc = |> ^ AR %o^   gcc-ar crs %o %f                       |>
 
-!cc_avr  = |> ^ CC %o^    avr-gcc $(CFLAGS) $(AVR_CFLAGS) -c %f -o %o |>
-!ld_avr  = |> ^ LD %o^    avr-gcc $(CFLAGS) $(AVR_CFLAGS)    %f -o %o |>
-!ar_avr  = |> ^ AR %o^    avr-gcc-ar crs %o %f $(AVR_ARFLAGS)         |>
-!dis_avr = |> ^ DIS %o^   avr-objdump -d %f > %o                      |>
-!hex_avr = |> ^ HEX %o^   avr-objcopy -j .text -j .data -O ihex %f %o |>
+!cc_avr   = |> ^ CC %o^    avr-gcc $(CFLAGS) $(AVR_CFLAGS) -c %f -o %o |>
+!ld_avr   = |> ^ LD %o^    avr-gcc $(CFLAGS) $(AVR_CFLAGS)    %f -o %o |>
+!ar_avr   = |> ^ AR %o^    avr-gcc-ar crs %o %f $(AVR_ARFLAGS)         |>
+!dis_avr  = |> ^ DIS %o^   avr-objdump -d %f > %o                      |>
+!hex_avr  = |> ^ HEX %o^   avr-objcopy -j .text -j .data -O ihex %f %o |>
+!size_avr = |> ^ SIZE %o^  avr-size -C --mcu=atmega328p %f > %o        |>

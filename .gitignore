@@ -6,6 +6,7 @@
 *.sw*
 *.vscode
 /.tup
+/apps/*_size.txt
 /tests/*_results.txt
 /tests/*_runner.c
 /tests/results.txt
