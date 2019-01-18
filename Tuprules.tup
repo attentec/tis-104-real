@@ -1,7 +1,6 @@
 CFLAGS      = -std=c11 -g -Werror -Wall -Wextra -pedantic -flto
 PC_CFLAGS   = -O0
-AVR_CFLAGS  = -mmcu=atmega328p -Os -DF_CPU=16000000ul -flto
-AVR_ARFLAGS = --plugin /usr/lib/gcc/avr/4.9.2/liblto_plugin.so
+AVR_CFLAGS  = -mmcu=atmega328p -Os -DF_CPU=16000000ul
 
 !cc_pc = |> ^ CC %o^   gcc $(CFLAGS) $(PC_CFLAGS) -c %f -o %o |>
 !ld_pc = |> ^ LD %o^   gcc $(CFLAGS) $(PC_CFLAGS)    %f -o %o |>
@@ -9,7 +8,7 @@ AVR_ARFLAGS = --plugin /usr/lib/gcc/avr/4.9.2/liblto_plugin.so
 
 !cc_avr   = |> ^ CC %o^    avr-gcc $(CFLAGS) $(AVR_CFLAGS) -c %f -o %o |>
 !ld_avr   = |> ^ LD %o^    avr-gcc $(CFLAGS) $(AVR_CFLAGS)    %f -o %o |>
-!ar_avr   = |> ^ AR %o^    avr-gcc-ar crs %o %f $(AVR_ARFLAGS)         |>
+!ar_avr   = |> ^ AR %o^    avr-gcc-ar crs %o %f                        |>
 !dis_avr  = |> ^ DIS %o^   avr-objdump -d %f > %o                      |>
 !hex_avr  = |> ^ HEX %o^   avr-objcopy -j .text -j .data -O ihex %f %o |>
 !size_avr = |> ^ SIZE %o^  avr-size -C --mcu=atmega328p %f > %o        |>
