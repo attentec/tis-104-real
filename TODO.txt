@@ -1,0 +1,37 @@
+SMALL TASKS
+
+New features:
+* Implement text alignment in canvas_draw_text: left, center, right
+* Make status boxes have centered text
+* Draw direction arrows
+* Draw updating status texts
+* Draw code text
+* Draw an editor cursor (when editing)
+* Draw the currently instruction line with white background (when running)
+
+Cleaning up:
+* Let canvas decide the display write order - because it needs it to be Y major
+  - possibly by adding a display_set_write_order function and calling it in canvas_init
+* Tidy up src/avr/panic.c to use pin abstraction (maybe?)
+
+Nice to have:
+* Also compile most apps/*.c files for PC.
+  (Possibly by adding a apps/avr/ directory for the AVR-only apps.)
+* Implement uart.h for PC.
+* Connect some push buttons for easier debugging and testing
+
+
+
+MEDIUM TASKS
+
+* Calculate status values from CPU state
+* Run emulated CPU on an AVR
+* Implement display.h for PC using (for example) SDL
+
+
+
+LARGE TASKS
+
+* Implement a program parser
+* Design and implement a communication protocol
+* Run two emulated CPUS on separate AVRs
