@@ -3,7 +3,7 @@
 
 #include "panic.h"
 
-void panic(void) {
-    printf("PANIC!\n");
+void panic_handler(const char* file, int line) {
+    printf("PANIC!\n\n%s:%d\n", file, line);
     exit(1);
 }
