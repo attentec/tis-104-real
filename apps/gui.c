@@ -45,7 +45,7 @@ static uint8_t status_width_chars  =  6;
 static uint8_t status_height_chars =  2;
 
 static uint16_t white = RGB888_TO_RGB565(0xFFFFFFul);
-static uint16_t gray  = RGB888_TO_RGB565(0xCCCCCCul);
+static uint16_t gray  = RGB888_TO_RGB565(0xAAAAAAul);
 static uint16_t black = RGB888_TO_RGB565(0x000000ul);
 
 static void draw_static(struct canvas_t *canvas)
