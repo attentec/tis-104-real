@@ -22,8 +22,6 @@ Nice to have:
 MEDIUM TASKS
 
 * Implement a code editor
-* Calculate status values from CPU state
-* Run emulated CPU on an AVR
 * Implement display.h for PC using (for example) SDL
 
 

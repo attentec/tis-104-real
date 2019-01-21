@@ -9,6 +9,7 @@
 #include "font.h"
 #include "fonts.h"
 #include "panic.h"
+#include "pipe_mock.h"
 
 struct code_t {
     struct prgm_t prgm;
@@ -17,6 +18,7 @@ struct code_t {
 };
 
 static void compile(struct code_t *code, const char *lines[CPU_MAX_PRGM_LENGTH]);
+static void setup_pipes(struct pipe_t inputs[], struct pipe_t outputs[], struct pipe_t *input_ptrs[], struct pipe_t *output_ptrs[]);
 
 static void draw_static(struct canvas_t *canvas);
 static void draw_borders(struct canvas_t *canvas);
@@ -51,13 +53,20 @@ int main(void)
     struct canvas_t canvas;
     struct code_t code;
     struct state_t cpu_state;
+    struct pipe_t inputs[CPU_MAX_PIPES];
+    struct pipe_t outputs[CPU_MAX_PIPES];
+    struct pipe_t *input_ptrs[CPU_MAX_PIPES];
+    struct pipe_t *output_ptrs[CPU_MAX_PIPES];
+    struct cpu_t cpu;
 
     board_init(&board);
     display_init(&display, board.dispif, ORIENTATION_RIBBON_LEFT, WRITE_ORDER_Y_MAJOR);
     font_init(&font, monoblipp6x8);
     canvas_init(&canvas, &display, &font);
-    compile(&code, example_program_text);
     cpu_state_init(&cpu_state);
+    compile(&code, example_program_text);
+    setup_pipes(inputs, outputs, input_ptrs, output_ptrs);
+    cpu_init(&cpu, &code.prgm, &cpu_state, input_ptrs, output_ptrs);
 
     draw_static(&canvas);
     display_activate(&display);
@@ -65,16 +74,7 @@ int main(void)
     for (;;) {
         draw_status(&canvas, &cpu_state);
         draw_program(&canvas, &code, cpu_state.pc);
-        cpu_state.acc++;
-        if (cpu_state.acc > 999) {
-            cpu_state.acc = -999;
-        }
-        cpu_state.bak += 2;
-        if (cpu_state.bak > 999) {
-            cpu_state.bak = -999;
-        }
-        cpu_state.pc++;
-        cpu_state.pc %= code.prgm.length;
+        cpu_step(&cpu);
     }
 
     return 0;
@@ -104,6 +104,18 @@ static void compile(struct code_t *code, const char *lines[CPU_MAX_PRGM_LENGTH])
             6
         }
     };
+}
+
+static void setup_pipes(struct pipe_t inputs[], struct pipe_t outputs[], struct pipe_t *input_ptrs[], struct pipe_t *output_ptrs[])
+{
+   for (uint8_t i = 0; i < CPU_MAX_PIPES; ++i) {
+        inputs[i].cell = NULL;
+        inputs[i].used = false;
+        outputs[i].cell = NULL;
+        outputs[i].used = false;
+        input_ptrs[i] = &inputs[i];
+        output_ptrs[i] = &outputs[i];
+    }
 }
 
 static uint8_t char_width  = 6;
