@@ -2,7 +2,8 @@ SMALL TASKS
 
 New features:
 * Draw direction arrows
-* Draw updating status texts
+* Calculate and draw MODE value
+* Calculate and draw IDLE value
 * Draw code text
 * Draw an editor cursor (when editing)
 * Draw the currently instruction line with white background (when running)

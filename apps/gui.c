@@ -1,17 +1,20 @@
 #include <stdint.h>
+#include <stdio.h>
 
 #include "board.h"
 #include "canvas.h"
+#include "cpu.h"
 #include "display.h"
 #include "dispif.h"
 #include "font.h"
 #include "fonts.h"
+#include "panic.h"
 
 static void draw_static(struct canvas_t *canvas);
 static void draw_borders(struct canvas_t *canvas);
 static void draw_border_layer(struct canvas_t *canvas);
 static void draw_labels(struct canvas_t *canvas);
-static void draw_status(struct canvas_t *canvas);
+static void draw_status(struct canvas_t *canvas, struct state_t *cpu_state);
 
 int main(void)
 {
@@ -19,17 +22,27 @@ int main(void)
     struct display_t display;
     struct font_t font;
     struct canvas_t canvas;
+    struct state_t cpu_state;
 
     board_init(&board);
     display_init(&display, board.dispif, ORIENTATION_RIBBON_LEFT, WRITE_ORDER_Y_MAJOR);
     font_init(&font, monoblipp6x8);
     canvas_init(&canvas, &display, &font);
+    cpu_state_init(&cpu_state);
 
     display_activate(&display);
     draw_static(&canvas);
 
     for (;;) {
-        draw_status(&canvas);
+        cpu_state.acc++;
+        if (cpu_state.acc > 999) {
+            cpu_state.acc = -999;
+        }
+        cpu_state.bak += 2;
+        if (cpu_state.bak > 999) {
+            cpu_state.bak = -999;
+        }
+        draw_status(&canvas, &cpu_state);
     }
 
     return 0;
@@ -104,18 +117,43 @@ static void draw_labels(struct canvas_t *canvas)
     canvas_draw_text(canvas, x0, y0+hs*4, w, ALIGN_CENTER, "IDLE");
 }
 
-static void draw_status(struct canvas_t *canvas)
+static void draw_status(struct canvas_t *canvas, struct state_t *cpu_state)
 {
     uint8_t x0 = main_x_pixels + (code_width_chars + 2) * char_width;
     uint8_t y0 = main_y_pixels + (char_height * 2);
     uint8_t w  = status_width_chars * char_width;
     uint8_t hs = ((status_height_chars + 1) * char_height) + 2;
+    char buffer[7];
+    const char *text;
 
     canvas_set_fg_color(canvas, white);
     canvas_set_bg_color(canvas, black);
-    canvas_draw_text(canvas, x0, y0+hs*0, w, ALIGN_CENTER, "0");
-    canvas_draw_text(canvas, x0, y0+hs*1, w, ALIGN_CENTER, "(0)");
-    canvas_draw_text(canvas, x0, y0+hs*2, w, ALIGN_CENTER, "N/A");
+    snprintf(buffer, 7, "%d", cpu_state->acc);
+    canvas_draw_text(canvas, x0, y0+hs*0, w, ALIGN_CENTER, buffer);
+    snprintf(buffer, 7, "(%d)", cpu_state->bak);
+    canvas_draw_text(canvas, x0, y0+hs*1, w, ALIGN_CENTER, buffer);
+    if (cpu_state->has_last) {
+        switch (cpu_state->last) {
+        case DIR_LEFT:
+            text = "LEFT";
+            break;
+        case DIR_RIGHT:
+            text = "RIGHT";
+            break;
+        case DIR_UP:
+            text = "UP";
+            break;
+        case DIR_DOWN:
+            text = "DOWN";
+            break;
+        default:
+            panic();
+            break;
+        }
+    } else {
+        text = "N/A";
+    }
+    canvas_draw_text(canvas, x0, y0+hs*2, w, ALIGN_CENTER, text);
     canvas_draw_text(canvas, x0, y0+hs*3, w, ALIGN_CENTER, "IDLE");
     canvas_draw_text(canvas, x0, y0+hs*4, w, ALIGN_CENTER, "0%");
 }
