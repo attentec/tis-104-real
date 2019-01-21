@@ -50,17 +50,15 @@ void canvas_clear(struct canvas_t *canvas, uint16_t color)
 void canvas_draw_hline(struct canvas_t *canvas, uint8_t x, uint8_t y, uint8_t w)
 {
     uint16_t color = canvas->fg_color;
-    uint8_t tt = canvas->thickness;
-    uint8_t t = tt / 2;
-    canvas_fill_rectangle(canvas, x - t, y - t, w + tt + 1, tt + 1, color);
+    uint8_t t = canvas->thickness / 2;
+    canvas_fill_rectangle(canvas, x - t, y - t, w + (t*2) + 1, (t*2) + 1, color);
 }
 
 void canvas_draw_vline(struct canvas_t *canvas, uint8_t x, uint8_t y, uint8_t h)
 {
     uint16_t color = canvas->fg_color;
-    uint8_t tt = canvas->thickness;
-    uint8_t t = tt / 2;
-    canvas_fill_rectangle(canvas, x - t, y - t,tt + 1, h + tt + 1, color);
+    uint8_t t = canvas->thickness / 2;
+    canvas_fill_rectangle(canvas, x - t, y - t, (t*2) + 1, h + (t*2) + 1, color);
 }
 
 void canvas_draw_text(struct canvas_t *canvas, uint8_t x, uint8_t y, uint8_t w, enum align_t align, const char *text)
