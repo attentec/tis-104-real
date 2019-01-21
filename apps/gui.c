@@ -49,9 +49,8 @@ int main(void)
     canvas_init(&canvas, &display, &font);
     cpu_state_init(&cpu_state);
 
-    display_activate(&display);
     draw_static(&canvas);
-    draw_program(&canvas, example_program_text);
+    display_activate(&display);
 
     for (;;) {
         cpu_state.acc++;
