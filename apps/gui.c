@@ -9,6 +9,7 @@
 
 static void draw_static(struct canvas_t *canvas);
 static void draw_borders(struct canvas_t *canvas);
+static void draw_border_layer(struct canvas_t *canvas);
 static void draw_labels(struct canvas_t *canvas);
 static void draw_status(struct canvas_t *canvas);
 
@@ -58,6 +59,17 @@ static void draw_static(struct canvas_t *canvas)
 static void draw_borders(struct canvas_t *canvas)
 {
 
+    canvas_set_fg_color(canvas, white);
+    canvas_set_thickness(canvas, 3);
+    draw_border_layer(canvas);
+
+    canvas_set_fg_color(canvas, black);
+    canvas_set_thickness(canvas, 1);
+    draw_border_layer(canvas);
+}
+
+static void draw_border_layer(struct canvas_t *canvas)
+{
     uint8_t x0 = main_x_pixels + 3;
     uint8_t w1 = char_width * (code_width_chars + 1);
     uint8_t w2 = char_width * (status_width_chars + 1);
@@ -65,20 +77,6 @@ static void draw_borders(struct canvas_t *canvas)
     uint8_t h  = char_height * (code_height_chars + 1);
     uint8_t hs = char_height * (status_height_chars + 1);
 
-    canvas_set_fg_color(canvas, white);
-    canvas_set_thickness(canvas, 3);
-    canvas_draw_hline(canvas, x0,    y0,          w1+w2);
-    canvas_draw_hline(canvas, x0+w1, y0+(1*hs)+1, w2);
-    canvas_draw_hline(canvas, x0+w1, y0+(2*hs)+3, w2);
-    canvas_draw_hline(canvas, x0+w1, y0+(3*hs)+5, w2);
-    canvas_draw_hline(canvas, x0+w1, y0+(4*hs)+7, w2);
-    canvas_draw_hline(canvas, x0,    y0+h,        w1+w2);
-    canvas_draw_vline(canvas, x0,       y0, h);
-    canvas_draw_vline(canvas, x0+w1,    y0, h);
-    canvas_draw_vline(canvas, x0+w1+w2, y0, h);
-
-    canvas_set_fg_color(canvas, black);
-    canvas_set_thickness(canvas, 1);
     canvas_draw_hline(canvas, x0,    y0,          w1+w2);
     canvas_draw_hline(canvas, x0+w1, y0+(1*hs)+1, w2);
     canvas_draw_hline(canvas, x0+w1, y0+(2*hs)+3, w2);
