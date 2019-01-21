@@ -31,3 +31,4 @@ LARGE TASKS
 * Implement a program parser
 * Design and implement a communication protocol
 * Run two emulated CPUS on separate AVRs
+* Implement breakpoints ("!")
