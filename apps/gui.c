@@ -13,8 +13,27 @@
 static void draw_static(struct canvas_t *canvas);
 static void draw_borders(struct canvas_t *canvas);
 static void draw_border_layer(struct canvas_t *canvas);
-static void draw_labels(struct canvas_t *canvas);
 static void draw_status(struct canvas_t *canvas, struct state_t *cpu_state);
+static void draw_labels(struct canvas_t *canvas);
+static void draw_program(struct canvas_t *canvas, const char *lines[CPU_MAX_PRGM_LENGTH]);
+
+const char *example_program_text[CPU_MAX_PRGM_LENGTH] = {
+    "  MOV 10, ACC",
+    "LOOP:",
+    "  SUB 1",
+    "  JNZ LOOP",
+    "  SWP",
+    "  ADD 1",
+    "  SWP",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+};
 
 int main(void)
 {
@@ -32,6 +51,7 @@ int main(void)
 
     display_activate(&display);
     draw_static(&canvas);
+    draw_program(&canvas, example_program_text);
 
     for (;;) {
         cpu_state.acc++;
@@ -71,7 +91,6 @@ static void draw_static(struct canvas_t *canvas)
 
 static void draw_borders(struct canvas_t *canvas)
 {
-
     canvas_set_fg_color(canvas, white);
     canvas_set_thickness(canvas, 3);
     draw_border_layer(canvas);
@@ -156,4 +175,17 @@ static void draw_status(struct canvas_t *canvas, struct state_t *cpu_state)
     canvas_draw_text(canvas, x0, y0+hs*2, w, ALIGN_CENTER, text);
     canvas_draw_text(canvas, x0, y0+hs*3, w, ALIGN_CENTER, "IDLE");
     canvas_draw_text(canvas, x0, y0+hs*4, w, ALIGN_CENTER, "0%");
+}
+
+static void draw_program(struct canvas_t *canvas, const char *lines[CPU_MAX_PRGM_LENGTH])
+{
+    uint8_t x0 = main_x_pixels + char_width;
+    uint8_t y0 = main_y_pixels + char_height;
+    uint8_t w  = code_width_chars * char_width;
+
+    canvas_set_fg_color(canvas, white);
+    canvas_set_bg_color(canvas, black);
+    for (uint8_t i = 0; i < CPU_MAX_PRGM_LENGTH; i++) {
+        canvas_draw_text(canvas, x0, y0+(char_height*i), w, ALIGN_LEFT, lines[i]);
+    }
 }
