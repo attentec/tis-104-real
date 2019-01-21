@@ -5,6 +5,7 @@
 *.s
 *.sw*
 *.vscode
+TAGS
 /.tup
 /apps/*_size.txt
 /tests/*_results.txt
