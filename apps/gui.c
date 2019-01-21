@@ -92,9 +92,9 @@ static void draw_labels(struct canvas_t *canvas, struct font_t *font)
     uint8_t w  = status_width_chars * char_width;
     uint8_t hs = ((status_height_chars + 1) * char_height) + 2;
 
-    canvas_draw_text(canvas, x0, y0+hs*0, w, gray, black, font, "ACC");
-    canvas_draw_text(canvas, x0, y0+hs*1, w, gray, black, font, "BAK");
-    canvas_draw_text(canvas, x0, y0+hs*2, w, gray, black, font, "LAST");
-    canvas_draw_text(canvas, x0, y0+hs*3, w, gray, black, font, "MODE");
-    canvas_draw_text(canvas, x0, y0+hs*4, w, gray, black, font, "IDLE");
+    canvas_draw_text(canvas, x0, y0+hs*0, w, gray, black, font, ALIGN_CENTER, "ACC");
+    canvas_draw_text(canvas, x0, y0+hs*1, w, gray, black, font, ALIGN_CENTER, "BAK");
+    canvas_draw_text(canvas, x0, y0+hs*2, w, gray, black, font, ALIGN_CENTER, "LAST");
+    canvas_draw_text(canvas, x0, y0+hs*3, w, gray, black, font, ALIGN_CENTER, "MODE");
+    canvas_draw_text(canvas, x0, y0+hs*4, w, gray, black, font, ALIGN_CENTER, "IDLE");
 }

@@ -1,8 +1,6 @@
 SMALL TASKS
 
 New features:
-* Implement text alignment in canvas_draw_text: left, center, right
-* Make status boxes have centered text
 * Draw direction arrows
 * Draw updating status texts
 * Draw code text
