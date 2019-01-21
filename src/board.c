@@ -16,7 +16,7 @@ static struct pin_t cs;
 void board_init(struct board_t *board)
 {
     // Display module plugged directly into Arduino headers
-                                                            // Arduino pin
+                                                      // Arduino pin
     led = pin_init(PIN_PORT_C, 0, PIN_DIR_OUTPUT);    // A0
     //clk = pin_init(PIN_PORT_C, 1, PIN_DIR_OUTPUT);    // A1
     //sdi = pin_init(PIN_PORT_C, 2, PIN_DIR_OUTPUT);    // A2
