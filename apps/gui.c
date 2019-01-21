@@ -50,7 +50,6 @@ int main(void)
 {
     struct board_t board;
     struct display_t display;
-    struct font_t font;
     struct canvas_t canvas;
     struct code_t code;
     struct state_t cpu_state;
@@ -62,8 +61,7 @@ int main(void)
 
     board_init(&board);
     display_init(&display, board.dispif, ORIENTATION_RIBBON_LEFT, WRITE_ORDER_Y_MAJOR);
-    font_init(&font, monoblipp6x8);
-    canvas_init(&canvas, &display, &font);
+    canvas_init(&canvas, &display, &monoblipp6x8);
     cpu_state_init(&cpu_state);
     compile(&code, example_program_text);
     setup_pipes(inputs, outputs, input_ptrs, output_ptrs);
