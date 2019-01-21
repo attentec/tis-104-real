@@ -4,9 +4,7 @@ New features:
 * Draw direction arrows
 * Calculate and draw MODE value
 * Calculate and draw IDLE value
-* Draw code text
 * Draw an editor cursor (when editing)
-* Draw the currently instruction line with white background (when running)
 
 Cleaning up:
 * Let canvas decide the display write order - because it needs it to be Y major
