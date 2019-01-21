@@ -2,9 +2,13 @@ include_rules
 
 INCLUDES = -I../src
 LIBS = ../src/tis104_avr.a
+PCLIBS = ../src/tis104_pc.a
 
 : foreach *.c              |> !cc_avr $(INCLUDES) |> avr/%B.o   {objs}
 : foreach {objs} | $(LIBS) |> !ld_avr $(LIBS)     |> avr/%B.elf {bins}
 : foreach {bins}           |> !dis_avr            |> avr/%B.s
 : foreach {bins}           |> !hex_avr            |> avr/%B.hex
 : foreach {bins}           |> !size_avr           |> avr/%B_size.txt
+
+: foreach *.c                  |> !cc_pc $(INCLUDES)   |> pc/%B.o   {pcobjs}
+: foreach {pcobjs} | $(PCLIBS) |> !ld_pc $(PCLIBS)     |> pc/%B.elf {pcbins}
