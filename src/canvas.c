@@ -3,9 +3,33 @@
 #include "font.h"
 #include "panic.h"
 
-void canvas_init(struct canvas_t *canvas, struct display_t *display)
+void canvas_init(struct canvas_t *canvas, struct display_t *display, struct font_t *font)
 {
     canvas->display = display;
+    canvas->font = font;
+    canvas->fg_color = RGB888_TO_RGB565(0xFFFFFFul);
+    canvas->bg_color = RGB888_TO_RGB565(0x000000ul);
+    canvas->thickness = 1;
+}
+
+void canvas_set_font(struct canvas_t *canvas, struct font_t *font)
+{
+    canvas->font = font;
+}
+
+void canvas_set_fg_color(struct canvas_t *canvas, uint16_t fg_color)
+{
+    canvas->fg_color = fg_color;
+}
+
+void canvas_set_bg_color(struct canvas_t *canvas, uint16_t bg_color)
+{
+    canvas->bg_color = bg_color;
+}
+
+void canvas_set_thickness(struct canvas_t *canvas, uint8_t thickness)
+{
+    canvas->thickness = thickness;
 }
 
 void canvas_fill_rectangle(struct canvas_t *canvas, uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color)
@@ -23,20 +47,27 @@ void canvas_clear(struct canvas_t *canvas, uint16_t color)
     canvas_fill_rectangle(canvas, 0, 0, w, h, color);
 }
 
-void canvas_draw_hline(struct canvas_t *canvas, uint8_t x, uint8_t y, uint8_t w, uint16_t color, uint8_t thickness)
+void canvas_draw_hline(struct canvas_t *canvas, uint8_t x, uint8_t y, uint8_t w)
 {
-    uint8_t t = thickness / 2;
-    canvas_fill_rectangle(canvas, x - t, y - t, w + (2 * t) + 1, (2 * t) + 1, color);
+    uint16_t color = canvas->fg_color;
+    uint8_t tt = canvas->thickness;
+    uint8_t t = tt / 2;
+    canvas_fill_rectangle(canvas, x - t, y - t, w + tt + 1, tt + 1, color);
 }
 
-void canvas_draw_vline(struct canvas_t *canvas, uint8_t x, uint8_t y, uint8_t h, uint16_t color, uint8_t thickness)
+void canvas_draw_vline(struct canvas_t *canvas, uint8_t x, uint8_t y, uint8_t h)
 {
-    uint8_t t = thickness / 2;
-    canvas_fill_rectangle(canvas, x - t, y - t, (2 * t) + 1, h + (2 * t) + 1, color);
+    uint16_t color = canvas->fg_color;
+    uint8_t tt = canvas->thickness;
+    uint8_t t = tt / 2;
+    canvas_fill_rectangle(canvas, x - t, y - t,tt + 1, h + tt + 1, color);
 }
 
-void canvas_draw_text(struct canvas_t *canvas, uint8_t x, uint8_t y, uint8_t w, uint16_t fg_color, uint16_t bg_color, struct font_t *font, enum align_t align, const char *text)
+void canvas_draw_text(struct canvas_t *canvas, uint8_t x, uint8_t y, uint8_t w, enum align_t align, const char *text)
 {
+    struct font_t *font = canvas->font;
+    uint16_t fg_color = canvas->fg_color;
+    uint16_t bg_color = canvas->bg_color;
     display_set_window(canvas->display, x, y, w, font->height);
     uint8_t text_width = 0;
     for (const char *char_ptr = text; *char_ptr != '\0'; char_ptr++) {

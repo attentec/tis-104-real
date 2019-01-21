@@ -7,10 +7,10 @@
 #include "font.h"
 #include "fonts.h"
 
-static void draw_static(struct canvas_t *canvas, struct font_t *font);
+static void draw_static(struct canvas_t *canvas);
 static void draw_borders(struct canvas_t *canvas);
-static void draw_labels(struct canvas_t *canvas, struct font_t *font);
-static void draw_status(struct canvas_t *canvas, struct font_t *font);
+static void draw_labels(struct canvas_t *canvas);
+static void draw_status(struct canvas_t *canvas);
 
 int main(void)
 {
@@ -22,13 +22,13 @@ int main(void)
     board_init(&board);
     display_init(&display, board.dispif, ORIENTATION_RIBBON_LEFT, WRITE_ORDER_Y_MAJOR);
     font_init(&font, monoblipp6x8);
-    canvas_init(&canvas, &display);
+    canvas_init(&canvas, &display, &font);
 
     display_activate(&display);
-    draw_static(&canvas, &font);
+    draw_static(&canvas);
 
     for (;;) {
-        draw_status(&canvas, &font);
+        draw_status(&canvas);
     }
 
     return 0;
@@ -48,11 +48,11 @@ static uint16_t white = RGB888_TO_RGB565(0xFFFFFFul);
 static uint16_t gray  = RGB888_TO_RGB565(0xCCCCCCul);
 static uint16_t black = RGB888_TO_RGB565(0x000000ul);
 
-static void draw_static(struct canvas_t *canvas, struct font_t *font)
+static void draw_static(struct canvas_t *canvas)
 {
     canvas_clear(canvas, black);
     draw_borders(canvas);
-    draw_labels(canvas, font);
+    draw_labels(canvas);
 }
 
 static void draw_borders(struct canvas_t *canvas)
@@ -65,51 +65,59 @@ static void draw_borders(struct canvas_t *canvas)
     uint8_t h  = char_height * (code_height_chars + 1);
     uint8_t hs = char_height * (status_height_chars + 1);
 
-    canvas_draw_hline(canvas, x0,    y0,          w1+w2, white, 3);
-    canvas_draw_hline(canvas, x0+w1, y0+(1*hs)+1, w2,    white, 3);
-    canvas_draw_hline(canvas, x0+w1, y0+(2*hs)+3, w2,    white, 3);
-    canvas_draw_hline(canvas, x0+w1, y0+(3*hs)+5, w2,    white, 3);
-    canvas_draw_hline(canvas, x0+w1, y0+(4*hs)+7, w2,    white, 3);
-    canvas_draw_hline(canvas, x0,    y0+h,        w1+w2, white, 3);
-    canvas_draw_vline(canvas, x0,       y0, h, white, 3);
-    canvas_draw_vline(canvas, x0+w1,    y0, h, white, 3);
-    canvas_draw_vline(canvas, x0+w1+w2, y0, h, white, 3);
+    canvas_set_fg_color(canvas, white);
+    canvas_set_thickness(canvas, 3);
+    canvas_draw_hline(canvas, x0,    y0,          w1+w2);
+    canvas_draw_hline(canvas, x0+w1, y0+(1*hs)+1, w2);
+    canvas_draw_hline(canvas, x0+w1, y0+(2*hs)+3, w2);
+    canvas_draw_hline(canvas, x0+w1, y0+(3*hs)+5, w2);
+    canvas_draw_hline(canvas, x0+w1, y0+(4*hs)+7, w2);
+    canvas_draw_hline(canvas, x0,    y0+h,        w1+w2);
+    canvas_draw_vline(canvas, x0,       y0, h);
+    canvas_draw_vline(canvas, x0+w1,    y0, h);
+    canvas_draw_vline(canvas, x0+w1+w2, y0, h);
 
-    canvas_draw_hline(canvas, x0,    y0,          w1+w2, black, 1);
-    canvas_draw_hline(canvas, x0+w1, y0+(1*hs)+1, w2,    black, 1);
-    canvas_draw_hline(canvas, x0+w1, y0+(2*hs)+3, w2,    black, 1);
-    canvas_draw_hline(canvas, x0+w1, y0+(3*hs)+5, w2,    black, 1);
-    canvas_draw_hline(canvas, x0+w1, y0+(4*hs)+7, w2,    black, 1);
-    canvas_draw_hline(canvas, x0,    y0+h,        w1+w2, black, 1);
-    canvas_draw_vline(canvas, x0,       y0, h, black, 1);
-    canvas_draw_vline(canvas, x0+w1,    y0, h, black, 1);
-    canvas_draw_vline(canvas, x0+w1+w2, y0, h, black, 1);
+    canvas_set_fg_color(canvas, black);
+    canvas_set_thickness(canvas, 1);
+    canvas_draw_hline(canvas, x0,    y0,          w1+w2);
+    canvas_draw_hline(canvas, x0+w1, y0+(1*hs)+1, w2);
+    canvas_draw_hline(canvas, x0+w1, y0+(2*hs)+3, w2);
+    canvas_draw_hline(canvas, x0+w1, y0+(3*hs)+5, w2);
+    canvas_draw_hline(canvas, x0+w1, y0+(4*hs)+7, w2);
+    canvas_draw_hline(canvas, x0,    y0+h,        w1+w2);
+    canvas_draw_vline(canvas, x0,       y0, h);
+    canvas_draw_vline(canvas, x0+w1,    y0, h);
+    canvas_draw_vline(canvas, x0+w1+w2, y0, h);
 }
 
-static void draw_labels(struct canvas_t *canvas, struct font_t *font)
+static void draw_labels(struct canvas_t *canvas)
 {
     uint8_t x0 = main_x_pixels + (code_width_chars + 2) * char_width;
     uint8_t y0 = main_y_pixels + char_height;
     uint8_t w  = status_width_chars * char_width;
     uint8_t hs = ((status_height_chars + 1) * char_height) + 2;
 
-    canvas_draw_text(canvas, x0, y0+hs*0, w, gray, black, font, ALIGN_CENTER, "ACC");
-    canvas_draw_text(canvas, x0, y0+hs*1, w, gray, black, font, ALIGN_CENTER, "BAK");
-    canvas_draw_text(canvas, x0, y0+hs*2, w, gray, black, font, ALIGN_CENTER, "LAST");
-    canvas_draw_text(canvas, x0, y0+hs*3, w, gray, black, font, ALIGN_CENTER, "MODE");
-    canvas_draw_text(canvas, x0, y0+hs*4, w, gray, black, font, ALIGN_CENTER, "IDLE");
+    canvas_set_fg_color(canvas, gray);
+    canvas_set_bg_color(canvas, black);
+    canvas_draw_text(canvas, x0, y0+hs*0, w, ALIGN_CENTER, "ACC");
+    canvas_draw_text(canvas, x0, y0+hs*1, w, ALIGN_CENTER, "BAK");
+    canvas_draw_text(canvas, x0, y0+hs*2, w, ALIGN_CENTER, "LAST");
+    canvas_draw_text(canvas, x0, y0+hs*3, w, ALIGN_CENTER, "MODE");
+    canvas_draw_text(canvas, x0, y0+hs*4, w, ALIGN_CENTER, "IDLE");
 }
 
-static void draw_status(struct canvas_t *canvas, struct font_t *font)
+static void draw_status(struct canvas_t *canvas)
 {
     uint8_t x0 = main_x_pixels + (code_width_chars + 2) * char_width;
     uint8_t y0 = main_y_pixels + (char_height * 2);
     uint8_t w  = status_width_chars * char_width;
     uint8_t hs = ((status_height_chars + 1) * char_height) + 2;
 
-    canvas_draw_text(canvas, x0, y0+hs*0, w, white, black, font, ALIGN_CENTER, "0");
-    canvas_draw_text(canvas, x0, y0+hs*1, w, white, black, font, ALIGN_CENTER, "(0)");
-    canvas_draw_text(canvas, x0, y0+hs*2, w, white, black, font, ALIGN_CENTER, "N/A");
-    canvas_draw_text(canvas, x0, y0+hs*3, w, white, black, font, ALIGN_CENTER, "IDLE");
-    canvas_draw_text(canvas, x0, y0+hs*4, w, white, black, font, ALIGN_CENTER, "0%");
+    canvas_set_fg_color(canvas, white);
+    canvas_set_bg_color(canvas, black);
+    canvas_draw_text(canvas, x0, y0+hs*0, w, ALIGN_CENTER, "0");
+    canvas_draw_text(canvas, x0, y0+hs*1, w, ALIGN_CENTER, "(0)");
+    canvas_draw_text(canvas, x0, y0+hs*2, w, ALIGN_CENTER, "N/A");
+    canvas_draw_text(canvas, x0, y0+hs*3, w, ALIGN_CENTER, "IDLE");
+    canvas_draw_text(canvas, x0, y0+hs*4, w, ALIGN_CENTER, "0%");
 }
