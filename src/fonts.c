@@ -3,6 +3,7 @@
 #else
 #define PROGMEM
 #endif
+#include "font.h"
 #include "fonts.h"
 
 const uint8_t monoblipp6x8_data[] PROGMEM = {
