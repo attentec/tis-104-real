@@ -10,12 +10,20 @@
 #include "fonts.h"
 #include "panic.h"
 
+struct code_t {
+    struct prgm_t prgm;
+    const char **lines;
+    uint8_t addr_to_line[CPU_MAX_PRGM_LENGTH];
+};
+
+static void compile(struct code_t *code, const char *lines[CPU_MAX_PRGM_LENGTH]);
+
 static void draw_static(struct canvas_t *canvas);
 static void draw_borders(struct canvas_t *canvas);
 static void draw_border_layer(struct canvas_t *canvas);
 static void draw_status(struct canvas_t *canvas, struct state_t *cpu_state);
 static void draw_labels(struct canvas_t *canvas);
-static void draw_program(struct canvas_t *canvas, const char *lines[CPU_MAX_PRGM_LENGTH], uint8_t current_line);
+static void draw_program(struct canvas_t *canvas, struct code_t *code, address_t pc);
 
 const char *example_program_text[CPU_MAX_PRGM_LENGTH] = {
     "  MOV 10, ACC",
@@ -41,21 +49,22 @@ int main(void)
     struct display_t display;
     struct font_t font;
     struct canvas_t canvas;
+    struct code_t code;
     struct state_t cpu_state;
 
     board_init(&board);
     display_init(&display, board.dispif, ORIENTATION_RIBBON_LEFT, WRITE_ORDER_Y_MAJOR);
     font_init(&font, monoblipp6x8);
     canvas_init(&canvas, &display, &font);
+    compile(&code, example_program_text);
     cpu_state_init(&cpu_state);
 
     draw_static(&canvas);
     display_activate(&display);
 
-    uint8_t current_line = 0;
     for (;;) {
         draw_status(&canvas, &cpu_state);
-        draw_program(&canvas, example_program_text, current_line);
+        draw_program(&canvas, &code, cpu_state.pc);
         cpu_state.acc++;
         if (cpu_state.acc > 999) {
             cpu_state.acc = -999;
@@ -64,11 +73,37 @@ int main(void)
         if (cpu_state.bak > 999) {
             cpu_state.bak = -999;
         }
-        current_line++;
-        current_line %= 7;
+        cpu_state.pc++;
+        cpu_state.pc %= code.prgm.length;
     }
 
     return 0;
+}
+
+static void compile(struct code_t *code, const char *lines[CPU_MAX_PRGM_LENGTH])
+{
+    *code = (struct code_t) {
+        .prgm = {
+            .length = 6,
+            .instrs = {
+                INSTR2(OP_MOV, 10, ARG_ACC),
+                INSTR1(OP_SUB, 1),
+                INSTR1(OP_JNZ, 1),
+                INSTR0(OP_SWP),
+                INSTR1(OP_ADD, 1),
+                INSTR0(OP_SWP)
+            }
+        },
+        .lines = lines,
+        .addr_to_line = {
+            0,
+            2,
+            3,
+            4,
+            5,
+            6
+        }
+    };
 }
 
 static uint8_t char_width  = 6;
@@ -180,8 +215,9 @@ static void draw_status(struct canvas_t *canvas, struct state_t *cpu_state)
     canvas_draw_text(canvas, x0, y0+hs*4, w, ALIGN_CENTER, "0%");
 }
 
-static void draw_program(struct canvas_t *canvas, const char *lines[CPU_MAX_PRGM_LENGTH], uint8_t current_line)
+static void draw_program(struct canvas_t *canvas, struct code_t *code, address_t pc)
 {
+    uint8_t current_line = code->addr_to_line[pc];
     uint8_t x0 = main_x_pixels + char_width;
     uint8_t y0 = main_y_pixels + char_height;
     uint8_t w  = code_width_chars * char_width;
@@ -194,6 +230,6 @@ static void draw_program(struct canvas_t *canvas, const char *lines[CPU_MAX_PRGM
             canvas_set_fg_color(canvas, white);
             canvas_set_bg_color(canvas, black);
         }
-        canvas_draw_text(canvas, x0, y0+(char_height*i), w, ALIGN_LEFT, lines[i]);
+        canvas_draw_text(canvas, x0, y0+(char_height*i), w, ALIGN_LEFT, code->lines[i]);
     }
 }

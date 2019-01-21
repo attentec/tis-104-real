@@ -8,6 +8,10 @@ struct pipe_t;
 #define CPU_MAX_PRGM_LENGTH (15)
 #define CPU_MAX_PIPES (4)
 
+#define INSTR0(op)             ((struct instr_t){(op), ARG_NONE, ARG_NONE})
+#define INSTR1(op, arg1)       ((struct instr_t){(op), (arg1),   ARG_NONE})
+#define INSTR2(op, arg1, arg2) ((struct instr_t){(op), (arg1),   (arg2)})
+
 typedef uint8_t address_t;
 typedef int16_t reg_t;
 
