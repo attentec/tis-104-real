@@ -20,12 +20,13 @@ struct code_t {
 static void compile(struct code_t *code, const char *lines[CPU_MAX_PRGM_LENGTH]);
 static void setup_pipes(struct pipe_t inputs[], struct pipe_t outputs[], struct pipe_t *input_ptrs[], struct pipe_t *output_ptrs[]);
 
-static void draw_static(struct canvas_t *canvas);
+static void draw_static(struct canvas_t *canvas, struct code_t *code);
 static void draw_borders(struct canvas_t *canvas);
 static void draw_border_layer(struct canvas_t *canvas);
 static void draw_status(struct canvas_t *canvas, struct state_t *cpu_state);
 static void draw_labels(struct canvas_t *canvas);
-static void draw_program(struct canvas_t *canvas, struct code_t *code, address_t pc);
+static void draw_program(struct canvas_t *canvas, struct code_t *code);
+static void draw_program_highlight(struct canvas_t *canvas, struct code_t *code, address_t last_pc, address_t current_pc);
 
 const char *example_program_text[CPU_MAX_PRGM_LENGTH] = {
     "  MOV 10, ACC",
@@ -68,12 +69,14 @@ int main(void)
     setup_pipes(inputs, outputs, input_ptrs, output_ptrs);
     cpu_init(&cpu, &code.prgm, &cpu_state, input_ptrs, output_ptrs);
 
-    draw_static(&canvas);
+    draw_static(&canvas, &code);
     display_activate(&display);
 
+    address_t last_pc = cpu_state.pc;
     for (;;) {
         draw_status(&canvas, &cpu_state);
-        draw_program(&canvas, &code, cpu_state.pc);
+        draw_program_highlight(&canvas, &code, last_pc, cpu_state.pc);
+        last_pc = cpu_state.pc;
         cpu_step(&cpu);
     }
 
@@ -132,11 +135,12 @@ static uint16_t white = RGB888_TO_RGB565(0xFFFFFFul);
 static uint16_t gray  = RGB888_TO_RGB565(0xAAAAAAul);
 static uint16_t black = RGB888_TO_RGB565(0x000000ul);
 
-static void draw_static(struct canvas_t *canvas)
+static void draw_static(struct canvas_t *canvas, struct code_t *code)
 {
     canvas_clear(canvas, black);
     draw_borders(canvas);
     draw_labels(canvas);
+    draw_program(canvas, code);
 }
 
 static void draw_borders(struct canvas_t *canvas)
@@ -227,21 +231,31 @@ static void draw_status(struct canvas_t *canvas, struct state_t *cpu_state)
     canvas_draw_text(canvas, x0, y0+hs*4, w, ALIGN_CENTER, "0%");
 }
 
-static void draw_program(struct canvas_t *canvas, struct code_t *code, address_t pc)
+static void draw_program(struct canvas_t *canvas, struct code_t *code)
 {
-    uint8_t current_line = code->addr_to_line[pc];
     uint8_t x0 = main_x_pixels + char_width;
     uint8_t y0 = main_y_pixels + char_height;
     uint8_t w  = code_width_chars * char_width;
 
+    canvas_set_fg_color(canvas, white);
+    canvas_set_bg_color(canvas, black);
     for (uint8_t i = 0; i < CPU_MAX_PRGM_LENGTH; i++) {
-        if (i == current_line) {
-            canvas_set_fg_color(canvas, black);
-            canvas_set_bg_color(canvas, white);
-        } else {
-            canvas_set_fg_color(canvas, white);
-            canvas_set_bg_color(canvas, black);
-        }
         canvas_draw_text(canvas, x0, y0+(char_height*i), w, ALIGN_LEFT, code->lines[i]);
     }
+}
+
+static void draw_program_highlight(struct canvas_t *canvas, struct code_t *code, address_t last_pc, address_t current_pc)
+{
+    uint8_t last_line = code->addr_to_line[last_pc];
+    uint8_t current_line = code->addr_to_line[current_pc];
+    uint8_t x0 = main_x_pixels + char_width;
+    uint8_t y0 = main_y_pixels + char_height;
+    uint8_t w  = code_width_chars * char_width;
+
+    canvas_set_fg_color(canvas, white);
+    canvas_set_bg_color(canvas, black);
+    canvas_draw_text(canvas, x0, y0+(char_height*last_line), w, ALIGN_LEFT, code->lines[last_line]);
+    canvas_set_fg_color(canvas, black);
+    canvas_set_bg_color(canvas, white);
+    canvas_draw_text(canvas, x0, y0+(char_height*current_line), w, ALIGN_LEFT, code->lines[current_line]);
 }
