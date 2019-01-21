@@ -1,6 +1,7 @@
 #include "canvas.h"
 #include "display.h"
 #include "font.h"
+#include "icon.h"
 #include "panic.h"
 
 void canvas_init(struct canvas_t *canvas, struct display_t *display, struct font_t *font)
@@ -108,5 +109,59 @@ void canvas_draw_text(struct canvas_t *canvas, uint8_t x, uint8_t y, uint8_t w, 
         for (uint8_t row = 0; row < font->height; row++) {
             display_write_pixel(canvas->display, bg_color);
         }
+    }
+}
+
+void canvas_draw_icon(struct canvas_t *canvas, uint8_t x, uint8_t y, enum rot_t rot, struct icon_t *icon)
+{
+    (void) rot;
+    uint16_t fg_color = canvas->fg_color;
+    uint16_t bg_color = canvas->bg_color;
+    uint8_t w = icon->width;
+    uint8_t h = icon->height;
+    switch (rot) {
+    case ROT_0:
+        display_set_window(canvas->display, x, y, w, h);
+        for (uint8_t xi = 0; xi < w; xi++) {
+            for (uint8_t yi = 0; yi < h; yi++) {
+                bool pixel = icon_read_pixel(icon, xi, yi);
+                uint16_t color = pixel ? fg_color : bg_color;
+                display_write_pixel(canvas->display, color);
+            }
+        }
+        break;
+    case ROT_90:
+        display_set_window(canvas->display, x, y, h, w);
+        for (uint8_t xi = 0; xi < h; xi++) {
+            for (uint8_t yi = 0; yi < w; yi++) {
+                bool pixel = icon_read_pixel(icon, yi, h - xi - 1);
+                uint16_t color = pixel ? fg_color : bg_color;
+                display_write_pixel(canvas->display, color);
+            }
+        }
+        break;
+    case ROT_180:
+        display_set_window(canvas->display, x, y, w, h);
+        for (uint8_t xi = 0; xi < w; xi++) {
+            for (uint8_t yi = 0; yi < h; yi++) {
+                bool pixel = icon_read_pixel(icon, w - xi - 1, h - yi - 1);
+                uint16_t color = pixel ? fg_color : bg_color;
+                display_write_pixel(canvas->display, color);
+            }
+        }
+        break;
+    case ROT_270:
+        display_set_window(canvas->display, x, y, h, w);
+        for (uint8_t xi = 0; xi < h; xi++) {
+            for (uint8_t yi = 0; yi < w; yi++) {
+                bool pixel = icon_read_pixel(icon, w - yi - 1, xi);
+                uint16_t color = pixel ? fg_color : bg_color;
+                display_write_pixel(canvas->display, color);
+            }
+        }
+        break;
+    default:
+        panic();
+        break;
     }
 }
