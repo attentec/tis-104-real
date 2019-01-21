@@ -11,7 +11,7 @@ set -u
 
 tup
 
-filename=apps/"$1".hex
+filename=apps/avr/"$1".hex
 if [[ ! -f $filename ]]; then
   echo "File does not exist: $filename"
   exit 1
