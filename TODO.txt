@@ -1,7 +1,6 @@
 SMALL TASKS
 
 New features:
-* Draw direction arrows
 * Calculate and draw MODE value
 * Calculate and draw IDLE value
 * Draw an editor cursor (when editing)

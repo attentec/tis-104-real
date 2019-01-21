@@ -8,6 +8,7 @@
 #include "dispif.h"
 #include "font.h"
 #include "fonts.h"
+#include "icons.h"
 #include "panic.h"
 #include "pipe_mock.h"
 
@@ -23,6 +24,7 @@ static void setup_pipes(struct pipe_t inputs[], struct pipe_t outputs[], struct 
 static void draw_static(struct canvas_t *canvas, struct code_t *code);
 static void draw_borders(struct canvas_t *canvas);
 static void draw_border_layer(struct canvas_t *canvas);
+static void draw_arrows(struct canvas_t *canvas);
 static void draw_status(struct canvas_t *canvas, struct state_t *cpu_state);
 static void draw_labels(struct canvas_t *canvas);
 static void draw_program(struct canvas_t *canvas, struct code_t *code);
@@ -137,6 +139,7 @@ static void draw_static(struct canvas_t *canvas, struct code_t *code)
 {
     canvas_clear(canvas, black);
     draw_borders(canvas);
+    draw_arrows(canvas);
     draw_labels(canvas);
     draw_program(canvas, code);
 }
@@ -170,6 +173,20 @@ static void draw_border_layer(struct canvas_t *canvas)
     canvas_draw_vline(canvas, x0,       y0, h);
     canvas_draw_vline(canvas, x0+w1,    y0, h);
     canvas_draw_vline(canvas, x0+w1+w2, y0, h);
+}
+
+static void draw_arrows(struct canvas_t *canvas)
+{
+    canvas_set_fg_color(canvas, white);
+    canvas_set_bg_color(canvas, black);
+    canvas_draw_icon(canvas,   6,  71, ROT_270, &arrow_icon);
+    canvas_draw_icon(canvas,   6,  95, ROT_90,  &arrow_icon);
+    canvas_draw_icon(canvas, 198,  71, ROT_270, &arrow_icon);
+    canvas_draw_icon(canvas, 198,  95, ROT_90,  &arrow_icon);
+    canvas_draw_icon(canvas,  88,   0, ROT_180, &arrow_icon);
+    canvas_draw_icon(canvas, 118,   0, ROT_0,   &arrow_icon);
+    canvas_draw_icon(canvas,  88, 160, ROT_180, &arrow_icon);
+    canvas_draw_icon(canvas, 118, 160, ROT_0,   &arrow_icon);
 }
 
 static void draw_labels(struct canvas_t *canvas)
