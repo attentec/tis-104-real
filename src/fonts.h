@@ -1,5 +1,5 @@
 #pragma once
 
-#include <stdint.h>
+#include "font.h"
 
-extern const uint8_t monoblipp6x8[];
+extern struct font_t monoblipp6x8;

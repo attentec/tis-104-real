@@ -5,10 +5,6 @@
 #include "pipe_mock.h"
 #include "unity.h"
 
-#define INSTR0(op)             ((struct instr_t){(op), ARG_NONE, ARG_NONE})
-#define INSTR1(op, arg1)       ((struct instr_t){(op), (arg1),   ARG_NONE})
-#define INSTR2(op, arg1, arg2) ((struct instr_t){(op), (arg1),   (arg2)})
-
 static struct cpu_t cpu;
 static struct prgm_t prgm;
 static struct state_t state;

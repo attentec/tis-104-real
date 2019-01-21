@@ -6,16 +6,27 @@ game by Zachtronics on real hardware.
 ## Setup
 
     submodule update --init
-    sudo apt install build-essential ruby
+    sudo apt install build-essential gcc-avr binutils-avr avr-libc avrdude ruby
+    # install TUP: http://gittup.org/tup/
+
+## Build everything
+
+    tup
 
 ## Run tests on PC
 
-    make build/pc/results/{cpu,integration}.txt
+Build everything and run tests:
+
+    ./test
 
 ## Build and flash AVR binary
 
 The code runs on an Arduino (or actually any ATmega328P) with a "red 128x160
 ST7735S 1.8 inch display module" connected. Check main_avr.c for pinout.
 
-    make build/avr/main_avr.elf               # Build only
-    make flash TARGET=build/avr/main_avr.elf  # Build and flash
+Build everything and flash:
+
+    ./flash main_avr
+
+The DEVICE environment variable can be used to override the Arduino USB device
+used. Any extra arguments are passed to Avrdude.

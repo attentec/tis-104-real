@@ -1,0 +1,34 @@
+SMALL TASKS
+
+New features:
+* Calculate and draw MODE value
+* Calculate and draw IDLE value
+* Draw an editor cursor (when editing)
+* Clamp arithmetic to [-999, 999] interval
+
+Cleaning up:
+* Let canvas decide the display write order - because it needs it to be Y major
+  - possibly by adding a display_set_write_order function and calling it in canvas_init
+* Tidy up src/avr/panic.c to use pin abstraction (maybe?)
+
+Nice to have:
+* Also compile most apps/*.c files for PC.
+  (Possibly by adding a apps/avr/ directory for the AVR-only apps.)
+* Implement uart.h for PC.
+* Connect some push buttons for easier debugging and testing
+
+
+
+MEDIUM TASKS
+
+* Implement a code editor
+* Implement display.h for PC using (for example) SDL
+
+
+
+LARGE TASKS
+
+* Implement a program parser
+* Design and implement a communication protocol
+* Run two emulated CPUS on separate AVRs
+* Implement breakpoints ("!")

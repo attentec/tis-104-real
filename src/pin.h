@@ -3,6 +3,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+struct pin_t {
+    volatile uint8_t *port;
+    volatile uint8_t *pin;
+    uint8_t bit_pattern;
+};
+
 typedef uint8_t pin_t;
 
 enum dir_t {
@@ -16,6 +22,6 @@ enum port_t {
     PIN_PORT_D = 3,
 };
 
-pin_t pin_init(enum port_t port, uint8_t bit, enum dir_t dir);
-void pin_write(pin_t pin, bool value);
-bool pin_read(pin_t pin);
+struct pin_t pin_init(enum port_t port, uint8_t bit, enum dir_t dir);
+void pin_write(struct pin_t *pin, bool value);
+bool pin_read(struct pin_t *pin);

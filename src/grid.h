@@ -1,7 +1,5 @@
 #pragma once
 
-#include "cpu.h"
-
 #define GRID_MAX_NUM_CPUS 12
 
 void grid_init(void);

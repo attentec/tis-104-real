@@ -1,12 +1,13 @@
 #pragma once
 
+#include <stdbool.h>
 #include <stdint.h>
 
-struct font_t
+struct icon_t
 {
     const uint8_t* data;
     uint8_t width;
     uint8_t height;
 };
 
-uint8_t font_read_column(struct font_t *font, uint8_t charno, uint8_t column);
+bool icon_read_pixel(struct icon_t *icon, uint8_t x, uint8_t y);
