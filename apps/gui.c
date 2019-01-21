@@ -10,6 +10,7 @@
 static void draw_static(struct canvas_t *canvas, struct font_t *font);
 static void draw_borders(struct canvas_t *canvas);
 static void draw_labels(struct canvas_t *canvas, struct font_t *font);
+static void draw_status(struct canvas_t *canvas, struct font_t *font);
 
 int main(void)
 {
@@ -27,6 +28,7 @@ int main(void)
     draw_static(&canvas, &font);
 
     for (;;) {
+        draw_status(&canvas, &font);
     }
 
     return 0;
@@ -86,7 +88,6 @@ static void draw_borders(struct canvas_t *canvas)
 
 static void draw_labels(struct canvas_t *canvas, struct font_t *font)
 {
-
     uint8_t x0 = main_x_pixels + (code_width_chars + 2) * char_width;
     uint8_t y0 = main_y_pixels + char_height;
     uint8_t w  = status_width_chars * char_width;
@@ -97,4 +98,18 @@ static void draw_labels(struct canvas_t *canvas, struct font_t *font)
     canvas_draw_text(canvas, x0, y0+hs*2, w, gray, black, font, ALIGN_CENTER, "LAST");
     canvas_draw_text(canvas, x0, y0+hs*3, w, gray, black, font, ALIGN_CENTER, "MODE");
     canvas_draw_text(canvas, x0, y0+hs*4, w, gray, black, font, ALIGN_CENTER, "IDLE");
+}
+
+static void draw_status(struct canvas_t *canvas, struct font_t *font)
+{
+    uint8_t x0 = main_x_pixels + (code_width_chars + 2) * char_width;
+    uint8_t y0 = main_y_pixels + (char_height * 2);
+    uint8_t w  = status_width_chars * char_width;
+    uint8_t hs = ((status_height_chars + 1) * char_height) + 2;
+
+    canvas_draw_text(canvas, x0, y0+hs*0, w, white, black, font, ALIGN_CENTER, "0");
+    canvas_draw_text(canvas, x0, y0+hs*1, w, white, black, font, ALIGN_CENTER, "(0)");
+    canvas_draw_text(canvas, x0, y0+hs*2, w, white, black, font, ALIGN_CENTER, "N/A");
+    canvas_draw_text(canvas, x0, y0+hs*3, w, white, black, font, ALIGN_CENTER, "IDLE");
+    canvas_draw_text(canvas, x0, y0+hs*4, w, white, black, font, ALIGN_CENTER, "0%");
 }
