@@ -179,14 +179,14 @@ static void draw_arrows(struct canvas_t *canvas)
 {
     canvas_set_fg_color(canvas, white);
     canvas_set_bg_color(canvas, black);
-    canvas_draw_icon(canvas,   6,  71, ROT_270, &arrow_icon);
-    canvas_draw_icon(canvas,   6,  95, ROT_90,  &arrow_icon);
-    canvas_draw_icon(canvas, 198,  71, ROT_270, &arrow_icon);
-    canvas_draw_icon(canvas, 198,  95, ROT_90,  &arrow_icon);
-    canvas_draw_icon(canvas,  88,   0, ROT_180, &arrow_icon);
-    canvas_draw_icon(canvas, 118,   0, ROT_0,   &arrow_icon);
-    canvas_draw_icon(canvas,  88, 160, ROT_180, &arrow_icon);
-    canvas_draw_icon(canvas, 118, 160, ROT_0,   &arrow_icon);
+    canvas_draw_icon(canvas,   6,  71, ROT_270, &hollow_arrow_icon);
+    canvas_draw_icon(canvas,   6,  95, ROT_90,  &hollow_arrow_icon);
+    canvas_draw_icon(canvas, 198,  71, ROT_270, &hollow_arrow_icon);
+    canvas_draw_icon(canvas, 198,  95, ROT_90,  &hollow_arrow_icon);
+    canvas_draw_icon(canvas,  88,   0, ROT_180, &hollow_arrow_icon);
+    canvas_draw_icon(canvas, 118,   0, ROT_0,   &hollow_arrow_icon);
+    canvas_draw_icon(canvas,  88, 160, ROT_180, &hollow_arrow_icon);
+    canvas_draw_icon(canvas, 118, 160, ROT_0,   &hollow_arrow_icon);
 }
 
 static void draw_labels(struct canvas_t *canvas)
