@@ -5,8 +5,9 @@
 *.s
 *.sw*
 *.vscode
+TAGS
 /.tup
-/apps/*_size.txt
+/apps/avr/*_size.txt
 /tests/*_results.txt
 /tests/*_runner.c
 /tests/results.txt

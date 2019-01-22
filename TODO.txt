@@ -12,10 +12,9 @@ Cleaning up:
 * Tidy up src/avr/panic.c to use pin abstraction (maybe?)
 
 Nice to have:
-* Also compile most apps/*.c files for PC.
-  (Possibly by adding a apps/avr/ directory for the AVR-only apps.)
 * Implement uart.h for PC.
 * Connect some push buttons for easier debugging and testing
+* Fix code paths when running in gdb on PC
 
 
 
