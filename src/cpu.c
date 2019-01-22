@@ -229,8 +229,18 @@ void cpu_write(struct cpu_t *cpu) {
         }
     } else if (op == OP_ADD) {
         cpu->state->acc += arg1;
+        if (cpu->state->acc > 999) {
+            cpu->state->acc = 999;
+        } else if (cpu->state->acc < -999) {
+            cpu->state->acc = -999;
+        }
     } else if (op == OP_SUB) {
         cpu->state->acc -= arg1;
+        if (cpu->state->acc > 999) {
+            cpu->state->acc = 999;
+        } else if (cpu->state->acc < -999) {
+            cpu->state->acc = -999;
+        }
     } else if (op == OP_NOP) {
     } else {
         panic();

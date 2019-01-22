@@ -427,3 +427,35 @@ void test_Cpu_should_AcceptWritesToNALast(void) {
     cpu_step(&cpu);
     TEST_ASSERT_EQUAL_INT(1, state.pc);
 }
+
+void test_Cpu_should_SatureAccOnAddPositively(void) {
+    prgm.length = 1;
+    state.acc = 999;
+    prgm.instrs[0] = INSTR1(OP_ADD, 1);
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(999, state.acc);
+}
+
+void test_Cpu_should_SatureAccOnAddNegatively(void) {
+    prgm.length = 1;
+    state.acc = -999;
+    prgm.instrs[0] = INSTR1(OP_ADD, -1);
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(-999, state.acc);
+}
+
+void test_Cpu_should_SatureAccOnSubPositively(void) {
+    prgm.length = 1;
+    state.acc = 999;
+    prgm.instrs[0] = INSTR1(OP_SUB, -1);
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(999, state.acc);
+}
+
+void test_Cpu_should_SatureAccOnSubNegatively(void) {
+    prgm.length = 1;
+    state.acc = -999;
+    prgm.instrs[0] = INSTR1(OP_SUB, 1);
+    cpu_step(&cpu);
+    TEST_ASSERT_EQUAL_INT(-999, state.acc);
+}

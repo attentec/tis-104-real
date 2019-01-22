@@ -4,7 +4,6 @@ New features:
 * Calculate and draw MODE value
 * Calculate and draw IDLE value
 * Draw an editor cursor (when editing)
-* Clamp arithmetic to [-999, 999] interval
 
 Cleaning up:
 * Let canvas decide the display write order - because it needs it to be Y major
