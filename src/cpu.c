@@ -194,7 +194,7 @@ void cpu_write(struct cpu_t *cpu) {
         }
     } else if (op == OP_MOV) {
         if (instr.arg2 == ARG_ACC) {
-            cpu->state->acc = arg1;
+            *acc = arg1;
         } else if (instr.arg2 == ARG_NIL) {
         } else if (arg_is_dir(instr.arg2) || instr.arg2 == ARG_ANY || instr.arg2 == ARG_LAST) {
             enum arg_t arg2 = instr.arg2;
@@ -228,18 +228,18 @@ void cpu_write(struct cpu_t *cpu) {
             }
         }
     } else if (op == OP_ADD) {
-        cpu->state->acc += arg1;
-        if (cpu->state->acc > 999) {
-            cpu->state->acc = 999;
-        } else if (cpu->state->acc < -999) {
-            cpu->state->acc = -999;
+        *acc += arg1;
+        if (*acc > 999) {
+            *acc = 999;
+        } else if (*acc < -999) {
+            *acc = -999;
         }
     } else if (op == OP_SUB) {
-        cpu->state->acc -= arg1;
-        if (cpu->state->acc > 999) {
-            cpu->state->acc = 999;
-        } else if (cpu->state->acc < -999) {
-            cpu->state->acc = -999;
+        *acc -= arg1;
+        if (*acc > 999) {
+            *acc = 999;
+        } else if (*acc < -999) {
+            *acc = -999;
         }
     } else if (op == OP_NOP) {
     } else {
