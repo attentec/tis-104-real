@@ -17,18 +17,18 @@ static struct pin_t cs;
 
 void board_init(void)
 {
-  // Display module plugged directly into Arduino headers
-                                                    // Arduino pin
-  led = pin_init(PIN_PORT_C, 0, PIN_DIR_OUTPUT);    // A0
-  clk = pin_init(PIN_PORT_C, 1, PIN_DIR_OUTPUT);    // A1
-  sdi = pin_init(PIN_PORT_C, 2, PIN_DIR_OUTPUT);    // A2
-  rs  = pin_init(PIN_PORT_C, 3, PIN_DIR_OUTPUT);    // A3
-  rst = pin_init(PIN_PORT_C, 4, PIN_DIR_OUTPUT);    // A4
-  cs  = pin_init(PIN_PORT_C, 5, PIN_DIR_OUTPUT);    // A5
+    // Display module plugged directly into Arduino headers
+                                                      // Arduino pin
+    led = pin_init(PIN_PORT_C, 0, PIN_DIR_OUTPUT);    // A0
+    clk = pin_init(PIN_PORT_C, 1, PIN_DIR_OUTPUT);    // A1
+    sdi = pin_init(PIN_PORT_C, 2, PIN_DIR_OUTPUT);    // A2
+    rs  = pin_init(PIN_PORT_C, 3, PIN_DIR_OUTPUT);    // A3
+    rst = pin_init(PIN_PORT_C, 4, PIN_DIR_OUTPUT);    // A4
+    cs  = pin_init(PIN_PORT_C, 5, PIN_DIR_OUTPUT);    // A5
 
-  spi_init(&spi, &sdi, &clk);
-  dispif_init(&dispif, &spi, &rs, &cs, &rst, &led);
+    spi_init(&spi, &sdi, &clk);
+    dispif_init(&dispif, &spi, &rs, &cs, &rst, &led);
 
-  board.dispif = &dispif;
-  board.led = &led;
+    board.dispif = &dispif;
+    board.led = &led;
 }
