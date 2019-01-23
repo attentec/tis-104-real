@@ -4,6 +4,8 @@
 #include "spi.h"
 #include "spi_hw.h"
 
+struct board_t board;
+
 static struct dispif_t dispif;
 static struct spi_t spi;
 static struct pin_t led;
@@ -13,7 +15,7 @@ static struct pin_t rs;
 static struct pin_t rst;
 static struct pin_t cs;
 
-void board_init(struct board_t *board)
+void board_init(void)
 {
     // Display module plugged directly into Arduino headers
                                                       // Arduino pin
@@ -27,5 +29,5 @@ void board_init(struct board_t *board)
     spi_init(&spi);
     dispif_init(&dispif, &spi, &rs, &cs, &rst, &led);
 
-    board->dispif = &dispif;
+    board.dispif = &dispif;
 }

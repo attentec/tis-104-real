@@ -4,9 +4,8 @@
 #include "display.h"
 
 int main(void) {
-    struct board_t board;
     struct display_t display;
-    board_init(&board);
+    board_init();
     display_init(&display, board.dispif, ORIENTATION_RIBBON_BOTTOM, WRITE_ORDER_X_MAJOR);
     display_activate(&display);
 

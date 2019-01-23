@@ -42,7 +42,6 @@ const char *example_program_text[CPU_MAX_PRGM_LENGTH] = {
 
 int main(void)
 {
-    struct board_t board;
     struct display_t display;
     struct canvas_t canvas;
     struct code_t code;
@@ -53,7 +52,7 @@ int main(void)
     struct pipe_t *output_ptrs[CPU_MAX_PIPES];
     struct cpu_t cpu;
 
-    board_init(&board);
+    board_init();
     display_init(&display, board.dispif, ORIENTATION_RIBBON_LEFT, WRITE_ORDER_Y_MAJOR);
     canvas_init(&canvas, &display, &monoblipp6x8);
     cpu_state_init(&cpu_state);
