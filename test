@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 
 tup
-grep -hi fail tests/*_results.txt
+for f in tests/*_results.txt; do
+    echo "$f"
+    grep -hi fail "$f"
+    echo
+done
