@@ -8,7 +8,6 @@ New features:
 Cleaning up:
 * Let canvas decide the display write order - because it needs it to be Y major
   - possibly by adding a display_set_write_order function and calling it in canvas_init
-* Tidy up src/avr/panic.c to use pin abstraction (maybe?)
 
 Nice to have:
 * Implement uart.h for PC.

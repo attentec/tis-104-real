@@ -1,8 +1,9 @@
-#include <avr/io.h>
 #include <stdio.h>
 
+#include "board.h"
 #include "delay.h"
 #include "panic.h"
+#include "pin.h"
 #include "uart.h"
 
 void panic_handler(const char* file, int line) {
@@ -11,9 +12,9 @@ void panic_handler(const char* file, int line) {
     sprintf(buffer, "%s:%d", file, line);
     write_line((uint8_t *) buffer);
     for (;;) {
-        PORTC &= ~(1<<0);
+        pin_write(board.led, false);
         delay_ms(100);
-        PORTC |= (1<<0);
+        pin_write(board.led, true);
         delay_ms(900);
     }
 }

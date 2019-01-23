@@ -30,4 +30,5 @@ void board_init(void)
     dispif_init(&dispif, &spi, &rs, &cs, &rst, &led);
 
     board.dispif = &dispif;
+    board.led = &led;
 }
