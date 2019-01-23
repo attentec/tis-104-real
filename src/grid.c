@@ -89,7 +89,7 @@ void grid_init(void) {
     struct pipe_t *output_pointers[CPU_MAX_PIPES];
 
     for (size_t i = 0; i < NUM_PIPES; ++i) {
-        pipes[i].cell = NULL;
+        pipe_init(&pipes[i]);
     }
 
     for (size_t i = 0; i < GRID_MAX_NUM_CPUS; ++i) {

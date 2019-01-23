@@ -40,10 +40,10 @@ void setUp(void) {
     struct pipe_t *output_pointers[CPU_MAX_PIPES];
 
     for (size_t i = 0; i < CPU_MAX_PIPES; ++i) {
+        pipe_init(&input_pipes[i]);
+        pipe_init(&output_pipes[i]);
         input_pointers[i] = &input_pipes[i];
         output_pointers[i] = &output_pipes[i];
-        input_pipes[i].cell = NULL;
-        output_pipes[i].cell = NULL;
     }
 
     prgm.length = 0;

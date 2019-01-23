@@ -104,10 +104,8 @@ static void compile(struct code_t *code, const char *lines[CPU_MAX_PRGM_LENGTH])
 static void setup_pipes(struct pipe_t inputs[], struct pipe_t outputs[], struct pipe_t *input_ptrs[], struct pipe_t *output_ptrs[])
 {
    for (uint8_t i = 0; i < CPU_MAX_PIPES; ++i) {
-        inputs[i].cell = NULL;
-        inputs[i].used = false;
-        outputs[i].cell = NULL;
-        outputs[i].used = false;
+        pipe_init(&inputs[i]);
+        pipe_init(&outputs[i]);
         input_ptrs[i] = &inputs[i];
         output_ptrs[i] = &outputs[i];
     }

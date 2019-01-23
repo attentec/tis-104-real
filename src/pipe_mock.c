@@ -4,6 +4,12 @@
 #include "pipe.h"
 #include "pipe_mock.h"
 
+void pipe_init(struct pipe_t *pipe)
+{
+    pipe->cell = NULL;
+    pipe->used = false;
+}
+
 bool input_accept(struct pipe_t *input, reg_t *value) {
     if (input->cell && *(input->cell) != REG_INVALID_VALUE) {
         *value = *(input->cell);
