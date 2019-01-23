@@ -81,13 +81,21 @@ static void draw_arrows(struct canvas_t *canvas)
 {
     canvas_set_fg_color(canvas, white);
     canvas_set_bg_color(canvas, black);
+    // Left side
     canvas_draw_icon(canvas,   6,  71, ROT_270, &hollow_arrow_icon);
+    canvas_draw_text(canvas,   0,  84, 26, ALIGN_CENTER, "SMN");
     canvas_draw_icon(canvas,   6,  95, ROT_90,  &hollow_arrow_icon);
+    // Right side
     canvas_draw_icon(canvas, 198,  71, ROT_270, &hollow_arrow_icon);
+    canvas_draw_text(canvas, 194,  84, 26, ALIGN_CENTER, "SMN");
     canvas_draw_icon(canvas, 198,  95, ROT_90,  &hollow_arrow_icon);
-    canvas_draw_icon(canvas,  88,   0, ROT_180, &hollow_arrow_icon);
+    // Top side
+    canvas_draw_text(canvas,  32,  4, 72, ALIGN_CENTER, "CONSOLE");
+    //canvas_draw_icon(canvas,  88,   0, ROT_180, &hollow_arrow_icon);
     canvas_draw_icon(canvas, 118,   0, ROT_0,   &hollow_arrow_icon);
-    canvas_draw_icon(canvas,  88, 160, ROT_180, &hollow_arrow_icon);
+    // Bottom side
+    canvas_draw_text(canvas,  32,164, 72, ALIGN_CENTER, "CONSOLE");
+    //canvas_draw_icon(canvas,  88, 160, ROT_180, &hollow_arrow_icon);
     canvas_draw_icon(canvas, 118, 160, ROT_0,   &hollow_arrow_icon);
 }
 
