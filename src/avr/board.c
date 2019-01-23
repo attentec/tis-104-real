@@ -3,6 +3,7 @@
 #include "pin.h"
 #include "spi.h"
 #include "spi_hw.h"
+#include "uart.h"
 
 struct board_t board;
 
@@ -14,6 +15,7 @@ static struct pin_t led;
 static struct pin_t rs;
 static struct pin_t rst;
 static struct pin_t cs;
+static struct uart_t uart;
 
 void board_init(void)
 {
@@ -28,7 +30,9 @@ void board_init(void)
 
     spi_init(&spi);
     dispif_init(&dispif, &spi, &rs, &cs, &rst, &led);
+    uart_init(&uart);
 
     board.dispif = &dispif;
     board.led = &led;
+    board.uart = &uart;
 }

@@ -4,6 +4,7 @@ New features:
 * Calculate and draw MODE value
 * Calculate and draw IDLE value
 * Draw an editor cursor (when editing)
+* Implement receive and transmit buffers for 'uart'
 
 Cleaning up:
 * Let canvas decide the display write order - because it needs it to be Y major

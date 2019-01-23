@@ -7,10 +7,10 @@
 #include "uart.h"
 
 void panic_handler(const char* file, int line) {
-    uart_init();
+    struct uart_t *uart = board.uart;
     char buffer[200];
     sprintf(buffer, "%s:%d", file, line);
-    write_line((uint8_t *) buffer);
+    uart_write_line(uart, (uint8_t *) buffer);
     for (;;) {
         pin_write(board.led, false);
         delay_ms(100);

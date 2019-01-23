@@ -45,25 +45,27 @@ static bool try_receive_value(int16_t *value) {
 }
 
 int main() {
+    struct uart_t uart;
+
     // Set pin 2 and 3 to input, without pullup
     DDRD &= ~((1 << 3) | (1 << 2));
     PORTD &= ~((1 << 3) | (1 << 2));
 
-    uart_init();
+    uart_init(&uart);
 
     int16_t value;
     const size_t mysize = 100;
     uint8_t mybuf[mysize];
     while (true) {
-        read_char();
+        uart_read_char(&uart);
         //1R
         while (!try_receive_value(&value)) {
-            read_char();
-            read_char();
+            uart_read_char(&uart);
+            uart_read_char(&uart);
         }
         snprintf((char *) mybuf, mysize, "Got value: %" PRId16, value);
-        write_line(mybuf);
-        read_char();
+        uart_write_line(&uart, mybuf);
+        uart_read_char(&uart);
         //1W
     }
 }

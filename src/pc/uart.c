@@ -3,20 +3,23 @@
 #include "panic.h"
 #include "uart.h"
 
-void uart_init(void)
+void uart_init(struct uart_t *uart)
 {
+    (void) uart;
 }
 
-void write_char(uint8_t c)
+void uart_write_char(struct uart_t *uart, uint8_t c)
 {
+    (void) uart;
     int ret = putchar((char) c);
     if (ret == EOF) {
         panic();
     }
 }
 
-uint8_t read_char(void)
+uint8_t uart_read_char(struct uart_t *uart)
 {
+    (void) uart;
     int ret = getchar();
     if (ret == EOF) {
         panic();
@@ -24,11 +27,12 @@ uint8_t read_char(void)
     return (uint8_t) ret;
 }
 
-void write_line(uint8_t *s)
+void uart_write_line(struct uart_t *uart, uint8_t *s)
 {
+    (void) uart;
     for (uint8_t *p = s; *p; p++) {
-        write_char(*p);
+        uart_write_char(uart, *p);
     }
-    write_char('\r');
-    write_char('\n');
+    uart_write_char(uart, '\r');
+    uart_write_char(uart, '\n');
 }

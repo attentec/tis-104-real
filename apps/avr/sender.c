@@ -48,27 +48,29 @@ static bool try_transmit_value(int16_t value) {
 }
 
 int main() {
+    struct uart_t uart;
+
     // Set pin 2 and 3 to input, without pullup
     DDRD &= ~((1 << 3) | (1 << 2));
     PORTD &= ~((1 << 3) | (1 << 2));
 
-    uart_init();
+    uart_init(&uart);
 
     int16_t counter = -999;
     while (true) {
-        read_char();
+        uart_read_char(&uart);
         //1R
-        read_char();
+        uart_read_char(&uart);
         //1W
         signal_value_available();
-        read_char();
+        uart_read_char(&uart);
         //2R
         while (!try_transmit_value(counter)) {
-            read_char();
-            read_char();
+            uart_read_char(&uart);
+            uart_read_char(&uart);
         }
-        write_line((uint8_t *)"Sent value");
-        read_char();
+        uart_write_line(&uart, (uint8_t *)"Sent value");
+        uart_read_char(&uart);
         //2W
 
         counter += 1;
