@@ -37,10 +37,11 @@ uint8_t read_char(void) {
     return UDR0;
 }
 
-void write_line(uint8_t *s) {
-    do {
-        write_char(*s);
-    } while (*++s);
+void write_line(uint8_t *s)
+{
+    for (uint8_t *p = s; *p; p++) {
+        write_char(*p);
+    }
     write_char('\r');
     write_char('\n');
 }
