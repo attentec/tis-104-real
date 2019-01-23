@@ -1,9 +1,10 @@
 #include <avr/io.h>
 #include <stdint.h>
 
+#include "spi.h"
 #include "spi_hw.h"
 
-void spi_init(struct spi_t *spi) {
+void spi_hw_init(struct spi_t *spi) {
     spi->dummy = 0;
     DDRB |= ((1<<5) | // SCK
              (1<<3) | // MOSI

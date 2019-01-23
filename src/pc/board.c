@@ -2,7 +2,7 @@
 #include "dispif.h"
 #include "pin.h"
 #include "spi.h"
-#include "spi_sw.h"
+#include "spi_stdio.h"
 #include "uart.h"
 #include "uart_stdio.h"
 
@@ -11,8 +11,6 @@ struct board_t board;
 static struct dispif_t dispif;
 static struct spi_t spi;
 static struct pin_t led;
-static struct pin_t clk;
-static struct pin_t sdi;
 static struct pin_t rs;
 static struct pin_t rst;
 static struct pin_t cs;
@@ -20,16 +18,12 @@ static struct uart_t uart;
 
 void board_init(void)
 {
-    // Display module plugged directly into Arduino headers
-                                                      // Arduino pin
-    led = pin_init(PIN_PORT_C, 0, PIN_DIR_OUTPUT);    // A0
-    clk = pin_init(PIN_PORT_C, 1, PIN_DIR_OUTPUT);    // A1
-    sdi = pin_init(PIN_PORT_C, 2, PIN_DIR_OUTPUT);    // A2
-    rs  = pin_init(PIN_PORT_C, 3, PIN_DIR_OUTPUT);    // A3
-    rst = pin_init(PIN_PORT_C, 4, PIN_DIR_OUTPUT);    // A4
-    cs  = pin_init(PIN_PORT_C, 5, PIN_DIR_OUTPUT);    // A5
+    led = pin_init(PIN_PORT_C, 0, PIN_DIR_OUTPUT);
+    rs  = pin_init(PIN_PORT_C, 3, PIN_DIR_OUTPUT);
+    rst = pin_init(PIN_PORT_C, 4, PIN_DIR_OUTPUT);
+    cs  = pin_init(PIN_PORT_C, 5, PIN_DIR_OUTPUT);
 
-    spi_init(&spi, &sdi, &clk);
+    spi_stdio_init(&spi);
     dispif_init(&dispif, &spi, &rs, &cs, &rst, &led);
     uart_stdio_init(&uart);
 

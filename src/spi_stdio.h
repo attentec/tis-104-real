@@ -6,4 +6,4 @@ struct spi_t {
     uint8_t dummy;
 };
 
-void spi_hw_init(struct spi_t *spi);
+void spi_stdio_init(struct spi_t *spi);
