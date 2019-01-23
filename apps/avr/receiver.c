@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include "uart.h"
+#include "uart_hw.h"
 
 static uint16_t receive_bit(void) {
     while (PIND & (1 << 3));
@@ -51,7 +52,7 @@ int main() {
     DDRD &= ~((1 << 3) | (1 << 2));
     PORTD &= ~((1 << 3) | (1 << 2));
 
-    uart_init(&uart);
+    uart_hw_init(&uart);
 
     int16_t value;
     const size_t mysize = 100;

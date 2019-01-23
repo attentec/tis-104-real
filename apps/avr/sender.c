@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include "uart.h"
+#include "uart_hw.h"
 
 static void signal_value_available(void) {
     DDRD |= (1 << 3);
@@ -54,7 +55,7 @@ int main() {
     DDRD &= ~((1 << 3) | (1 << 2));
     PORTD &= ~((1 << 3) | (1 << 2));
 
-    uart_init(&uart);
+    uart_hw_init(&uart);
 
     int16_t counter = -999;
     while (true) {

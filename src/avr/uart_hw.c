@@ -1,6 +1,7 @@
 #include <avr/io.h>
 
 #include "uart.h"
+#include "uart_hw.h"
 
 static void uart_9600(void) {
 #define BAUD 9600
@@ -14,7 +15,7 @@ static void uart_9600(void) {
 #endif
 }
 
-void uart_init(struct uart_t *uart)
+void uart_hw_init(struct uart_t *uart)
 {
     (void) uart;
     uart_9600();

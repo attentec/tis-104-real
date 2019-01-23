@@ -2,8 +2,9 @@
 
 #include "panic.h"
 #include "uart.h"
+#include "uart_stdio.h"
 
-void uart_init(struct uart_t *uart)
+void uart_stdio_init(struct uart_t *uart)
 {
     (void) uart;
 }

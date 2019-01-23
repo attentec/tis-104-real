@@ -4,6 +4,7 @@
 #include "spi.h"
 #include "spi_sw.h"
 #include "uart.h"
+#include "uart_stdio.h"
 
 struct board_t board;
 
@@ -30,7 +31,7 @@ void board_init(void)
 
     spi_init(&spi, &sdi, &clk);
     dispif_init(&dispif, &spi, &rs, &cs, &rst, &led);
-    uart_init(&uart);
+    uart_stdio_init(&uart);
 
     board.dispif = &dispif;
     board.led = &led;
