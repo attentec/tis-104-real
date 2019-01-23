@@ -36,19 +36,14 @@ static struct prgm_t test_dst_prgm(enum arg_t dst) {
 }
 
 void setUp(void) {
-    struct pipe_t *input_pointers[CPU_MAX_PIPES];
-    struct pipe_t *output_pointers[CPU_MAX_PIPES];
-
+    prgm.length = 0;
+    cpu_state_init(&state);
+    cpu_init(&cpu, &prgm, &state);
     for (size_t i = 0; i < CPU_MAX_PIPES; ++i) {
         pipe_init(&input_pipes[i]);
         pipe_init(&output_pipes[i]);
-        input_pointers[i] = &input_pipes[i];
-        output_pointers[i] = &output_pipes[i];
+        cpu_connect(&cpu, i, &input_pipes[i], &output_pipes[i]);
     }
-
-    prgm.length = 0;
-    cpu_state_init(&state);
-    cpu_init(&cpu, &prgm, &state, input_pointers, output_pointers);
 }
 
 void tearDown(void) {

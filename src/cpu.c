@@ -21,13 +21,19 @@ void cpu_state_init(struct state_t *state) {
     state->io_state = IO_STATE_RUNNING;
 }
 
-void cpu_init(struct cpu_t *cpu, struct prgm_t *prgm, struct state_t *state, struct pipe_t *inputs[], struct pipe_t *outputs[]) {
+void cpu_init(struct cpu_t *cpu, struct prgm_t *prgm, struct state_t *state) {
     cpu->prgm = prgm;
     cpu->state = state;
     for (size_t i = 0; i < CPU_MAX_PIPES; ++i) {
-        cpu->inputs[i] = inputs[i];
-        cpu->outputs[i] = outputs[i];
+        cpu->inputs[i] = NULL;
+        cpu->outputs[i] = NULL;
     }
+}
+
+void cpu_connect(struct cpu_t *cpu, enum dir_t dir, struct pipe_t *input, struct pipe_t *output)
+{
+    cpu->inputs[dir] = input;
+    cpu->outputs[dir] = output;
 }
 
 static enum dir_t arg_to_dir(enum arg_t arg) {

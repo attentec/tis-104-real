@@ -85,22 +85,19 @@ static void write(void) {
 }
 
 void grid_init(void) {
-    struct pipe_t *input_pointers[CPU_MAX_PIPES];
-    struct pipe_t *output_pointers[CPU_MAX_PIPES];
-
     for (size_t i = 0; i < NUM_PIPES; ++i) {
         pipe_init(&pipes[i]);
     }
 
     for (size_t i = 0; i < GRID_MAX_NUM_CPUS; ++i) {
+        cpu_state_init(&grid_states[i]);
+        cpu_init(&cpus[i], &grid_prgms[i], &grid_states[i]);
         for (enum dir_t d = DIR_MIN; d <= DIR_MAX; ++d) {
             size_t ib = index_in_border(i);
-            output_pointers[d] = &pipes[output_index(ib, d)];
-            input_pointers[d] = &pipes[input_index(ib, d)];
+            struct pipe_t *input = &pipes[input_index(ib, d)];
+            struct pipe_t *output = &pipes[output_index(ib, d)];
+            cpu_connect(&cpus[i], d, input, output);
         }
-
-        cpu_state_init(&grid_states[i]);
-        cpu_init(&cpus[i], &grid_prgms[i], &grid_states[i], input_pointers, output_pointers);
     }
 }
 

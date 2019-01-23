@@ -90,7 +90,8 @@ struct cpu_t {
 };
 
 void cpu_state_init(struct state_t *state);
-void cpu_init(struct cpu_t *cpu, struct prgm_t *prgm, struct state_t *state, struct pipe_t *inputs[], struct pipe_t *outputs[]);
+void cpu_init(struct cpu_t *cpu, struct prgm_t *prgm, struct state_t *state);
+void cpu_connect(struct cpu_t *cpu, enum dir_t dir, struct pipe_t *input, struct pipe_t *output);
 void cpu_read(struct cpu_t *cpu);
 void cpu_write(struct cpu_t *cpu);
 void cpu_step(struct cpu_t *cpu);

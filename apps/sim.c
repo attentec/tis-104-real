@@ -20,7 +20,6 @@ struct code_t {
 };
 
 static void compile(struct code_t *code, const char *lines[CPU_MAX_PRGM_LENGTH]);
-static void setup_pipes(struct pipe_t inputs[], struct pipe_t outputs[], struct pipe_t *input_ptrs[], struct pipe_t *output_ptrs[]);
 
 const char *example_program_text[CPU_MAX_PRGM_LENGTH] = {
     "  MOV 10, ACC",
@@ -48,8 +47,6 @@ int main(void)
     struct state_t cpu_state;
     struct pipe_t inputs[CPU_MAX_PIPES];
     struct pipe_t outputs[CPU_MAX_PIPES];
-    struct pipe_t *input_ptrs[CPU_MAX_PIPES];
-    struct pipe_t *output_ptrs[CPU_MAX_PIPES];
     struct cpu_t cpu;
 
     board_init();
@@ -57,8 +54,12 @@ int main(void)
     canvas_init(&canvas, &display, &monoblipp6x8);
     cpu_state_init(&cpu_state);
     compile(&code, example_program_text);
-    setup_pipes(inputs, outputs, input_ptrs, output_ptrs);
-    cpu_init(&cpu, &code.prgm, &cpu_state, input_ptrs, output_ptrs);
+    cpu_init(&cpu, &code.prgm, &cpu_state);
+    for (uint8_t i = 0; i < CPU_MAX_PIPES; i++) {
+        pipe_init(&inputs[i]);
+        pipe_init(&outputs[i]);
+        cpu_connect(&cpu, i, &inputs[i], &outputs[i]);
+    }
 
     gui_show_cpu(&canvas, code.lines);
     display_activate(&display);
@@ -98,14 +99,4 @@ static void compile(struct code_t *code, const char *lines[CPU_MAX_PRGM_LENGTH])
             6
         }
     };
-}
-
-static void setup_pipes(struct pipe_t inputs[], struct pipe_t outputs[], struct pipe_t *input_ptrs[], struct pipe_t *output_ptrs[])
-{
-   for (uint8_t i = 0; i < CPU_MAX_PIPES; ++i) {
-        pipe_init(&inputs[i]);
-        pipe_init(&outputs[i]);
-        input_ptrs[i] = &inputs[i];
-        output_ptrs[i] = &outputs[i];
-    }
 }
