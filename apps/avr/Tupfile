@@ -2,7 +2,6 @@ include_rules
 
 INCLUDES = -I../../src
 LIBS = ../../src/tis104_avr.a
-PCLIBS = ../../src/tis104_pc.a
 
 : foreach *.c              |> !cc_avr $(INCLUDES) |> %B.o   {objs}
 : foreach {objs} | $(LIBS) |> !ld_avr $(LIBS)     |> %B.elf {bins}
