@@ -12,7 +12,6 @@
 #include "fonts.h"
 #include "icons.h"
 #include "panic.h"
-#include "pipe_mock.h"
 
 const char *example_program_text[CPU_MAX_PRGM_LENGTH] = {
     "  MOV 10, ACC",
@@ -38,8 +37,6 @@ int main(void)
     struct canvas_t canvas;
     struct code_t code;
     struct state_t cpu_state;
-    struct pipe_t inputs[CPU_MAX_PIPES];
-    struct pipe_t outputs[CPU_MAX_PIPES];
     struct cpu_t cpu;
 
     board_init();
@@ -48,11 +45,6 @@ int main(void)
     cpu_state_init(&cpu_state);
     code_init(&code, example_program_text);
     cpu_init(&cpu, &code.prgm, &cpu_state);
-    for (uint8_t i = 0; i < CPU_MAX_PIPES; i++) {
-        pipe_init(&inputs[i]);
-        pipe_init(&outputs[i]);
-        cpu_connect(&cpu, i, &inputs[i], &outputs[i]);
-    }
 
     gui_show_cpu(&canvas, code.lines);
     display_activate(&display);
