@@ -3,6 +3,7 @@
 
 #include "board.h"
 #include "canvas.h"
+#include "code.h"
 #include "cpu.h"
 #include "display.h"
 #include "dispif.h"
@@ -12,14 +13,6 @@
 #include "icons.h"
 #include "panic.h"
 #include "pipe_mock.h"
-
-struct code_t {
-    struct prgm_t prgm;
-    const char **lines;
-    uint8_t addr_to_line[CPU_MAX_PRGM_LENGTH];
-};
-
-static void compile(struct code_t *code, const char *lines[CPU_MAX_PRGM_LENGTH]);
 
 const char *example_program_text[CPU_MAX_PRGM_LENGTH] = {
     "  MOV 10, ACC",
@@ -53,7 +46,7 @@ int main(void)
     display_init(&display, board.dispif, ORIENTATION_RIBBON_LEFT, WRITE_ORDER_Y_MAJOR);
     canvas_init(&canvas, &display, &monoblipp6x8);
     cpu_state_init(&cpu_state);
-    compile(&code, example_program_text);
+    code_init(&code, example_program_text);
     cpu_init(&cpu, &code.prgm, &cpu_state);
     for (uint8_t i = 0; i < CPU_MAX_PIPES; i++) {
         pipe_init(&inputs[i]);
@@ -73,30 +66,4 @@ int main(void)
     }
 
     return 0;
-}
-
-static void compile(struct code_t *code, const char *lines[CPU_MAX_PRGM_LENGTH])
-{
-    *code = (struct code_t) {
-        .prgm = {
-            .length = 6,
-            .instrs = {
-                INSTR2(OP_MOV, 10, ARG_ACC),
-                INSTR1(OP_SUB, 1),
-                INSTR1(OP_JNZ, 1),
-                INSTR0(OP_SWP),
-                INSTR1(OP_ADD, 1),
-                INSTR0(OP_SWP)
-            }
-        },
-        .lines = lines,
-        .addr_to_line = {
-            0,
-            2,
-            3,
-            4,
-            5,
-            6
-        }
-    };
 }
