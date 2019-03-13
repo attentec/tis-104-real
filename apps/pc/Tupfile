@@ -1,0 +1,8 @@
+include_rules
+
+INCLUDES = -I../../src
+LIBS = ../../src/tis104_pc.a
+LFLAGS = -lSDL2
+
+: foreach *.c              |> !cc_pc $(INCLUDES)       |> %B.o   {objs}
+: foreach {objs} | $(LIBS) |> !ld_pc $(LIBS) $(LFLAGS) |> %B.elf {bins}
