@@ -6,6 +6,7 @@
 #include "canvas.h"
 #include "code.h"
 #include "display.h"
+#include "display_ili9225.h"
 #include "dispif.h"
 #include "fonts.h"
 #include "icons.h"
@@ -51,7 +52,7 @@ int main(void)
     SDL_FillRect(surface, NULL, SDL_MapRGB(surface->format, 0, 0, 0));
 
     board_init();
-    display_init(&display, board.dispif, ORIENTATION_RIBBON_LEFT);
+    display_ili9225_init(&display, board.dispif, ORIENTATION_RIBBON_LEFT);
     canvas_init(&canvas, &display, &monoblipp6x8);
     code_init(&code, example_program_text);
     tile_init(&tile, &code, &canvas);

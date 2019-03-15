@@ -1,6 +1,7 @@
 #include "delay.h"
 #include "dispif.h"
 #include "display.h"
+#include "display_ili9225.h"
 #include "panic.h"
 
 #define DISPLAY_COLS (176u)
@@ -158,7 +159,7 @@
 #define REG_GAMMA_CONTROL_9  (0x58)
 #define REG_GAMMA_CONTROL_10 (0x59)
 
-void display_init(struct display_t *display, struct dispif_t *dispif, enum orientation_t orientation)
+void display_ili9225_init(struct display_t *display, struct dispif_t *dispif, enum orientation_t orientation)
 {
     display->dispif = dispif;
     display->orientation = orientation;

@@ -4,26 +4,13 @@
                              (((x >> 10u) & 0x3Fu) <<  5u) | \
                              (((x >>  3u) & 0x1Fu) <<  0u))
 
-struct dispif_t;
-
-enum orientation_t {
-    ORIENTATION_RIBBON_BOTTOM,
-    ORIENTATION_RIBBON_LEFT,
-    ORIENTATION_RIBBON_TOP,
-    ORIENTATION_RIBBON_RIGHT
-};
-
 enum write_order_t {
     WRITE_ORDER_X_MAJOR,
     WRITE_ORDER_Y_MAJOR
 };
 
-struct display_t {
-    struct dispif_t *dispif;
-    enum orientation_t orientation;
-};
+struct display_t;
 
-void display_init(struct display_t *display, struct dispif_t *dispif, enum orientation_t orientation);
 void display_set_write_order(struct display_t *display, enum write_order_t write_order);
 void display_activate(struct display_t *display);
 uint8_t display_get_width(struct display_t *display);
