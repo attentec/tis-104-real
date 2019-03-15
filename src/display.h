@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 #define RGB888_TO_RGB565(x) ((((x >> 19u) & 0x1Fu) << 11u) | \
                              (((x >> 10u) & 0x3Fu) <<  5u) | \
                              (((x >>  3u) & 0x1Fu) <<  0u))

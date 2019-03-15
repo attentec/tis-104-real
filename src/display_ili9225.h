@@ -1,5 +1,7 @@
 #pragma once
 
+#include "display.h"
+
 struct dispif_t;
 
 enum orientation_t {
