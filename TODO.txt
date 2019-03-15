@@ -7,8 +7,6 @@ New features:
 * Implement receive and transmit buffers for 'uart'
 
 Cleaning up:
-* Let canvas decide the display write order - because it needs it to be Y major
-  - possibly by adding a display_set_write_order function and calling it in canvas_init
 
 Nice to have:
 * Connect some push buttons for easier debugging and testing

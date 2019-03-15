@@ -51,7 +51,7 @@ int main(void)
     SDL_FillRect(surface, NULL, SDL_MapRGB(surface->format, 0, 0, 0));
 
     board_init();
-    display_init(&display, board.dispif, ORIENTATION_RIBBON_LEFT, WRITE_ORDER_Y_MAJOR);
+    display_init(&display, board.dispif, ORIENTATION_RIBBON_LEFT);
     canvas_init(&canvas, &display, &monoblipp6x8);
     code_init(&code, example_program_text);
     tile_init(&tile, &code, &canvas);

@@ -11,6 +11,7 @@ void canvas_init(struct canvas_t *canvas, struct display_t *display, struct font
     canvas->fg_color = RGB888_TO_RGB565(0xFFFFFFul);
     canvas->bg_color = RGB888_TO_RGB565(0x000000ul);
     canvas->thickness = 1;
+    display_set_write_order(display, WRITE_ORDER_Y_MAJOR);
 }
 
 void canvas_set_font(struct canvas_t *canvas, struct font_t *font)

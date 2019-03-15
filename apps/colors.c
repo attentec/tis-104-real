@@ -6,7 +6,8 @@
 int main(void) {
     struct display_t display;
     board_init();
-    display_init(&display, board.dispif, ORIENTATION_RIBBON_BOTTOM, WRITE_ORDER_X_MAJOR);
+    display_init(&display, board.dispif, ORIENTATION_RIBBON_BOTTOM);
+    display_set_write_order(&display, WRITE_ORDER_X_MAJOR);
     display_activate(&display);
 
     uint8_t w = display_get_width(&display);

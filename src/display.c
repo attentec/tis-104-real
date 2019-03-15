@@ -6,6 +6,8 @@
 #define DISPLAY_COLS (176u)
 #define DISPLAY_ROWS (220u)
 
+#define DEFAULT_WRITE_ORDER (WRITE_ORDER_X_MAJOR)
+
 #define REG_DRIVER_CODE_READ (0x00)
 
 #define REG_DRIVER_OUTPUT_CONTROL (0x01)
@@ -156,7 +158,7 @@
 #define REG_GAMMA_CONTROL_9  (0x58)
 #define REG_GAMMA_CONTROL_10 (0x59)
 
-void display_init(struct display_t *display, struct dispif_t *dispif, enum orientation_t orientation, enum write_order_t write_order)
+void display_init(struct display_t *display, struct dispif_t *dispif, enum orientation_t orientation)
 {
     display->dispif = dispif;
     display->orientation = orientation;
@@ -215,40 +217,7 @@ void display_init(struct display_t *display, struct dispif_t *dispif, enum orien
         (1<<BIT_INV0) |
         (0<<BIT_FLD)
     );
-    uint8_t inc_row, inc_col, column_major;
-    switch (orientation) {
-    case ORIENTATION_RIBBON_BOTTOM:
-        inc_row = 1;
-        inc_col = 1;
-        column_major = (write_order == WRITE_ORDER_Y_MAJOR);
-        break;
-    case ORIENTATION_RIBBON_LEFT:
-        inc_row = 0;
-        inc_col = 1;
-        column_major = (write_order == WRITE_ORDER_X_MAJOR);
-        break;
-    case ORIENTATION_RIBBON_TOP:
-        inc_row = 0;
-        inc_col = 0;
-        column_major = (write_order == WRITE_ORDER_Y_MAJOR);
-        break;
-    case ORIENTATION_RIBBON_RIGHT:
-        inc_row = 1;
-        inc_col = 0;
-        column_major = (write_order == WRITE_ORDER_X_MAJOR);
-        break;
-    default:
-        panic();
-        break;
-    }
-    dispif_write_register(dispif, REG_ENTRY_MODE,
-        (1<<BIT_BGR)  |
-        (0<<BIT_MTD1) |
-        (0<<BIT_MTD0) |
-        (inc_row<<BIT_ID1)  |
-        (inc_col<<BIT_ID0)  |
-        (column_major<<BIT_AM)
-    );
+    display_set_write_order(display, DEFAULT_WRITE_ORDER);
     dispif_write_register(dispif, REG_DISPLAY_CONTROL_1,
         (0<<BIT_TEMON) |
         (1<<BIT_GON)   |
@@ -303,6 +272,45 @@ void display_init(struct display_t *display, struct dispif_t *dispif, enum orien
     dispif_write_register(dispif, REG_GAMMA_CONTROL_8,  0x0000);
     dispif_write_register(dispif, REG_GAMMA_CONTROL_9,  0x1007);
     dispif_write_register(dispif, REG_GAMMA_CONTROL_10, 0x0710);
+}
+
+void display_set_write_order(struct display_t *display, enum write_order_t write_order)
+{
+    uint8_t inc_row, inc_col, column_major;
+
+    switch (display->orientation) {
+    case ORIENTATION_RIBBON_BOTTOM:
+        inc_row = 1;
+        inc_col = 1;
+        column_major = (write_order == WRITE_ORDER_Y_MAJOR);
+        break;
+    case ORIENTATION_RIBBON_LEFT:
+        inc_row = 0;
+        inc_col = 1;
+        column_major = (write_order == WRITE_ORDER_X_MAJOR);
+        break;
+    case ORIENTATION_RIBBON_TOP:
+        inc_row = 0;
+        inc_col = 0;
+        column_major = (write_order == WRITE_ORDER_Y_MAJOR);
+        break;
+    case ORIENTATION_RIBBON_RIGHT:
+        inc_row = 1;
+        inc_col = 0;
+        column_major = (write_order == WRITE_ORDER_X_MAJOR);
+        break;
+    default:
+        panic();
+        break;
+    }
+    dispif_write_register(display->dispif, REG_ENTRY_MODE,
+        (1<<BIT_BGR)  |
+        (0<<BIT_MTD1) |
+        (0<<BIT_MTD0) |
+        (inc_row<<BIT_ID1)  |
+        (inc_col<<BIT_ID0)  |
+        (column_major<<BIT_AM)
+    );
 }
 
 void display_activate(struct display_t *display)

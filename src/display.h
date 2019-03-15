@@ -23,7 +23,8 @@ struct display_t {
     enum orientation_t orientation;
 };
 
-void display_init(struct display_t *display, struct dispif_t *dispif, enum orientation_t orientation, enum write_order_t write_order);
+void display_init(struct display_t *display, struct dispif_t *dispif, enum orientation_t orientation);
+void display_set_write_order(struct display_t *display, enum write_order_t write_order);
 void display_activate(struct display_t *display);
 uint8_t display_get_width(struct display_t *display);
 uint8_t display_get_height(struct display_t *display);
