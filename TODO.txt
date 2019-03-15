@@ -18,7 +18,6 @@ Nice to have:
 MEDIUM TASKS
 
 * Implement a code editor
-* Implement display.h for PC using (for example) SDL
 
 
 

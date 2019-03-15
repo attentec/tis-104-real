@@ -48,9 +48,19 @@ int main(void)
         window_width,
         window_height,
         SDL_WINDOW_HIDDEN);
-    SDL_Surface *surface = SDL_GetWindowSurface(window);
+    SDL_Surface *window_surface = SDL_GetWindowSurface(window);
+    SDL_Surface *canvas_surface = SDL_CreateRGBSurface(
+        0,
+        window_width,
+        window_height,
+        // RGB565
+        16,
+        0x0000F800,
+        0x000007E0,
+        0x0000001F,
+        0x00000000);
 
-    display_sdl_init(&display, surface);
+    display_sdl_init(&display, canvas_surface);
     canvas_init(&canvas, &display, &monoblipp6x8);
     code_init(&code, example_program_text);
     tile_init(&tile, &code, &canvas);
@@ -72,10 +82,12 @@ int main(void)
         tile_draw(&tile);
         tile_read(&tile);
         tile_write(&tile);
+        SDL_BlitSurface(canvas_surface, NULL, window_surface, NULL);
         SDL_UpdateWindowSurface(window);
         SDL_Delay(10);
     }
 
+    SDL_FreeSurface(canvas_surface);
     SDL_DestroyWindow(window);
     SDL_Quit();
     return 0;
