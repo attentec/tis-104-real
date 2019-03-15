@@ -6,7 +6,7 @@
 #include "canvas.h"
 #include "code.h"
 #include "display.h"
-#include "display_ili9225.h"
+#include "display_sdl.h"
 #include "dispif.h"
 #include "fonts.h"
 #include "icons.h"
@@ -30,8 +30,8 @@ const char *example_program_text[CPU_MAX_PRGM_LENGTH] = {
     ""
 };
 
-static const int window_width = 220 * 4;
-static const int window_height = 176 * 3;
+static const int window_width = 220;
+static const int window_height = 176;
 
 int main(void)
 {
@@ -49,10 +49,8 @@ int main(void)
         window_height,
         SDL_WINDOW_HIDDEN);
     SDL_Surface *surface = SDL_GetWindowSurface(window);
-    SDL_FillRect(surface, NULL, SDL_MapRGB(surface->format, 0, 0, 0));
 
-    board_init();
-    display_ili9225_init(&display, board.dispif, ORIENTATION_RIBBON_LEFT);
+    display_sdl_init(&display, surface);
     canvas_init(&canvas, &display, &monoblipp6x8);
     code_init(&code, example_program_text);
     tile_init(&tile, &code, &canvas);
