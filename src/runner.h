@@ -1,0 +1,5 @@
+#pragma once
+
+#include "platform.h"
+
+void runner_main(enum orientation_t orientation);

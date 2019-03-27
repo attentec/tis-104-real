@@ -14,7 +14,6 @@ enum write_order_t {
 struct display_t;
 
 void display_set_write_order(struct display_t *display, enum write_order_t write_order);
-void display_activate(struct display_t *display);
 uint8_t display_get_width(struct display_t *display);
 uint8_t display_get_height(struct display_t *display);
 void display_set_window(struct display_t *display, uint8_t x, uint8_t y, uint8_t w, uint8_t h);

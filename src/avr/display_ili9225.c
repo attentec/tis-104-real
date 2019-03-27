@@ -314,11 +314,6 @@ void display_set_write_order(struct display_t *display, enum write_order_t write
     );
 }
 
-void display_activate(struct display_t *display)
-{
-    dispif_set_backlight(display->dispif, true);
-}
-
 uint8_t display_get_width(struct display_t *display)
 {
     switch (display->orientation) {

@@ -24,11 +24,6 @@ void display_set_write_order(struct display_t *display, enum write_order_t write
     display->write_order = write_order;
 }
 
-void display_activate(struct display_t *display)
-{
-    (void) display;
-}
-
 uint8_t display_get_width(struct display_t *display)
 {
     return display->surface->w;

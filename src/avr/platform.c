@@ -1,6 +1,8 @@
-#include "board.h"
 #include "dispif.h"
+#include "display.h"
+#include "display_ili9225.h"
 #include "pin.h"
+#include "platform.h"
 #include "spi.h"
 #include "uart.h"
 #include "uart_hw.h"
@@ -11,9 +13,10 @@
 #include "spi_hw.h"
 #endif
 
-struct board_t board;
+struct platform_t platform;
 
 static struct dispif_t dispif;
+static struct display_t display;
 static struct spi_t spi;
 static struct pin_t led;
 #ifdef SW_SPI
@@ -25,7 +28,7 @@ static struct pin_t rst;
 static struct pin_t cs;
 static struct uart_t uart;
 
-void board_init(void)
+void platform_init(enum orientation_t orientation)
 {
     led = pin_init(PIN_PORT_C, 0, PIN_DIR_OUTPUT);
 #ifdef SW_SPI
@@ -42,9 +45,24 @@ void board_init(void)
     spi_hw_init(&spi);
 #endif
     dispif_init(&dispif, &spi, &rs, &cs, &rst, &led);
+    display_ili9225_init(&display, &dispif, orientation);
     uart_hw_init(&uart);
 
-    board.dispif = &dispif;
-    board.led = &led;
-    board.uart = &uart;
+    platform.display = &display;
+    platform.led = &led;
+    platform.uart = &uart;
+}
+
+void platform_begin(void)
+{
+    dispif_set_backlight(&dispif, true);
+}
+
+bool platform_loop(void)
+{
+    return true;
+}
+
+void platform_deinit(void)
+{
 }
