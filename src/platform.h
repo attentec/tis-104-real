@@ -23,6 +23,8 @@ struct platform_t {
 extern struct platform_t platform;
 
 void platform_init(enum orientation_t orientation);
+void platform_init_multi(enum orientation_t orientation, int cols, int rows);
+struct display_t *platform_get_display(int col, int row);
 void platform_begin(void);
 bool platform_loop(void);
 void platform_deinit(void);

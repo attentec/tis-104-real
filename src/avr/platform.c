@@ -1,6 +1,7 @@
 #include "dispif.h"
 #include "display.h"
 #include "display_ili9225.h"
+#include "panic.h"
 #include "pin.h"
 #include "platform.h"
 #include "spi.h"
@@ -51,6 +52,22 @@ void platform_init(enum orientation_t orientation)
     platform.display = &display;
     platform.led = &led;
     platform.uart = &uart;
+}
+
+void platform_init_multi(enum orientation_t orientation, int cols, int rows)
+{
+    if (cols != 1 || rows != 1) {
+        panic();
+    }
+    platform_init(orientation);
+}
+
+struct display_t *platform_get_display(int col, int row)
+{
+    if (col != 0 || row != 0) {
+        panic();
+    }
+    return platform.display;
 }
 
 void platform_begin(void)
