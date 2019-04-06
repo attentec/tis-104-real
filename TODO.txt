@@ -5,8 +5,10 @@ New features:
 * Calculate and draw IDLE value
 * Draw an editor cursor (when editing)
 * Implement receive and transmit buffers for 'uart'
+* Display code errors
 
 Cleaning up:
+* Inline compile into code_init
 
 Nice to have:
 * Connect some push buttons for easier debugging and testing
@@ -22,7 +24,6 @@ MEDIUM TASKS
 
 LARGE TASKS
 
-* Implement a program parser
 * Design and implement a communication protocol
 * Run two emulated CPUS on separate AVRs
 * Implement breakpoints ("!")
