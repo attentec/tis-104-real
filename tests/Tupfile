@@ -9,6 +9,7 @@ LIBS = ../src/tis104_pc.a
 : foreach *.c       |> !gen               |> %B_runner.c
 : foreach *.c       |> !cc_pc $(INCLUDES) |> %B.o
 
+: code_test.o        code_test_runner.o        unity.o $(LIBS) |> !ld_pc |> code_test.elf        {bins}
 : cpu_test.o         cpu_test_runner.o         unity.o $(LIBS) |> !ld_pc |> cpu_test.elf         {bins}
 : integration_test.o integration_test_runner.o unity.o $(LIBS) |> !ld_pc |> integration_test.elf {bins}
 
