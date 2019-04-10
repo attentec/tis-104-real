@@ -1,4 +1,5 @@
 #include "app.h"
+#include "delay.h"
 #include "platform.h"
 #include "runner.h"
 
@@ -27,6 +28,7 @@ static void runner_main_common(void)
         if (!app_loop()) {
             break;
         }
+        delay_ms(500);
     }
     platform_deinit();
 }
