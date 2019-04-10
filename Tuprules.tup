@@ -1,5 +1,5 @@
 CFLAGS      = -std=c11 -g -Werror -Wall -Wextra -pedantic -flto
-PC_CFLAGS   = -O0
+PC_CFLAGS   = -O0 -D_GNU_SOURCE
 AVR_CFLAGS  = -mmcu=atmega328p -Os -DF_CPU=16000000ul
 
 !cc_pc = |> ^ CC %o^   gcc $(CFLAGS) $(PC_CFLAGS) -c %f -o %o |>
