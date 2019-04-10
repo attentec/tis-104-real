@@ -204,6 +204,23 @@ void test_Code_should_mark_error_on_junk_after_instr(void) {
     compare_code(expected, code);
 }
 
+void test_Code_should_mark_error_on_invalid_constants(void) {
+    struct code_t code;
+    const char *lines[CPU_MAX_PRGM_LENGTH] = {
+        "ADD 1000",
+        "ADD -1000",
+    };
+    code_init(&code, lines);
+    struct code_t expected = (struct code_t) {
+        .prgm = {
+            .length = 0,
+        },
+        .lines = lines,
+        .errors = {true, true},
+    };
+    compare_code(expected, code);
+}
+
 void test_Code_should_accept_all_instructions(void) {
     struct code_t code;
     const char *lines[CPU_MAX_PRGM_LENGTH] = {
