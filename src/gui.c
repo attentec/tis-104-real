@@ -165,7 +165,8 @@ static void draw_program(struct canvas_t *canvas, const char *lines[])
     canvas_set_fg_color(canvas, white);
     canvas_set_bg_color(canvas, black);
     for (uint8_t i = 0; i < CPU_MAX_PRGM_LENGTH; i++) {
-        canvas_draw_text(canvas, x0, y0+(char_height*i), w, ALIGN_LEFT, lines[i]);
+        const char *text = lines[i] == NULL ? "" : lines[i];
+        canvas_draw_text(canvas, x0, y0+(char_height*i), w, ALIGN_LEFT, text);
     }
 }
 
