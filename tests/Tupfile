@@ -1,7 +1,10 @@
 include_rules
 
 INCLUDES = -I../src -Iunity/src
-LIBS = ../src/tis104_pc.a
+
+libs  = ../src/tis104_pc.a
+libs += ../src/pc/panic.o
+libs += ../src/opts/pipe_mock_pc.o
 
 !gen  = |> ^ GEN Unity Runner %o^ ruby unity/auto/generate_test_runner.rb %f %o |>
 
@@ -9,9 +12,9 @@ LIBS = ../src/tis104_pc.a
 : foreach *.c       |> !gen               |> %B_runner.c
 : foreach *.c       |> !cc_pc $(INCLUDES) |> %B.o
 
-: code_test.o        code_test_runner.o        unity.o $(LIBS) |> !ld_pc |> code_test.elf        {bins}
-: cpu_test.o         cpu_test_runner.o         unity.o $(LIBS) |> !ld_pc |> cpu_test.elf         {bins}
-: integration_test.o integration_test_runner.o unity.o $(LIBS) |> !ld_pc |> integration_test.elf {bins}
+: code_test.o        code_test_runner.o        unity.o $(libs) |> !ld_pc |> code_test.elf        {bins}
+: cpu_test.o         cpu_test_runner.o         unity.o $(libs) |> !ld_pc |> cpu_test.elf         {bins}
+: integration_test.o integration_test_runner.o unity.o $(libs) |> !ld_pc |> integration_test.elf {bins}
 
 : foreach {bins} |> ^ TEST %o^ ./%f   > %o |> %B_results.txt {results}
 : {results}      |> ^ CAT %o^  cat %f > %o |> results.txt

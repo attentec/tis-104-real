@@ -1,0 +1,6 @@
+include_rules
+
+INCLUDES = -I..
+
+: foreach *.c |> !cc_pc $(INCLUDES)  |> %B_pc.o
+: foreach *.c |> !cc_avr $(INCLUDES) |> %B_avr.o
