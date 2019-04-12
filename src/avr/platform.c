@@ -29,8 +29,14 @@ static struct pin_t rst;
 static struct pin_t cs;
 static struct uart_t uart;
 
-void platform_init(enum orientation_t orientation)
+void platform_init(enum orientation_t orientation, int cols, int rows, int argc, char **argv)
 {
+    (void) argc;
+    (void) argv;
+    if (cols != 1 || rows != 1) {
+        panic();
+    }
+
     led = pin_init(PIN_PORT_C, 0, PIN_DIR_OUTPUT);
 #ifdef SW_SPI
     clk = pin_init(PIN_PORT_B, 5, PIN_DIR_OUTPUT); // SCK
@@ -52,14 +58,6 @@ void platform_init(enum orientation_t orientation)
     platform.display = &display;
     platform.led = &led;
     platform.uart = &uart;
-}
-
-void platform_init_multi(enum orientation_t orientation, int cols, int rows)
-{
-    if (cols != 1 || rows != 1) {
-        panic();
-    }
-    platform_init(orientation);
 }
 
 struct display_t *platform_get_display(int col, int row)

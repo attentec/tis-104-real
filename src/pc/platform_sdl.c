@@ -28,13 +28,10 @@ static struct uart_t uart;
 const int small_size = 176;
 const int large_size = 220;
 
-void platform_init(enum orientation_t orientation)
+void platform_init(enum orientation_t orientation, int cols, int rows, int argc, char **argv)
 {
-    platform_init_multi(orientation, 1, 1);
-}
-
-void platform_init_multi(enum orientation_t orientation, int cols, int rows)
-{
+    (void) argc;
+    (void) argv;
     grid_cols = cols;
     grid_rows = rows;
     switch (orientation) {

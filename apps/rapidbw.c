@@ -4,9 +4,9 @@
 #include "platform.h"
 #include "runner.h"
 
-int main(void) 
+int main(int argc, char **argv)
 {
-    runner_main(ORIENTATION_RIBBON_BOTTOM);
+    runner_main(ORIENTATION_RIBBON_BOTTOM, 1, 1, argc, argv);
     return 0;
 }
 

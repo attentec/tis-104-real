@@ -28,9 +28,9 @@ const char *example_program_text[CPU_MAX_PRGM_LENGTH] = {
 #define COLS (4)
 #define ROWS (3)
 
-int main(void)
+int main(int argc, char **argv)
 {
-    runner_main_multi(ORIENTATION_RIBBON_LEFT, COLS, ROWS);
+    runner_main(ORIENTATION_RIBBON_LEFT, COLS, ROWS, argc, argv);
     return 0;
 }
 
