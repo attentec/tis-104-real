@@ -14,14 +14,18 @@ avr_libs += ../src/tis104_avr.a
 pc_libs += ../src/pc/delay_pc.o
 pc_libs += ../src/pc/panic.o
 pc_libs += ../src/pc/pin.o
-pc_libs += ../src/pc/platform_sdl.o
-pc_libs += ../src/pc/surface_sdl.o
 pc_libs += ../src/pc/uart_stdio.o
 pc_libs += ../src/opts/display_sw_pc.o
 pc_libs += ../src/opts/pipe_mock_pc.o
 pc_libs += ../src/tis104_pc.a
 
-pc_link_flags = -lSDL2
+pc_sdl_libs += ../src/pc/platform_sdl.o
+pc_sdl_libs += ../src/pc/surface_sdl.o
+pc_sdl_libs += $(pc_libs)
+
+pc_gif_libs += ../src/pc/platform_gif.o
+pc_gif_libs += ../src/pc/surface_gif.o
+pc_gif_libs += $(pc_libs)
 
 universal_srcs += colors.c
 universal_srcs += rapidbw.c
@@ -39,8 +43,9 @@ pc_srcs += gridsim.c
 : foreach $(avr_srcs) |> !cc_avr $(INCLUDES) |> avr/%B.o {avr_objs}
 : foreach $(pc_srcs)  |> !cc_pc $(INCLUDES)  |> pc/%B.o  {pc_objs}
 
-: foreach {avr_objs} | $(avr_libs) |> !ld_avr $(avr_libs)                |> avr/%B.elf {avr_bins}
-: foreach {pc_objs}  | $(pc_libs)  |> !ld_pc $(pc_link_flags) $(pc_libs) |> pc/%B.elf
+: foreach {avr_objs} | $(avr_libs)    |> !ld_avr $(avr_libs)          |> avr/%B.elf    {avr_bins}
+: foreach {pc_objs}  | $(pc_sdl_libs) |> !ld_pc -lSDL2 $(pc_sdl_libs) |> pc/%B_sdl.elf
+: foreach {pc_objs}  | $(pc_gif_libs) |> !ld_pc -lgif  $(pc_gif_libs) |> pc/%B_gif.elf
 
 : foreach {avr_bins} |> !dis_avr  |> avr/%B.s
 : foreach {avr_bins} |> !hex_avr  |> avr/%B.hex
