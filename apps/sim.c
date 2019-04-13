@@ -27,7 +27,7 @@ const char *example_program_text[CPU_MAX_PRGM_LENGTH] = {
 
 int main(int argc, char **argv)
 {
-    runner_main(ORIENTATION_RIBBON_BOTTOM, 1, 1, argc, argv);
+    runner_main(ORIENTATION_RIBBON_LEFT, 1, 1, argc, argv);
     return 0;
 }
 
