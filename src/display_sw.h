@@ -4,10 +4,10 @@
 
 #include "display.h"
 
-struct SDL_Surface;
+struct surface_t;
 
 struct display_t {
-    struct SDL_Surface *surface;
+    struct surface_t *surface;
     enum write_order_t write_order;
     // Window rectangle
     uint8_t window_x;
@@ -19,4 +19,4 @@ struct display_t {
     uint8_t position_y;
 };
 
-void display_sdl_init(struct display_t *display, struct SDL_Surface *surface);
+void display_sw_init(struct display_t *display, struct surface_t *surface);

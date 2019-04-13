@@ -12,11 +12,12 @@ avr_libs += ../src/opts/pipe_mock_avr.o
 avr_libs += ../src/tis104_avr.a
 
 pc_libs += ../src/pc/delay_pc.o
-pc_libs += ../src/pc/display_sdl.o
 pc_libs += ../src/pc/panic.o
 pc_libs += ../src/pc/pin.o
 pc_libs += ../src/pc/platform_sdl.o
+pc_libs += ../src/pc/surface_sdl.o
 pc_libs += ../src/pc/uart_stdio.o
+pc_libs += ../src/opts/display_sw_pc.o
 pc_libs += ../src/opts/pipe_mock_pc.o
 pc_libs += ../src/tis104_pc.a
 

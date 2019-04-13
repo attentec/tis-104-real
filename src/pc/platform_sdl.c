@@ -1,11 +1,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_surface.h>
 
-#include "display.h"
-#include "display_sdl.h"
+#include "display_sw.h"
 #include "panic.h"
 #include "pin.h"
 #include "platform.h"
+#include "surface_sdl.h"
 #include "uart.h"
 #include "uart_stdio.h"
 
@@ -21,6 +21,7 @@ static int surface_height;
 static SDL_Window *window;
 static SDL_Surface *window_surface;
 static SDL_Surface *canvas_surfaces[MAX_SIZE][MAX_SIZE];
+static struct surface_t display_surfaces[MAX_SIZE][MAX_SIZE];
 static struct display_t displays[MAX_SIZE][MAX_SIZE];
 static struct pin_t led;
 static struct uart_t uart;
@@ -70,7 +71,8 @@ void platform_init(enum orientation_t orientation, int cols, int rows, int argc,
                 0x000007E0,
                 0x0000001F,
                 0x00000000);
-            display_sdl_init(&displays[c][r], canvas_surfaces[c][r]);
+            surface_sdl_init(&display_surfaces[c][r], canvas_surfaces[c][r]);
+            display_sw_init(&displays[c][r], &display_surfaces[c][r]);
         }
     }
 
