@@ -16,10 +16,10 @@ static void runner_main_common(void)
     app_init();
     platform_begin();
     for (;;) {
-        if (!platform_loop()) {
+        if (!app_loop()) {
             break;
         }
-        if (!app_loop()) {
+        if (!platform_loop()) {
             break;
         }
     }

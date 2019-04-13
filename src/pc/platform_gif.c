@@ -23,6 +23,7 @@ static int image_height;
 
 static int total_frames;
 static int current_frame;
+static int frame_time;
 static GifFileType* gif;
 static ColorMapObject *color_map;
 static int error;
@@ -80,8 +81,22 @@ void platform_init(enum orientation_t orientation, int cols, int rows, int argc,
         panic();
     }
     pixels = malloc(image_width * image_height);
-    total_frames = 1;
+    if (EGifPutExtensionLeader(gif, APPLICATION_EXT_FUNC_CODE) != GIF_OK) {
+        panic();
+    }
+    if (EGifPutExtensionBlock(gif, 11, "NETSCAPE2.0") != GIF_OK) {
+        panic();
+    }
+    uint8_t block[3] = {0x01, 0x00, 0x00};
+    if (EGifPutExtensionBlock(gif, sizeof(block), block) != GIF_OK) {
+        panic();
+    }
+    if (EGifPutExtensionTrailer(gif) != GIF_OK) {
+        panic();
+    }
+    total_frames = 96;
     current_frame = 0;
+    frame_time = 100;
 
     for (int c = 0; c < cols; c++) {
         for (int r = 0; r < rows; r++) {
@@ -115,7 +130,15 @@ bool platform_loop(void)
     if (current_frame >= total_frames) {
         return false;
     }
-    if (EGifPutImageDesc(gif, 0, 0, image_width, image_height, false, color_map) != GIF_OK) {
+    uint8_t block[4];
+    block[0] = 0x00;
+    block[1] = (frame_time / 10) & 0xFF;
+    block[2] = (frame_time / 10) >> 8;
+    block[3] = 0x00;
+    if (EGifPutExtension(gif, GRAPHICS_EXT_FUNC_CODE, sizeof(block), block) != GIF_OK) {
+        panic();
+    }
+    if (EGifPutImageDesc(gif, 0, 0, image_width, image_height, false, NULL) != GIF_OK) {
         panic();
     }
     for (int y = 0; y < image_height; y++) {
