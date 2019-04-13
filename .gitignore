@@ -1,5 +1,6 @@
 *.a
 *.elf
+*.gif
 *.hex
 *.o
 *.s

@@ -50,3 +50,5 @@ pc_srcs += gridsim.c
 : foreach {avr_bins} |> !dis_avr  |> avr/%B.s
 : foreach {avr_bins} |> !hex_avr  |> avr/%B.hex
 : foreach {avr_bins} |> !size_avr |> avr/%B_size.txt
+
+: pc/sim_gif.elf |> ./%f |> tis-104-real.gif
