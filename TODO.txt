@@ -11,6 +11,7 @@ New features:
   * loop on/off
   * include frame before first cycle
   * output file name
+* read program from file or eeprom
 
 Cleaning up:
 * Inline compile into code_init
