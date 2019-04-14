@@ -26,7 +26,6 @@ static int current_frame;
 static int frame_time;
 static GifFileType* gif;
 static ColorMapObject *color_map;
-static int error;
 static GifPixelType *pixels;
 static struct surface_t display_surfaces[MAX_SIZE][MAX_SIZE];
 static struct display_t displays[MAX_SIZE][MAX_SIZE];
@@ -36,7 +35,7 @@ static struct uart_t uart;
 const int small_size = 176;
 const int large_size = 220;
 
-static void panic_gif(void)
+static void panic_gif(int error)
 {
     printf("%s\n", GifErrorString(error));
     panic();
@@ -62,8 +61,9 @@ void platform_init(enum orientation_t orientation, int cols, int rows, int argc,
     }
     image_width = cols * tile_width;
     image_height = rows * tile_height;
+    int error;
     if ((gif = EGifOpenFileName("tis-104-real.gif", false, &error)) == NULL) {
-        panic_gif();
+        panic_gif(error);
     }
     if ((color_map = GifMakeMapObject(MAX_COLORS, NULL)) == NULL) {
         panic();
@@ -78,21 +78,21 @@ void platform_init(enum orientation_t orientation, int cols, int rows, int argc,
     color_map->Colors[2].Green = 0xAA;
     color_map->Colors[2].Blue  = 0xAA;
     if (EGifPutScreenDesc(gif, image_width, image_height, MAX_COLORS, 0, color_map) != GIF_OK) {
-        panic();
+        panic_gif(gif->Error);
     }
     pixels = malloc(image_width * image_height);
     if (EGifPutExtensionLeader(gif, APPLICATION_EXT_FUNC_CODE) != GIF_OK) {
-        panic();
+        panic_gif(gif->Error);
     }
     if (EGifPutExtensionBlock(gif, 11, "NETSCAPE2.0") != GIF_OK) {
-        panic();
+        panic_gif(gif->Error);
     }
     uint8_t block[3] = {0x01, 0x00, 0x00};
     if (EGifPutExtensionBlock(gif, sizeof(block), block) != GIF_OK) {
-        panic();
+        panic_gif(gif->Error);
     }
     if (EGifPutExtensionTrailer(gif) != GIF_OK) {
-        panic();
+        panic_gif(gif->Error);
     }
     total_frames = 96;
     current_frame = 0;
@@ -136,14 +136,14 @@ bool platform_loop(void)
     block[2] = (frame_time / 10) >> 8;
     block[3] = 0x00;
     if (EGifPutExtension(gif, GRAPHICS_EXT_FUNC_CODE, sizeof(block), block) != GIF_OK) {
-        panic();
+        panic_gif(gif->Error);
     }
     if (EGifPutImageDesc(gif, 0, 0, image_width, image_height, false, NULL) != GIF_OK) {
-        panic();
+        panic_gif(gif->Error);
     }
     for (int y = 0; y < image_height; y++) {
         if (EGifPutLine(gif, &pixels[y * image_width], image_width) != GIF_OK) {
-            panic();
+            panic_gif(gif->Error);
         }
     }
     current_frame++;
@@ -153,7 +153,8 @@ bool platform_loop(void)
 void platform_deinit()
 {
     free(pixels);
+    int error;
     if (EGifCloseFile(gif, &error) != GIF_OK) {
-        panic_gif();
+        panic_gif(error);
     }
 }
