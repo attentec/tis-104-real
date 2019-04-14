@@ -6,6 +6,11 @@ New features:
 * Draw an editor cursor (when editing)
 * Implement receive and transmit buffers for 'uart'
 * Display code errors
+* platform_gif command line arguments:
+  * number of cycles
+  * loop on/off
+  * include frame before first cycle
+  * output file name
 
 Cleaning up:
 * Inline compile into code_init
