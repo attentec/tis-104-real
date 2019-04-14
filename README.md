@@ -26,7 +26,7 @@ ST7735S 1.8 inch display module" connected. Check main_avr.c for pinout.
 
 Build everything and flash:
 
-    ./flash main_avr
+    ./flash sim
 
 The DEVICE environment variable can be used to override the Arduino USB device
 used. Any extra arguments are passed to Avrdude.
