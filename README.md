@@ -6,7 +6,7 @@ game by Zachtronics on real hardware.
 ## Setup
 
     submodule update --init
-    sudo apt install build-essential gcc-avr binutils-avr avr-libc avrdude ruby libgif-dev
+    sudo apt install build-essential gcc-avr binutils-avr avr-libc avrdude ruby libsdl2-dev libgif-dev
     # install TUP: http://gittup.org/tup/
 
 ## Build everything
