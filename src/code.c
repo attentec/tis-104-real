@@ -343,7 +343,6 @@ static struct code_t compile(const char *lines[CPU_MAX_PRGM_LENGTH])
                 if (!found) {
                     // there is no instruction after the target label,
                     // jump to start of code
-                    // TODO: is this the right thing to do?
                     found = true;
                     state.code.prgm.instrs[instr.addr] = INSTR1(instr.op, 0);
                 }

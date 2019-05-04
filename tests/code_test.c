@@ -136,6 +136,30 @@ void test_Code_should_handle_label_with_instr(void) {
     compare_code(expected, code);
 }
 
+void test_Code_should_treat_label_at_end_as_at_beginning(void) {
+    struct code_t code;
+    const char *lines[CPU_MAX_PRGM_LENGTH] = {
+        "  NOP",
+        "  JMP END",
+        "END:",
+    };
+    code_init(&code, lines);
+    struct code_t expected = (struct code_t) {
+        .prgm = {
+            .length = 2,
+            .instrs = {
+                INSTR0(OP_NOP),
+                INSTR1(OP_JMP, 0),
+            },
+        },
+        .lines = lines,
+        .addr_to_line = {
+            0, 1,
+        }
+    };
+    compare_code(expected, code);
+}
+
 void test_Code_should_mark_error_on_unknown_instruction(void) {
     struct code_t code;
     const char *lines[CPU_MAX_PRGM_LENGTH] = {
