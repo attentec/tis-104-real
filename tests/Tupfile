@@ -8,6 +8,8 @@ libs += ../src/opts/pipe_mock_pc.o
 
 !gen  = |> ^ GEN Unity Runner %o^ ruby unity/auto/generate_test_runner.rb %f %o |>
 
+ifeq (@(PC),y)
+ifeq (@(PC_TEST),y)
 : unity/src/unity.c |> !cc_pc             |> unity.o
 : foreach *.c       |> !gen               |> %B_runner.c
 : foreach *.c       |> !cc_pc $(INCLUDES) |> %B.o
@@ -18,3 +20,5 @@ libs += ../src/opts/pipe_mock_pc.o
 
 : foreach {bins} |> ^ TEST %o^ ./%f   > %o |> %B_results.txt {results}
 : {results}      |> ^ CAT %o^  cat %f > %o |> results.txt
+endif
+endif

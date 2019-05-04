@@ -2,6 +2,7 @@ include_rules
 
 INCLUDES = -I../src
 
+ifeq (@(AVR),y)
 avr_libs += ../src/avr/display_ili9225.o
 avr_libs += ../src/avr/panic.o
 avr_libs += ../src/avr/pin.o
@@ -10,7 +11,9 @@ avr_libs += ../src/avr/spi_hw.o
 avr_libs += ../src/avr/uart_hw.o
 avr_libs += ../src/opts/pipe_mock_avr.o
 avr_libs += ../src/tis104_avr.a
+endif
 
+ifeq (@(PC),y)
 pc_libs += ../src/pc/delay_pc.o
 pc_libs += ../src/pc/panic.o
 pc_libs += ../src/pc/pin.o
@@ -19,13 +22,18 @@ pc_libs += ../src/opts/display_sw_pc.o
 pc_libs += ../src/opts/pipe_mock_pc.o
 pc_libs += ../src/tis104_pc.a
 
+ifeq (@(PC_SDL),y)
 pc_sdl_libs += ../src/pc/platform_sdl.o
 pc_sdl_libs += ../src/pc/surface_sdl.o
 pc_sdl_libs += $(pc_libs)
+endif
 
+ifeq (@(PC_GIF),y)
 pc_gif_libs += ../src/pc/platform_gif.o
 pc_gif_libs += ../src/pc/surface_gif.o
 pc_gif_libs += $(pc_libs)
+endif
+endif
 
 universal_srcs += colors.c
 universal_srcs += rapidbw.c
@@ -40,15 +48,25 @@ avr_srcs += sender.c
 pc_srcs += $(universal_srcs)
 pc_srcs += gridsim.c
 
+ifeq (@(AVR),y)
 : foreach $(avr_srcs) |> !cc_avr $(INCLUDES) |> avr/%B.o {avr_objs}
-: foreach $(pc_srcs)  |> !cc_pc $(INCLUDES)  |> pc/%B.o  {pc_objs}
 
-: foreach {avr_objs} | $(avr_libs)    |> !ld_avr $(avr_libs)          |> avr/%B.elf    {avr_bins}
-: foreach {pc_objs}  | $(pc_sdl_libs) |> !ld_pc -lSDL2 $(pc_sdl_libs) |> pc/%B_sdl.elf
-: foreach {pc_objs}  | $(pc_gif_libs) |> !ld_pc -lgif  $(pc_gif_libs) |> pc/%B_gif.elf
+: foreach {avr_objs} | $(avr_libs) |> !ld_avr $(avr_libs) |> avr/%B.elf {avr_bins}
 
 : foreach {avr_bins} |> !dis_avr  |> avr/%B.s
 : foreach {avr_bins} |> !hex_avr  |> avr/%B.hex
 : foreach {avr_bins} |> !size_avr |> avr/%B_size.txt
+endif
 
+ifeq (@(PC),y)
+: foreach $(pc_srcs)  |> !cc_pc $(INCLUDES)  |> pc/%B.o  {pc_objs}
+
+ifeq (@(PC_SDL),y)
+: foreach {pc_objs}  | $(pc_sdl_libs) |> !ld_pc -lSDL2 $(pc_sdl_libs) |> pc/%B_sdl.elf
+endif
+
+ifeq (@(PC_GIF),y)
+: foreach {pc_objs}  | $(pc_gif_libs) |> !ld_pc -lgif  $(pc_gif_libs) |> pc/%B_gif.elf
 : pc/sim_gif.elf |> ./%f |> tis-104-real.gif
+endif
+endif

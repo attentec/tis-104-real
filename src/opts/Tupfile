@@ -2,5 +2,10 @@ include_rules
 
 INCLUDES = -I..
 
-: foreach *.c |> !cc_pc $(INCLUDES)  |> %B_pc.o
+ifeq (@(PC),y)
+: foreach *.c |> !cc_pc $(INCLUDES) |> %B_pc.o
+endif
+
+ifeq (@(AVR),y)
 : foreach *.c |> !cc_avr $(INCLUDES) |> %B_avr.o
+endif

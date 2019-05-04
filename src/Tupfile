@@ -2,8 +2,12 @@ include_rules
 
 INCLUDES = -I.
 
-: foreach *.c |> !cc_pc $(INCLUDES)  |> %B_pc.o  {pc_objs}
-: foreach *.c |> !cc_avr $(INCLUDES) |> %B_avr.o {avr_objs}
+ifeq (@(PC),y)
+: foreach *.c |> !cc_pc $(INCLUDES) |> %B_pc.o  {pc_objs}
+: {pc_objs}   |> !ar_pc             |> tis104_pc.a
+endif
 
-: {pc_objs}   |> !ar_pc  |> tis104_pc.a
-: {avr_objs}  |> !ar_avr |> tis104_avr.a
+ifeq (@(AVR),y)
+: foreach *.c |> !cc_avr $(INCLUDES) |> %B_avr.o {avr_objs}
+: {avr_objs}  |> !ar_avr             |> tis104_avr.a
+endif
