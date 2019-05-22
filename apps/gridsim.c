@@ -7,7 +7,7 @@
 #include "runner.h"
 #include "tile.h"
 
-const char *example_program_text[CPU_MAX_PRGM_LENGTH] = {
+const source_t example_program_text = {
     "  MOV 10, ACC",
     "LOOP:",
     "  SUB 1",
@@ -44,7 +44,7 @@ void app_init(void)
         for (int r = 0; r < ROWS; r++) {
             struct display_t *display = platform_get_display(c, r);
             canvas_init(&canvases[c][r], display, &monoblipp6x8);
-            code_init(&codes[c][r], example_program_text);
+            code_init(&codes[c][r], &example_program_text);
             tile_init(&tiles[c][r], &codes[c][r], &canvases[c][r]);
         }
     }

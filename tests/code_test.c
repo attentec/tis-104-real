@@ -40,34 +40,34 @@ void compare_code(struct code_t expected, struct code_t actual) {
 
 void test_Code_should_parse_empty_program(void) {
     struct code_t code;
-    const char *lines[CPU_MAX_PRGM_LENGTH] = {0};
-    code_init(&code, lines);
+    const source_t lines = {0};
+    code_init(&code, &lines);
     struct code_t expected = (struct code_t){
         .prgm = {
             .length = 0,
         },
-        .lines = lines,
+        .lines = &lines,
     };
     compare_code(expected, code);
 }
 
 void test_Code_should_parse_empty_program_lines(void) {
     struct code_t code;
-    const char *lines[CPU_MAX_PRGM_LENGTH] = {"", "", "", ""};
-    code_init(&code, lines);
+    const source_t lines = {"", "", "", ""};
+    code_init(&code, &lines);
     struct code_t expected = (struct code_t){
         .prgm = {
             .length = 0,
         },
-        .lines = lines,
+        .lines = &lines,
     };
     compare_code(expected, code);
 }
 
 void test_Code_should_parse_single_instruction(void) {
     struct code_t code;
-    const char *lines[CPU_MAX_PRGM_LENGTH] = {"MOV 1 ACC"};
-    code_init(&code, lines);
+    const source_t lines = {"MOV 1 ACC"};
+    code_init(&code, &lines);
     struct code_t expected = (struct code_t) {
         .prgm = {
             .length = 1,
@@ -75,7 +75,7 @@ void test_Code_should_parse_single_instruction(void) {
                 INSTR2(OP_MOV, 1, ARG_ACC),
             },
         },
-        .lines = lines,
+        .lines = &lines,
         .addr_to_line = {0},
     };
     compare_code(expected, code);
@@ -83,7 +83,7 @@ void test_Code_should_parse_single_instruction(void) {
 
 void test_Code_should_parse_example_program(void) {
     struct code_t code;
-    const char *lines[CPU_MAX_PRGM_LENGTH] = {
+    const source_t lines = {
         "  MOV 10, ACC",
         "LOOP:",
         "  SUB 1",
@@ -92,7 +92,7 @@ void test_Code_should_parse_example_program(void) {
         "  ADD 1",
         "  SWP"
     };
-    code_init(&code, lines);
+    code_init(&code, &lines);
     struct code_t expected = (struct code_t) {
         .prgm = {
             .length = 6,
@@ -105,7 +105,7 @@ void test_Code_should_parse_example_program(void) {
                 INSTR0(OP_SWP),
             },
         },
-        .lines = lines,
+        .lines = &lines,
         .addr_to_line = {
             0, 2, 3, 4, 5, 6,
         }
@@ -115,11 +115,11 @@ void test_Code_should_parse_example_program(void) {
 
 void test_Code_should_handle_label_with_instr(void) {
     struct code_t code;
-    const char *lines[CPU_MAX_PRGM_LENGTH] = {
+    const source_t lines = {
         "LOOP:ADD 1",
         "  JMP LOOP",
     };
-    code_init(&code, lines);
+    code_init(&code, &lines);
     struct code_t expected = (struct code_t) {
         .prgm = {
             .length = 2,
@@ -128,7 +128,7 @@ void test_Code_should_handle_label_with_instr(void) {
                 INSTR1(OP_JMP, 0),
             },
         },
-        .lines = lines,
+        .lines = &lines,
         .addr_to_line = {
             0, 1,
         }
@@ -138,12 +138,12 @@ void test_Code_should_handle_label_with_instr(void) {
 
 void test_Code_should_treat_label_at_end_as_at_beginning(void) {
     struct code_t code;
-    const char *lines[CPU_MAX_PRGM_LENGTH] = {
+    const source_t lines = {
         "  NOP",
         "  JMP END",
         "END:",
     };
-    code_init(&code, lines);
+    code_init(&code, &lines);
     struct code_t expected = (struct code_t) {
         .prgm = {
             .length = 2,
@@ -152,7 +152,7 @@ void test_Code_should_treat_label_at_end_as_at_beginning(void) {
                 INSTR1(OP_JMP, 0),
             },
         },
-        .lines = lines,
+        .lines = &lines,
         .addr_to_line = {
             0, 1,
         }
@@ -162,15 +162,15 @@ void test_Code_should_treat_label_at_end_as_at_beginning(void) {
 
 void test_Code_should_mark_error_on_unknown_instruction(void) {
     struct code_t code;
-    const char *lines[CPU_MAX_PRGM_LENGTH] = {
+    const source_t lines = {
         "FOO 1, 2",
     };
-    code_init(&code, lines);
+    code_init(&code, &lines);
     struct code_t expected = (struct code_t) {
         .prgm = {
             .length = 0,
         },
-        .lines = lines,
+        .lines = &lines,
         .errors = {true},
     };
     compare_code(expected, code);
@@ -178,15 +178,15 @@ void test_Code_should_mark_error_on_unknown_instruction(void) {
 
 void test_Code_should_mark_error_on_missing_label(void) {
     struct code_t code;
-    const char *lines[CPU_MAX_PRGM_LENGTH] = {
+    const source_t lines = {
         "JMP FOO",
     };
-    code_init(&code, lines);
+    code_init(&code, &lines);
     struct code_t expected = (struct code_t) {
         .prgm = {
             .length = 1,
         },
-        .lines = lines,
+        .lines = &lines,
         .errors = {true},
     };
     compare_code(expected, code);
@@ -194,16 +194,16 @@ void test_Code_should_mark_error_on_missing_label(void) {
 
 void test_Code_should_mark_error_on_duplicate_label(void) {
     struct code_t code;
-    const char *lines[CPU_MAX_PRGM_LENGTH] = {
+    const source_t lines = {
         "LOOP:",
         "LOOP:",
     };
-    code_init(&code, lines);
+    code_init(&code, &lines);
     struct code_t expected = (struct code_t) {
         .prgm = {
             .length = 0,
         },
-        .lines = lines,
+        .lines = &lines,
         .errors = {false, true},
     };
     compare_code(expected, code);
@@ -211,10 +211,10 @@ void test_Code_should_mark_error_on_duplicate_label(void) {
 
 void test_Code_should_mark_error_on_junk_after_instr(void) {
     struct code_t code;
-    const char *lines[CPU_MAX_PRGM_LENGTH] = {
+    const source_t lines = {
         "ADD 1 BAR",
     };
-    code_init(&code, lines);
+    code_init(&code, &lines);
     struct code_t expected = (struct code_t) {
         .prgm = {
             .length = 1,
@@ -222,7 +222,7 @@ void test_Code_should_mark_error_on_junk_after_instr(void) {
                 INSTR1(OP_ADD, 1),
             },
         },
-        .lines = lines,
+        .lines = &lines,
         .errors = {true},
     };
     compare_code(expected, code);
@@ -230,16 +230,16 @@ void test_Code_should_mark_error_on_junk_after_instr(void) {
 
 void test_Code_should_mark_error_on_invalid_constants(void) {
     struct code_t code;
-    const char *lines[CPU_MAX_PRGM_LENGTH] = {
+    const source_t lines = {
         "ADD 1000",
         "ADD -1000",
     };
-    code_init(&code, lines);
+    code_init(&code, &lines);
     struct code_t expected = (struct code_t) {
         .prgm = {
             .length = 0,
         },
-        .lines = lines,
+        .lines = &lines,
         .errors = {true, true},
     };
     compare_code(expected, code);
@@ -247,7 +247,7 @@ void test_Code_should_mark_error_on_invalid_constants(void) {
 
 void test_Code_should_accept_all_instructions(void) {
     struct code_t code;
-    const char *lines[CPU_MAX_PRGM_LENGTH] = {
+    const source_t lines = {
         "START:",
         "NOP",
         "MOV 0, LEFT",
@@ -263,7 +263,7 @@ void test_Code_should_accept_all_instructions(void) {
         "JGZ START",
         "JLZ START",
     };
-    code_init(&code, lines);
+    code_init(&code, &lines);
     struct code_t expected = (struct code_t) {
         .prgm = {
             .length = 13,
@@ -283,7 +283,7 @@ void test_Code_should_accept_all_instructions(void) {
                 INSTR1(OP_JLZ, 0),
             },
         },
-        .lines = lines,
+        .lines = &lines,
         .addr_to_line = {
             1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
         }
@@ -293,13 +293,13 @@ void test_Code_should_accept_all_instructions(void) {
 
 void test_Code_should_accept_all_arg_keywords(void) {
     struct code_t code;
-    const char *lines[CPU_MAX_PRGM_LENGTH] = {
+    const source_t lines = {
         "MOV ACC, NIL",
         "MOV LEFT, RIGHT",
         "MOV UP, DOWN",
         "MOV ANY, LAST",
     };
-    code_init(&code, lines);
+    code_init(&code, &lines);
     struct code_t expected = (struct code_t) {
         .prgm = {
             .length = 4,
@@ -310,7 +310,7 @@ void test_Code_should_accept_all_arg_keywords(void) {
                 INSTR2(OP_MOV, ARG_ANY, ARG_LAST),
             },
         },
-        .lines = lines,
+        .lines = &lines,
         .addr_to_line = {
             0, 1, 2, 3,
         }

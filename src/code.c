@@ -4,11 +4,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define CODE_MAX_LINE_LENGTH (19)
+static struct code_t compile(const source_t *lines);
 
-static struct code_t compile(const char *lines[CPU_MAX_PRGM_LENGTH]);
-
-void code_init(struct code_t *code, const char *lines[CPU_MAX_PRGM_LENGTH])
+void code_init(struct code_t *code, const source_t *lines)
 {
     *code = compile(lines);
 }
@@ -29,13 +27,13 @@ enum type_t {
 };
 
 struct label_t {
-    char label[CODE_MAX_LINE_LENGTH];
+    char label[CODE_LINE_BUFFER_SIZE];
     int line;
 };
 
 struct label_instr_t {
     enum op_t op;
-    char label[CODE_MAX_LINE_LENGTH];
+    char label[CODE_LINE_BUFFER_SIZE];
     address_t addr;
 };
 
@@ -50,8 +48,8 @@ struct parse_t {
 };
 
 static void copy_line(char *dst, const char *src) {
-    strncpy(dst, src, CODE_MAX_LINE_LENGTH);
-    dst[CODE_MAX_LINE_LENGTH - 1] = '\0';
+    strncpy(dst, src, CODE_LINE_BUFFER_SIZE);
+    dst[CODE_LINE_BUFFER_SIZE - 1] = '\0';
 }
 
 static bool streq(const char *one, const char *two) {
@@ -230,8 +228,8 @@ static struct parse_t parse(const char *word)
 
 struct compile_state_t {
     struct code_t code;
-    struct label_t labels[CPU_MAX_PRGM_LENGTH];
-    struct label_instr_t label_instrs[CPU_MAX_PRGM_LENGTH];
+    struct label_t labels[CODE_NUM_LINES];
+    struct label_instr_t label_instrs[CODE_NUM_LINES];
     address_t l_count;
     address_t li_count;
 };
@@ -275,7 +273,7 @@ static bool handle_word(struct compile_state_t *state, const char *word, int lin
     }
 }
 
-static struct code_t compile(const char *lines[CPU_MAX_PRGM_LENGTH])
+static struct code_t compile(const source_t *lines)
 {
     struct compile_state_t state;
     memset(&state, 0, sizeof(state));
@@ -283,12 +281,9 @@ static struct code_t compile(const char *lines[CPU_MAX_PRGM_LENGTH])
     state.l_count = 0;
     state.li_count = 0;
 
-    for (int i = 0; i < CPU_MAX_PRGM_LENGTH; ++i) {
-        if (!lines[i]) {
-            break;
-        }
-        char line[CODE_MAX_LINE_LENGTH];
-        copy_line(line, lines[i]);
+    for (int i = 0; i < CODE_NUM_LINES; ++i) {
+        char line[CODE_LINE_BUFFER_SIZE];
+        copy_line(line, &(*lines)[i][0]);
         char *pch = strtok(line, " ,");
         while (pch) {
             if (strchr(pch, ':')) {
