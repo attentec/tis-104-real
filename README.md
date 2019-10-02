@@ -3,6 +3,8 @@
 The goal of this project is to implement the computer in the brilliant TIS-100
 game by Zachtronics on real hardware.
 
+![GIF animation of a simulated display](demo.gif)
+
 ## Setup
 
     submodule update --init
